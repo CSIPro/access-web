@@ -29,9 +29,9 @@ export const Navbar: FC<Props> = ({ orientation = "horizontal" }) => {
         <NavigationMenuItem>
           <NavbarLink to="/app">Home</NavbarLink>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavbarLink to="/app/dashboard">Dashboard</NavbarLink>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
         {/* <NavigationMenuItem>
           <NavbarLink to="/">Access Logs</NavbarLink>
         </NavigationMenuItem>

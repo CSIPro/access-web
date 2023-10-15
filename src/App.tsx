@@ -6,6 +6,7 @@ import { useSigninCheck } from "reactfire";
 import { Splash } from "./components/splash/splash";
 import { AppIndex } from "./routes/app";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
+import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
 import { ProtectedRoute } from "./routes/protected-route";
@@ -22,13 +23,23 @@ function App() {
     return <Splash message={error?.message ?? "Something went wrong"} />;
   }
 
+  if (!data || !data.user) {
+    return <Splash message="Something went wrong while signing in" />;
+  }
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between bg-muted font-sans text-white">
-      <BrowserRouter>
+      <BrowserRouter basename="/access">
         <Routes>
           <Route
             path="/"
-            element={<ProtectedRoute isAuthenticated={data.signedIn} />}
+            element={
+              // eslint-disable-next-line react/jsx-wrap-multilines
+              <ProtectedRoute
+                isAuthenticated={data.signedIn}
+                userUid={data.user.uid}
+              />
+            }
           >
             <Route path="/" element={<Navigate to="/app" replace />} />
             <Route path="/app" element={<MainApp />}>
@@ -41,13 +52,15 @@ function App() {
             element={data.signedIn ? <Navigate to="/" /> : <Login />}
           />
           <Route
+            path="/complete-signup"
+            element={
+              data.signedIn ? <CompleteSignup /> : <Navigate to="/login" />
+            }
+          />
+          <Route
             path="/oauth/callback"
             element={data.signedIn ? <Navigate to="/" /> : <AuthCallback />}
           />
-          {/* <Route
-            path="/__/auth/handler"
-            element={data.signedIn ? <Navigate to="/" /> : <GoogleOAuth />}
-          /> */}
         </Routes>
       </BrowserRouter>
       <Toaster position="bottom-center" />

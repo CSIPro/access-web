@@ -1,6 +1,18 @@
+import { useUser } from "reactfire";
+
 import { Header } from "@/components/header/header";
 
 export const AppIndex = () => {
+  const { status, error } = useUser();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "error") {
+    return <div>{error?.message}</div>;
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-primary">
       <Header title="Home" />

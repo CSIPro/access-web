@@ -5,6 +5,7 @@ import { useAuth } from "reactfire";
 
 import { Navbar } from "../navbar/navbar";
 import { Button } from "../ui/button";
+import { ProfileButton } from "../ui/profile-button";
 import {
   Sheet,
   SheetContent,
@@ -39,7 +40,7 @@ export const Header: FC<Props> = ({ title }) => {
           </SheetTrigger>
           <Link to="/app" className="hidden items-center gap-2 md:flex">
             <img
-              src="/images/access-logo.svg"
+              src={`${import.meta.env.BASE_URL}/images/access-logo.svg`}
               alt="Logo de CSI PRO Access"
               width={24}
             />
@@ -50,13 +51,14 @@ export const Header: FC<Props> = ({ title }) => {
           </Link>
           <h1 className="text-center md:hidden">{title}</h1>
           <Navbar />
-          <div className="hidden flex-grow md:block" />
-          <Button
+          <div className="block flex-grow" />
+          <ProfileButton />
+          {/* <Button
             onClick={handleSignOut}
             className="hidden bg-white text-muted hover:bg-destructive hover:text-white md:inline-flex"
           >
             Sign out
-          </Button>
+          </Button> */}
         </div>
       </header>
       <SheetPortal>
@@ -65,7 +67,7 @@ export const Header: FC<Props> = ({ title }) => {
             <SheetTitle asChild={true} className="pt-8">
               <Link to="/app" className="flex items-center gap-2">
                 <img
-                  src="/images/access-logo.svg"
+                  src={`${import.meta.env.BASE_URL}/images/access-logo.svg`}
                   alt="Logo de CSI PRO Access"
                   width={24}
                 />
@@ -80,7 +82,7 @@ export const Header: FC<Props> = ({ title }) => {
           </SheetHeader>
           <div className="flex h-4/5 flex-col gap-4 pl-8 pt-4 text-lg text-white">
             <Link to="/app">Home</Link>
-            <Link to="/app/dashboard">Dashboard</Link>
+            {/* <Link to="/app/dashboard">Dashboard</Link> */}
             <Link to="/app/qr-code">QR Code</Link>
             <div className="flex-grow" />
             <Button

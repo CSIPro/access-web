@@ -10,7 +10,7 @@ export const Login = () => {
           <span className="bg-white px-2 font-bold text-primary">ACCESS</span>
         </h1>
         <div className="flex w-4/5 flex-col items-center justify-center gap-2">
-          <AuthButton provider="github" disabled={true} />
+          <AuthButton provider="github" />
           <AuthButton provider="google" />
         </div>
         <Branding />
