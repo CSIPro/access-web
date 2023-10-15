@@ -10,7 +10,7 @@ export const Splash = ({ message, loading = false }: Props) => {
   return (
     <main className="relative flex min-h-screen w-full flex-col items-center justify-center gap-16 bg-primary text-white">
       <img
-        src="images/access-logo.svg"
+        src="/images/access-logo.svg"
         alt="Logo de CSI PRO Access"
         className="w-64"
       />

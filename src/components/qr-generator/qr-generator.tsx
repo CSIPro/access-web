@@ -14,11 +14,14 @@ export const QRGenerator: FC<Props> = ({ user }) => {
   const { isLoading, error, data } = useQuery({
     queryKey: ["qr-token"],
     queryFn: async () => {
-      return axios.get("http://148.225.50.130:3000/api/users/generate-token", {
-        headers: {
-          Authorization: `Bearer ${await user.getIdToken()}`,
+      return axios.get(
+        `${import.meta.env.VITE_ACCESS_API_URL}/api/users/generate-token`,
+        {
+          headers: {
+            Authorization: `Bearer ${await user.getIdToken()}`,
+          },
         },
-      });
+      );
     },
     refetchInterval: 20000,
   });

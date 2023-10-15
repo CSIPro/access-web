@@ -5,12 +5,12 @@ import { useSigninCheck } from "reactfire";
 
 import { Splash } from "./components/splash/splash";
 import { AppIndex } from "./routes/app";
+import { QRCodePage } from "./routes/app/qr-code";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
 import { AuthedRoute, UnauthedRoute } from "./routes/protected-route";
-import { QRCodePage } from "./routes/qr-code";
 
 function App() {
   const { status, data, error } = useSigninCheck();

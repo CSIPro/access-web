@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_MEASUREMENT_ID: string;
   readonly VITE_GITHUB_CALLBACK_URL: string;
   readonly VITE_GITHUB_CLIENT_ID: string;
+  readonly VITE_ACCESS_API_URL: string;
 }
 
 interface ImportMeta {

@@ -24,7 +24,7 @@ export const useLogs = () => {
     where(
       "timestamp",
       ">=",
-      Timestamp.fromDate(new Date(new Date(2023, 9, 13).setHours(0, 0, 0, 0))),
+      Timestamp.fromDate(new Date(new Date().setHours(0, 0, 0, 0))),
     ),
   );
   const { status, data } = useFirestoreCollectionData(logsQuery, {
