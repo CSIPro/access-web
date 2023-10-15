@@ -15,6 +15,7 @@ import {
 
 import App from "./App.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
+import { RoomProvider } from "./context/room-context.tsx";
 import "./index.css";
 import { firebaseConfig } from "./firebase.ts";
 
@@ -32,8 +33,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <AnalyticsProvider sdk={analytics}>
           <AuthProvider sdk={auth}>
             <FirestoreProvider sdk={firestore}>
-              <App />
-              <Toaster />
+              <RoomProvider>
+                <App />
+                <Toaster />
+              </RoomProvider>
             </FirestoreProvider>
           </AuthProvider>
         </AnalyticsProvider>

@@ -1,6 +1,15 @@
-import { Timestamp, collection, query, where } from "firebase/firestore";
+import {
+  Timestamp,
+  collection,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { useContext } from "react";
 import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import * as z from "zod";
+
+import { RoomContext } from "@/context/room-context";
 
 const logSchema = z.object({
   accessed: z.boolean(),
@@ -17,15 +26,19 @@ const logSchema = z.object({
 });
 
 export const useLogs = () => {
+  const roomCtx = useContext(RoomContext);
+
   const firestore = useFirestore();
   const logsCol = collection(firestore, "logs");
   const logsQuery = query(
     logsCol,
+    where("room", "==", roomCtx.selectedRoom || ""),
     where(
       "timestamp",
       ">=",
       Timestamp.fromDate(new Date(new Date().setHours(0, 0, 0, 0))),
     ),
+    orderBy("timestamp", "desc"),
   );
   const { status, data } = useFirestoreCollectionData(logsQuery, {
     idField: "id",

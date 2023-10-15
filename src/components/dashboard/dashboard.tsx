@@ -8,7 +8,7 @@ import { UserSuccessfulAttempts } from "./dash-bubbles/user-successful";
 
 export const Dashboard = () => {
   return (
-    <div className="grid w-full grid-cols-2 gap-2 p-2 sm:grid-cols-2 md:grid-cols-6">
+    <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-6">
       <SuccessfulAttempts />
       <BluetoothAttempts />
       <FailedAttempts />
