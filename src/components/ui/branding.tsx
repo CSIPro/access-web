@@ -8,7 +8,7 @@ export const Branding: FC<ImgHTMLAttributes<HTMLImageElement>> = ({
 }) => {
   return (
     <img
-      src={`${import.meta.env.BASE_URL}/images/csipro.svg`}
+      src="images/csipro.svg"
       alt="Logo de CSI PRO"
       height={40}
       width={40}

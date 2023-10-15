@@ -40,7 +40,7 @@ export const Header: FC<Props> = ({ title }) => {
           </SheetTrigger>
           <Link to="/app" className="hidden items-center gap-2 md:flex">
             <img
-              src={`${import.meta.env.BASE_URL}/images/access-logo.svg`}
+              src="images/access-logo.svg"
               alt="Logo de CSI PRO Access"
               width={24}
             />
@@ -67,7 +67,7 @@ export const Header: FC<Props> = ({ title }) => {
             <SheetTitle asChild={true} className="pt-8">
               <Link to="/app" className="flex items-center gap-2">
                 <img
-                  src={`${import.meta.env.BASE_URL}/images/access-logo.svg`}
+                  src="images/access-logo.svg"
                   alt="Logo de CSI PRO Access"
                   width={24}
                 />

@@ -9,7 +9,7 @@ import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
-import { ProtectedRoute } from "./routes/protected-route";
+import { AuthedRoute, UnauthedRoute } from "./routes/protected-route";
 import { QRCodePage } from "./routes/qr-code";
 
 function App() {
@@ -23,21 +23,17 @@ function App() {
     return <Splash message={error?.message ?? "Something went wrong"} />;
   }
 
-  if (!data || !data.user) {
-    return <Splash message="Something went wrong while signing in" />;
-  }
-
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between bg-muted font-sans text-white">
-      <BrowserRouter basename="/access">
+      <BrowserRouter>
         <Routes>
           <Route
             path="/"
             element={
               // eslint-disable-next-line react/jsx-wrap-multilines
-              <ProtectedRoute
+              <AuthedRoute
                 isAuthenticated={data.signedIn}
-                userUid={data.user.uid}
+                userUid={data.user?.uid}
               />
             }
           >
@@ -54,9 +50,15 @@ function App() {
           <Route
             path="/complete-signup"
             element={
-              data.signedIn ? <CompleteSignup /> : <Navigate to="/login" />
+              // eslint-disable-next-line react/jsx-wrap-multilines
+              <UnauthedRoute
+                isAuthenticated={data.signedIn}
+                userUid={data.user?.uid}
+              />
             }
-          />
+          >
+            <Route path="/complete-signup" element={<CompleteSignup />} />
+          </Route>
           <Route
             path="/oauth/callback"
             element={data.signedIn ? <Navigate to="/" /> : <AuthCallback />}

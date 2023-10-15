@@ -92,3 +92,7 @@
 select::-webkit-scrollbar {
   display: none;
 }
+
+.rdp-caption_dropdowns {
+  @apply flex flex-row items-center justify-center gap-2;
+}

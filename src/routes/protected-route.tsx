@@ -12,7 +12,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export const ProtectedRoute: FC<Props> = ({
+export const AuthedRoute: FC<Props> = ({
   isAuthenticated,
   userUid = "invalid",
   redirectPath = "/login",
@@ -37,6 +37,36 @@ export const ProtectedRoute: FC<Props> = ({
 
   if (!data) {
     return <Navigate to="/complete-signup" replace />;
+  }
+
+  return children ? children : <Outlet />;
+};
+
+export const UnauthedRoute: FC<Props> = ({
+  isAuthenticated,
+  redirectPath = "/",
+  userUid = "invalid",
+  children,
+}) => {
+  const firestore = useFirestore();
+  const { status, data, error } = useFirestoreDocData(
+    doc(firestore, "users", `${userUid}`),
+  );
+
+  if (isAuthenticated) {
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  if (status === "loading") {
+    return <Splash loading />;
+  }
+
+  if (error) {
+    return <Splash message="Error connecting to the Firestore database" />;
+  }
+
+  if (data) {
+    return <Navigate to={redirectPath} replace />;
   }
 
   return children ? children : <Outlet />;

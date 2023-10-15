@@ -50,7 +50,7 @@ export const AuthButton: FC<Props> = ({ provider, ...rest }) => {
       {...rest}
     >
       <img
-        src={`${import.meta.env.BASE_URL}${providers[provider].icon}`}
+        src={providers[provider].icon}
         alt={`Logo de ${providers[provider].name}`}
         width={24}
         className="absolute left-4 top-1/2 -translate-y-1/2 transform"
