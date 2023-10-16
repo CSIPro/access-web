@@ -83,6 +83,7 @@ export const Header: FC<Props> = ({ title }) => {
           <div className="flex h-4/5 flex-col gap-4 pl-8 pt-4 text-lg text-white">
             <Link to="/app">Home</Link>
             {/* <Link to="/app/dashboard">Dashboard</Link> */}
+            <Link to="/app/logs">Access Logs</Link>
             <Link to="/app/qr-code">QR Code</Link>
             <div className="flex-grow" />
             <Button

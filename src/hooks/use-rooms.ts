@@ -19,6 +19,10 @@ export const useRooms = () => {
     },
   );
 
+  if (roomsStatus === "error") {
+    return { status: "error", data: [] };
+  }
+
   return {
     status: roomsStatus,
     data: roomsData as z.infer<typeof roomSchema>[],
@@ -45,6 +49,10 @@ export const useUserRooms = () => {
     useFirestoreCollectionData(userRoomsCol, {
       idField: "id",
     });
+
+  if (userRoomsStatus === "error") {
+    return { status: "error", data: [] };
+  }
 
   return {
     status: userRoomsStatus,

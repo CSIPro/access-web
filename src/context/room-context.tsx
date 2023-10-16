@@ -41,6 +41,14 @@ export const RoomProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
   }
 
+  if (!roomsData || !userRoomsData) {
+    return (
+      <RoomContext.Provider value={{ status: "error" }}>
+        {children}
+      </RoomContext.Provider>
+    );
+  }
+
   const rooms = roomsData?.filter((room) =>
     userRoomsData.some((userRoom) => userRoom.id === room.id),
   );

@@ -1,10 +1,13 @@
+/* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable check-file/filename-naming-convention */
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useSigninCheck } from "reactfire";
 
 import { Splash } from "./components/splash/splash";
+import { RoomProvider } from "./context/room-context";
 import { AppIndex } from "./routes/app";
+import { LogsPage } from "./routes/app/logs";
 import { QRCodePage } from "./routes/app/qr-code";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { CompleteSignup } from "./routes/complete-signup";
@@ -30,7 +33,6 @@ function App() {
           <Route
             path="/"
             element={
-              // eslint-disable-next-line react/jsx-wrap-multilines
               <AuthedRoute
                 isAuthenticated={data.signedIn}
                 userUid={data.user?.uid}
@@ -38,8 +40,16 @@ function App() {
             }
           >
             <Route path="/" element={<Navigate to="/app" replace />} />
-            <Route path="/app" element={<MainApp />}>
+            <Route
+              path="/app"
+              element={
+                <RoomProvider>
+                  <MainApp />
+                </RoomProvider>
+              }
+            >
               <Route path="/app" element={<AppIndex />} />
+              <Route path="/app/logs" element={<LogsPage />} />
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
           </Route>
@@ -50,7 +60,6 @@ function App() {
           <Route
             path="/complete-signup"
             element={
-              // eslint-disable-next-line react/jsx-wrap-multilines
               <UnauthedRoute
                 isAuthenticated={data.signedIn}
                 userUid={data.user?.uid}

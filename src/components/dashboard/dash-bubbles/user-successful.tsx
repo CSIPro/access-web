@@ -21,7 +21,7 @@ export const UserSuccessfulAttempts = () => {
   }
 
   return (
-    <div className="flex w-full flex-col items-start gap-4 rounded-lg bg-primary p-4 text-white md:col-span-2">
+    <div className="flex w-full flex-col items-start gap-4 rounded-lg bg-tertiary p-4 text-white md:col-span-2">
       <span className="text-7xl">{logs?.length || 0}</span>
       <span className="text-lg">your successful attempts</span>
     </div>

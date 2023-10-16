@@ -1,6 +1,7 @@
 import {
   Timestamp,
   collection,
+  limit,
   orderBy,
   query,
   where,
@@ -25,21 +26,32 @@ const logSchema = z.object({
     .optional(),
 });
 
-export const useLogs = () => {
+interface UseLogsProps {
+  today?: boolean;
+}
+
+export const useLogs = ({ today = true }: UseLogsProps = {}) => {
   const roomCtx = useContext(RoomContext);
 
   const firestore = useFirestore();
   const logsCol = collection(firestore, "logs");
-  const logsQuery = query(
-    logsCol,
-    where("room", "==", roomCtx.selectedRoom || ""),
-    where(
-      "timestamp",
-      ">=",
-      Timestamp.fromDate(new Date(new Date().setHours(0, 0, 0, 0))),
-    ),
-    orderBy("timestamp", "desc"),
-  );
+  const logsQuery = today
+    ? query(
+        logsCol,
+        where("room", "==", roomCtx.selectedRoom || ""),
+        where(
+          "timestamp",
+          ">=",
+          Timestamp.fromDate(new Date(new Date().setHours(0, 0, 0, 0))),
+        ),
+        orderBy("timestamp", "desc"),
+      )
+    : query(
+        logsCol,
+        where("room", "==", roomCtx.selectedRoom || ""),
+        orderBy("timestamp", "desc"),
+        limit(40),
+      );
   const { status, data } = useFirestoreCollectionData(logsQuery, {
     idField: "id",
   });
@@ -61,7 +73,7 @@ export const useSuccessfulLogs = () => {
     return { status: "error", logs: [] };
   }
 
-  const successfulLogs = logsData.filter((log) => log.accessed);
+  const successfulLogs = logsData?.filter((log) => log.accessed);
 
   return { status: logsStatus, logs: successfulLogs };
 };
@@ -77,7 +89,7 @@ export const useFailedLogs = () => {
     return { status: "error", logs: [] };
   }
 
-  const failedLogs = logsData.filter((log) => !log.accessed);
+  const failedLogs = logsData?.filter((log) => !log.accessed);
 
   return { status: logsStatus, logs: failedLogs };
 };
@@ -93,7 +105,7 @@ export const useBluetoothLogs = () => {
     return { status: "error", logs: [] };
   }
 
-  const bluetoothLogs = logsData.filter((log) => log.bluetooth);
+  const bluetoothLogs = logsData?.filter((log) => log.bluetooth);
 
   return { status: logsStatus, logs: bluetoothLogs };
 };
@@ -109,7 +121,7 @@ export const useUnknownLogs = () => {
     return { status: "error", logs: [] };
   }
 
-  const unknownLogs = logsData.filter((log) => !log.user);
+  const unknownLogs = logsData?.filter((log) => !log.user);
 
   return { status: logsStatus, logs: unknownLogs };
 };
@@ -126,7 +138,7 @@ export const useUserLogs = () => {
     return { status: "error", logs: [] };
   }
 
-  const userAttempts = logsData.filter((log) => log.user === userData!.uid);
+  const userAttempts = logsData?.filter((log) => log.user === userData!.uid);
 
   return {
     status: logsStatus,
@@ -145,7 +157,7 @@ export const useUserSuccessfulLogs = () => {
     return { status: "error" };
   }
 
-  const successfulLogs = logsData.filter((log) => log.accessed);
+  const successfulLogs = logsData?.filter((log) => log.accessed);
 
   return { status: logsStatus, logs: successfulLogs };
 };
@@ -161,7 +173,7 @@ export const useUserFailedLogs = () => {
     return { status: "error" };
   }
 
-  const successfulLogs = logsData.filter((log) => !log.accessed);
+  const successfulLogs = logsData?.filter((log) => !log.accessed);
 
   return { status: logsStatus, logs: successfulLogs };
 };
