@@ -53,21 +53,11 @@ function App() {
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
           </Route>
+          <Route path="/complete-signup" element={<CompleteSignup />} />
           <Route
             path="/login"
             element={data.signedIn ? <Navigate to="/" /> : <Login />}
           />
-          <Route
-            path="/complete-signup"
-            element={
-              <UnauthedRoute
-                isAuthenticated={data.signedIn}
-                userUid={data.user?.uid}
-              />
-            }
-          >
-            <Route path="/complete-signup" element={<CompleteSignup />} />
-          </Route>
           <Route
             path="/oauth/callback"
             element={data.signedIn ? <Navigate to="/" /> : <AuthCallback />}

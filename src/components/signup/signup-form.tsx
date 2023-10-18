@@ -144,7 +144,7 @@ export const SignupForm = () => {
       const userUid = auth.currentUser.uid;
 
       const response = await fetch(
-        "http://192.168.100.24:8080/passcode-encrypt",
+        `${import.meta.env.VITE_ACCESS_API_URL}/api/users/passcode-encrypt`,
         {
           method: "POST",
           body: JSON.stringify({
