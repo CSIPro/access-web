@@ -1,7 +1,11 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { BiMenu } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { useAuth } from "reactfire";
+
+import { RoleContext } from "@/context/role-context";
+import { UserContext } from "@/context/user-context";
+import { findRole } from "@/lib/utils";
 
 import { Navbar } from "../navbar/navbar";
 import { Button } from "../ui/button";
@@ -21,10 +25,15 @@ interface Props {
 
 export const Header: FC<Props> = ({ title }) => {
   const auth = useAuth();
+  const userCtx = useContext(UserContext);
+  const roleCtx = useContext(RoleContext);
 
   const handleSignOut = () => {
     void auth.signOut();
   };
+
+  const role = findRole(userCtx.user?.role, roleCtx.roles);
+  const isRoot = userCtx.user?.isRoot;
 
   return (
     <Sheet>
@@ -50,7 +59,7 @@ export const Header: FC<Props> = ({ title }) => {
             </span>
           </Link>
           <h1 className="text-center md:hidden">{title}</h1>
-          <Navbar />
+          <Navbar role={role} isRoot={isRoot} />
           <div className="block flex-grow" />
           <ProfileButton />
           {/* <Button
@@ -84,7 +93,12 @@ export const Header: FC<Props> = ({ title }) => {
             <Link to="/app">Home</Link>
             {/* <Link to="/app/dashboard">Dashboard</Link> */}
             <Link to="/app/logs">Access Logs</Link>
-            <Link to="/app/qr-code">QR Code</Link>
+            {(role?.canReadLogs || isRoot) && (
+              <Link to="/app/qr-code">QR Code</Link>
+            )}
+            {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
+              <Link to="/app/members">Room Members</Link>
+            )}
             <div className="flex-grow" />
             <Button
               variant="outline"

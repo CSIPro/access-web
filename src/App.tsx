@@ -5,15 +5,18 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useSigninCheck } from "reactfire";
 
 import { Splash } from "./components/splash/splash";
+import { RoleProvider } from "./context/role-context";
 import { RoomProvider } from "./context/room-context";
+import { UserProvider } from "./context/user-context";
 import { AppIndex } from "./routes/app";
 import { LogsPage } from "./routes/app/logs";
+import { RoomMembers } from "./routes/app/members";
 import { QRCodePage } from "./routes/app/qr-code";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
-import { AuthedRoute, UnauthedRoute } from "./routes/protected-route";
+import { AuthedRoute } from "./routes/protected-route";
 
 function App() {
   const { status, data, error } = useSigninCheck();
@@ -44,16 +47,21 @@ function App() {
               path="/app"
               element={
                 <RoomProvider>
-                  <MainApp />
+                  <RoleProvider>
+                    <UserProvider>
+                      <MainApp />
+                    </UserProvider>
+                  </RoleProvider>
                 </RoomProvider>
               }
             >
               <Route path="/app" element={<AppIndex />} />
               <Route path="/app/logs" element={<LogsPage />} />
+              <Route path="/app/members" element={<RoomMembers />} />
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
+            <Route path="/complete-signup" element={<CompleteSignup />} />
           </Route>
-          <Route path="/complete-signup" element={<CompleteSignup />} />
           <Route
             path="/login"
             element={data.signedIn ? <Navigate to="/" /> : <Login />}

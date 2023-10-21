@@ -63,7 +63,9 @@ const formSchema = z.object({
     .max(9, {
       message: "Your UniSon ID must be at most 9 digits long",
     })
-    .regex(/^[0-9]{5,9}$/),
+    .regex(/^[0-9]{5,9}$/, {
+      message: "Invalid UniSon ID.",
+    }),
   passcode: z
     .string({
       required_error: "Your passcode is required",
@@ -81,7 +83,7 @@ const formSchema = z.object({
     .date({
       required_error: "Your date of birth is required",
     })
-    .min(new Date(1900, 1, 1), {
+    .min(new Date(1900, 0, 1), {
       message: "I don't think you're that old",
     })
     .max(new Date(), {
@@ -168,7 +170,6 @@ export const SignupForm = () => {
 
       const { encryptedPasscode } = await response.json();
 
-      // TODO: Submit data to Firestore
       if (await unisonIdExists(data.unisonId)) {
         toast({
           title: "Invalid UniSon ID",
@@ -199,7 +200,7 @@ export const SignupForm = () => {
         status: 0,
         userId: userUid,
         roomId: data.room,
-        userComment: "Sign up request from Access Web",
+        userComment: "Sign up request from CSI PRO Access Web",
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       });

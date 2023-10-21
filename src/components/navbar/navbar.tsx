@@ -1,6 +1,8 @@
 import { FC } from "react";
 import { LinkProps, Link as RouterLink, useLocation } from "react-router-dom";
+import { z } from "zod";
 
+import { roleSchema } from "@/hooks/use-roles";
 import { cn } from "@/lib/utils";
 
 import {
@@ -14,9 +16,15 @@ import {
 
 interface Props {
   orientation?: "horizontal" | "vertical";
+  isRoot?: boolean;
+  role?: z.infer<typeof roleSchema>;
 }
 
-export const Navbar: FC<Props> = ({ orientation = "horizontal" }) => {
+export const Navbar: FC<Props> = ({
+  role,
+  isRoot = false,
+  orientation = "horizontal",
+}) => {
   return (
     <NavigationMenu
       orientation={orientation}
@@ -29,9 +37,16 @@ export const Navbar: FC<Props> = ({ orientation = "horizontal" }) => {
         <NavigationMenuItem>
           <NavbarLink to="/app">Home</NavbarLink>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavbarLink to="/app/logs">Access Logs</NavbarLink>
-        </NavigationMenuItem>
+        {(role?.canReadLogs || isRoot) && (
+          <NavigationMenuItem>
+            <NavbarLink to="/app/logs">Access Logs</NavbarLink>
+          </NavigationMenuItem>
+        )}
+        {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
+          <NavigationMenuItem>
+            <NavbarLink to="/app/members">Members</NavbarLink>
+          </NavigationMenuItem>
+        )}
         {/* <NavigationMenuItem>
           <NavbarLink to="/">Access Logs</NavbarLink>
         </NavigationMenuItem>
