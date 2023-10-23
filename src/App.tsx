@@ -60,8 +60,8 @@ function App() {
               <Route path="/app/members" element={<RoomMembers />} />
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
-            <Route path="/complete-signup" element={<CompleteSignup />} />
           </Route>
+          <Route path="/complete-signup" element={<CompleteSignup />} />
           <Route
             path="/login"
             element={data.signedIn ? <Navigate to="/" /> : <Login />}
