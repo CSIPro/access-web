@@ -1,13 +1,13 @@
 import { Buffer } from "buffer";
 
 import axios from "axios";
+import { Bluetooth } from "lucide-react";
 import { useUser } from "reactfire";
 
 import { Dashboard } from "@/components/dashboard/dashboard";
 import { Header } from "@/components/header/header";
 import { Button } from "@/components/ui/button";
 import { RoomSelector } from "@/components/ui/room-selector";
-import { Bluetooth } from "lucide-react";
 
 export const AppIndex = () => {
   const { data: userData } = useUser();
@@ -40,7 +40,7 @@ export const AppIndex = () => {
       const encodedToken = Buffer.from(token).toString("base64");
       await characteristic?.writeValue(new TextEncoder().encode(encodedToken));
 
-      server.disconnect();
+      server?.disconnect();
     } catch (error) {
       console.error(error);
     }
