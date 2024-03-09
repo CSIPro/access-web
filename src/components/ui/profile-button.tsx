@@ -16,6 +16,16 @@ export const ProfileButton = () => {
   const auth = useAuth();
   const { status: userStatus, data: userData } = useUser();
 
+  const handleLinkGithub = () => {
+    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+    const callbackUrl = import.meta.env.VITE_GITHUB_CALLBACK_URL;
+
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+      callbackUrl,
+    )}&scope=user:email`;
+    window.location.href = authUrl;
+  };
+
   const handleSignOut = () => {
     void auth.signOut();
   };
@@ -58,6 +68,17 @@ export const ProfileButton = () => {
             </span>
           </IconContext.Provider>
           <p>{userData?.displayName}</p>
+          <Button
+            onClick={handleLinkGithub}
+            className="flex gap-2 bg-muted hover:bg-muted focus:bg-muted"
+          >
+            <img
+              src="/images/auth/github-white.svg"
+              alt="GitHub logo"
+              className="aspect-square w-6"
+            />
+            Link with GitHub
+          </Button>
           <Button variant="destructive" onClick={handleSignOut}>
             Sign out
           </Button>
