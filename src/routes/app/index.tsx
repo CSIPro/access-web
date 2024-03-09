@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
 
 import axios from "axios";
-import { Bluetooth } from "lucide-react";
 import { useUser } from "reactfire";
 
 import { Dashboard } from "@/components/dashboard/dashboard";
