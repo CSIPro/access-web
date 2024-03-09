@@ -71,10 +71,7 @@ function App() {
             path="/oauth/callback"
             element={data.signedIn ? <Navigate to="/" /> : <AuthCallback />}
           />
-          <Route
-            path="/oauth/link"
-            element={data.signedIn ? <Navigate to="/" /> : <GithubLink />}
-          />
+          <Route path="/oauth/link" element={<GithubLink />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="bottom-center" />

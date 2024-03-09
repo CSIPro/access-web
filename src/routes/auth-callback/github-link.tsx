@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GithubAuthProvider, getAuth, linkWithCredential } from "firebase/auth";
 import { useMutation } from "react-query";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useFirebaseApp } from "reactfire";
 
 import { Splash } from "@/components/splash/splash";
@@ -40,6 +40,8 @@ export const GithubLink = () => {
 
   if (status === "idle" && !!code) {
     void mutate();
+  } else if (!code) {
+    return <Navigate to="/" replace />;
   }
 
   return <Splash loading message="Verifying..." />;
