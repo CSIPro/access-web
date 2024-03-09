@@ -13,6 +13,7 @@ import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
 import { QRCodePage } from "./routes/app/qr-code";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
+import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
@@ -69,6 +70,10 @@ function App() {
           <Route
             path="/oauth/callback"
             element={data.signedIn ? <Navigate to="/" /> : <AuthCallback />}
+          />
+          <Route
+            path="/oauth/link"
+            element={data.signedIn ? <Navigate to="/" /> : <GithubLink />}
           />
         </Routes>
       </BrowserRouter>
