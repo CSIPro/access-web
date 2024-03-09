@@ -25,6 +25,8 @@ jobs:
       VITE_GITHUB_CALLBACK_URL: ${{ secrets.GH_CALLBACK_URL }}
       VITE_GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
       VITE_ACCESS_API_URL: ${{ secrets.ACCESS_API_URL }}
+      VITE_BLE_SERVICE_UUID: ${{ secrets.BLE_SERVICE_UUID }}
+      VITE_BLE_CHARACTERISTIC_UUID: ${{ secrets.BLE_CHARACTERISTIC_UUID }}
 
     steps:
       - name: Checkout repo
@@ -70,6 +72,8 @@ jobs:
           echo "VITE_GITHUB_CALLBACK_URL=$VITE_GITHUB_CALLBACK_URL" >> .env.local
           echo "VITE_GITHUB_CLIENT_ID=$VITE_GITHUB_CLIENT_ID" >> .env.local
           echo "VITE_ACCESS_API_URL=$VITE_ACCESS_API_URL" >> .env.local
+          echo "VITE_BLE_SERVICE_UUID=$VITE_BLE_SERVICE_UUID" >> .env.local
+          echo "VITE_BLE_CHARACTERISTIC_UUID=$VITE_BLE_CHARACTERISTIC_UUID" >> .env.local
 
       - name: Transfer files to Production
         run: |
@@ -77,4 +81,3 @@ jobs:
 
       - name: SSH to Production and install dependencies
         run: ssh unison-production "cd /var/www/access.csipro.isi.unison.mx && rm -rf node_modules && ~/.local/share/pnpm/pnpm install && ~/.local/share/pnpm/pnpm build"
-
