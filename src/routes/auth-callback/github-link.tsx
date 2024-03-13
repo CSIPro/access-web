@@ -9,13 +9,13 @@ import { Splash } from "@/components/splash/splash";
 export const GithubLink = () => {
   const auth = getAuth(useFirebaseApp());
   const navigate = useNavigate();
-  const { code } = useParams();
+  const params = useParams();
   const { status, mutate } = useMutation({
     mutationKey: "github-link",
     mutationFn: async () => {
       const serverUrl = `${
         import.meta.env.VITE_ACCESS_API_URL
-      }/auth/oauth/callback/web?code=${code}`;
+      }/api/auth/oauth/callback/web?code=${params["code"]}`;
 
       try {
         const response = await axios.post(
@@ -24,8 +24,10 @@ export const GithubLink = () => {
           { headers: { Accept: "application/json" } },
         );
 
+        console.log(response.status);
         if (response.status === 200) {
           const token = response.data.accessToken as string;
+          console.log(token);
 
           const credential = GithubAuthProvider.credential(token);
           await linkWithCredential(auth.currentUser!, credential);
@@ -38,9 +40,9 @@ export const GithubLink = () => {
     },
   });
 
-  if (status === "idle" && !!code) {
+  if (status === "idle" && !!params["code"]) {
     void mutate();
-  } else if (!code) {
+  } else if (!params["code"]) {
     return <Navigate to="/" replace />;
   }
 
