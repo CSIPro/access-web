@@ -30,6 +30,16 @@ module.exports = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          "08": "hsla(var(--primary-translucid-08))",
+          16: "hsla(var(--primary-translucid-16))",
+          24: "hsla(var(--primary-translucid-24))",
+          32: "hsla(var(--primary-translucid-32))",
+          40: "hsla(var(--primary-translucid-40))",
+          48: "hsla(var(--primary-translucid-48))",
+          56: "hsla(var(--primary-translucid-56))",
+          64: "hsla(var(--primary-translucid-64))",
+          72: "hsla(var(--primary-translucid-72))",
+          80: "hsla(var(--primary-translucid-80))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

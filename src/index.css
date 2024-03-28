@@ -15,6 +15,16 @@
 
     --primary: 258, 64%, 55%;
     --primary-foreground: 210 40% 98%;
+    --primary-translucid-08: 258.21, 63.88%, 55.49%, 0.08;
+    --primary-translucid-16: 258.21, 63.88%, 55.49%, 0.16;
+    --primary-translucid-24: 258.21, 63.88%, 55.49%, 0.24;
+    --primary-translucid-32: 258.21, 63.88%, 55.49%, 0.32;
+    --primary-translucid-40: 258.21, 63.88%, 55.49%, 0.4;
+    --primary-translucid-48: 258.21, 63.88%, 55.49%, 0.48;
+    --primary-translucid-56: 258.21, 63.88%, 55.49%, 0.56;
+    --primary-translucid-64: 258.21, 63.88%, 55.49%, 0.64;
+    --primary-translucid-72: 258.21, 63.88%, 55.49%, 0.72;
+    --primary-translucid-80: 258.21, 63.88%, 55.49%, 0.8;
 
     --secondary: 340, 82%, 52%;
     --secondary-foreground: 222.2 47.4% 11.2%;

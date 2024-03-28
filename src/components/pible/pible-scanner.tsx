@@ -1,14 +1,10 @@
-import { Buffer } from "buffer";
-
 import axios from "axios";
 import { useUser } from "reactfire";
 
-import { Dashboard } from "@/components/dashboard/dashboard";
-import { Header } from "@/components/header/header";
-import { PibleScanner } from "@/components/pible/pible-scanner";
-import { RoomSelector } from "@/components/ui/room-selector";
+import { Button } from "../ui/button";
+import { RoomSelector } from "../ui/room-selector";
 
-export const AppIndex = () => {
+export const PibleScanner = () => {
   const { data: userData } = useUser();
 
   const testBluetooth = async () => {
@@ -46,22 +42,24 @@ export const AppIndex = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center bg-white">
-      <Header title="Home" />
-      <main className="flex h-full w-full flex-col items-center gap-2 p-2">
-        <RoomSelector />
-        <Dashboard />
-        {/* {!!navigator.bluetooth && !!userData && (
-          <Button
-            onClick={testBluetooth}
-            size="icon"
-            className="fixed bottom-4 right-4 flex h-14 w-14 items-center justify-center rounded-full p-2 hover:bg-primary focus:bg-primary"
-          >
-            <img src="/images/access-logo.svg" alt="Logo de CSI PRO Access" />
-          </Button>
-        )} */}
-        {!!navigator.bluetooth && !!userData && <PibleScanner />}
-      </main>
+    <div className="fixed bottom-2 flex w-full px-1.5">
+      <Button
+        onClick={testBluetooth}
+        size="icon"
+        className="bg-primary-56 absolute -top-1/2 left-1/2 z-10 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white p-2 backdrop-blur-sm transition-all hover:bg-primary focus:bg-primary"
+      >
+        <img src="/images/access-logo.svg" alt="Logo de CSI PRO Access" />
+      </Button>
+      <div className="bg-primary-32 relative flex h-16 w-full items-center justify-between gap-24 overflow-hidden rounded-full border-2 border-primary px-2">
+        <div className="absolute left-0 top-0 h-full w-full bg-black bg-opacity-20 backdrop-blur-sm"></div>
+        <div></div>
+        <div className="">
+          <RoomSelector
+            compact
+            className="bg-primary-48 rounded-full border-2 border-primary backdrop-blur-sm"
+          />
+        </div>
+      </div>
     </div>
   );
 };
