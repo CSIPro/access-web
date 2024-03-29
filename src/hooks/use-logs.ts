@@ -162,6 +162,22 @@ export const useUserSuccessfulLogs = () => {
   return { status: logsStatus, logs: successfulLogs };
 };
 
+export const useUserBluetoothLogs = () => {
+  const { status: logsStatus, logs: logsData } = useUserSuccessfulLogs();
+
+  if (logsStatus === "loading") {
+    return { status: "loading" };
+  }
+
+  if (logsStatus === "error") {
+    return { status: "error" };
+  }
+
+  const successfulLogs = logsData?.filter((log) => log.bluetooth) ?? [];
+
+  return { status: logsStatus, logs: successfulLogs };
+};
+
 export const useUserFailedLogs = () => {
   const { status: logsStatus, logs: logsData } = useUserLogs();
 

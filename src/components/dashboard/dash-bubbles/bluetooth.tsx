@@ -1,6 +1,12 @@
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { useBluetoothLogs } from "@/hooks/use-logs";
 
+import {
+  DashboardItem,
+  DashboardItemData,
+  DashboardItemTitle,
+} from "./dashboard-item";
+
 export const BluetoothAttempts = () => {
   const { status, logs } = useBluetoothLogs();
 
@@ -21,9 +27,11 @@ export const BluetoothAttempts = () => {
   }
 
   return (
-    <div className="col-span-full flex w-full flex-col items-start justify-between gap-4 rounded-lg bg-tertiary p-4 text-white sm:col-span-1 md:col-span-3">
-      <span className="text-7xl">{logs?.length || 0}</span>
-      <span className="text-lg">bluetooth attempts</span>
-    </div>
+    <DashboardItem color="tertiary">
+      <DashboardItemData>
+        {logs?.length.toString().padStart(2, "0") || "00"}
+      </DashboardItemData>
+      <DashboardItemTitle>Wireless</DashboardItemTitle>
+    </DashboardItem>
   );
 };

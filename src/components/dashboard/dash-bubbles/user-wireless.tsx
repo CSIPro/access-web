@@ -1,5 +1,5 @@
 import { LoadingSpinner } from "@/components/ui/spinner";
-import { useUserFailedLogs } from "@/hooks/use-logs";
+import { useUserBluetoothLogs } from "@/hooks/use-logs";
 
 import {
   DashboardItem,
@@ -7,8 +7,8 @@ import {
   DashboardItemTitle,
 } from "./dashboard-item";
 
-export const UserFailedAttempts = () => {
-  const { status, logs } = useUserFailedLogs();
+export const UserWirelessAttempts = () => {
+  const { status, logs } = useUserBluetoothLogs();
 
   if (status === "loading") {
     return (
@@ -27,11 +27,11 @@ export const UserFailedAttempts = () => {
   }
 
   return (
-    <DashboardItem color="secondary">
+    <DashboardItem color="tertiary">
       <DashboardItemData size="large">
         {logs?.length.toString().padStart(2, "0") || "00"}
       </DashboardItemData>
-      <DashboardItemTitle>Entries</DashboardItemTitle>
+      <DashboardItemTitle>Wireless</DashboardItemTitle>
     </DashboardItem>
   );
 };
