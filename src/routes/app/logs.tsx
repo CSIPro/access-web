@@ -4,9 +4,9 @@ import { PibleScanner } from "@/components/pible/pible-scanner";
 
 export const LogsPage = () => {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-muted">
+    <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
       <Header title="Access Logs" />
-      <main className="flex h-full w-full flex-col gap-2 p-2">
+      <main className="flex h-full w-full flex-col items-center gap-2 p-2">
         <AccessLogs />
         <div className="h-64" />
         <PibleScanner />
