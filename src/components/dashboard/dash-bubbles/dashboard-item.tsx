@@ -17,7 +17,7 @@ export const DashboardItem: FC<DashboardItemProps> = ({ color, children }) => {
   return (
     <div
       className={cn(
-        "bg-muted-32 flex h-full w-full flex-col items-center justify-center rounded-md border-2 border-muted p-6",
+        "flex h-full w-full flex-col items-center justify-center rounded-md border-2 border-muted bg-muted-32 p-6",
         colors[color],
       )}
     >

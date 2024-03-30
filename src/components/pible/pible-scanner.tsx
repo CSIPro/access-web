@@ -48,17 +48,17 @@ export const PibleScanner = () => {
       <Button
         onClick={testBluetooth}
         size="icon"
-        className="bg-primary-56 absolute -top-1/2 left-1/2 z-10 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white p-2 backdrop-blur-sm transition-all hover:bg-primary focus:bg-primary"
+        className="absolute -top-1/2 left-1/2 z-10 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white bg-primary-56 p-2 backdrop-blur-sm transition-all hover:bg-primary focus:bg-primary"
       >
         <img src="/images/access-logo.svg" alt="Logo de CSI PRO Access" />
       </Button>
-      <div className="bg-primary-32 relative flex h-16 w-full items-center justify-between gap-24 overflow-hidden rounded-full border-2 border-primary px-2">
+      <div className="relative flex h-16 w-full items-center justify-between gap-24 overflow-hidden rounded-full border-2 border-primary bg-primary-32 px-2">
         <div className="absolute left-0 top-0 h-full w-full bg-black bg-opacity-20 backdrop-blur-sm"></div>
         <div></div>
         <div className="">
           <RoomSelector
             compact
-            className="bg-primary-48 rounded-full border-2 border-primary backdrop-blur-sm"
+            className="rounded-full border-2 border-primary bg-primary-48 backdrop-blur-sm"
           />
         </div>
       </div>
