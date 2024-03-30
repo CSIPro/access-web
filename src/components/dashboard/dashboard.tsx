@@ -39,7 +39,6 @@ export const Dashboard = () => {
         </div>
         <UserSuccessfulAttempts />
       </div>
-      <div className="h-64" />
     </div>
   );
 };

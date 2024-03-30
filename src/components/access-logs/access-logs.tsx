@@ -30,7 +30,7 @@ export const AccessLogs: FC<Props> = ({ limit }) => {
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-1">
       {logs?.map((log) => (
         <LogItem
           key={log.timestamp.toMillis()}

@@ -31,7 +31,7 @@ export const FailedAttempts = () => {
       <DashboardItemData>
         {logs?.length.toString().padStart(2, "0") || "00"}
       </DashboardItemData>
-      <DashboardItemTitle>Entries</DashboardItemTitle>
+      <DashboardItemTitle>Failed</DashboardItemTitle>
     </DashboardItem>
   );
 };

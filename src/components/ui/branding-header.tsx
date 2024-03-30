@@ -3,6 +3,7 @@ import { FC, HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const sizes = {
+  small: "text-base",
   normal: "text-3xl",
   large: "text-5xl",
 };
@@ -25,7 +26,7 @@ export const BrandingHeader: FC<Props> = ({
   return (
     <span
       className={cn(
-        "flex items-center justify-center gap-1 font-sans uppercase",
+        "flex items-center justify-center gap-1 font-sans font-normal uppercase",
         sizes[size],
         className,
       )}
@@ -33,7 +34,7 @@ export const BrandingHeader: FC<Props> = ({
       {children}
       <span
         className={cn(
-          "rounded-sm bg-white px-1 font-medium text-primary",
+          "rounded-sm bg-primary px-1 font-medium text-white",
           highlightClassName,
         )}
       >

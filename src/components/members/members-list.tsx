@@ -31,7 +31,7 @@ export const MembersList: FC<Props> = ({ roleId }) => {
   const members = data?.docs.map((member) => member.ref.parent.parent?.id);
 
   return (
-    <ul className="flex w-full flex-col gap-2">
+    <ul className="flex w-full flex-col gap-1">
       {members?.map((uid) => <MemberItem key={uid} uid={uid} />)}
     </ul>
   );

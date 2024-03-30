@@ -8,6 +8,7 @@ export const AppIndex = () => {
       <Header title="Home" />
       <main className="flex h-full w-full flex-col items-center gap-2 p-2">
         <Dashboard />
+        <div className="h-64" />
         {!!navigator.bluetooth && <PibleScanner />}
       </main>
     </div>

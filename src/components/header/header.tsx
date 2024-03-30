@@ -8,6 +8,7 @@ import { UserContext } from "@/context/user-context";
 import { findRole } from "@/lib/utils";
 
 import { Navbar } from "../navbar/navbar";
+import { BrandingHeader } from "../ui/branding-header";
 import { Button } from "../ui/button";
 import { ProfileButton } from "../ui/profile-button";
 import {
@@ -38,11 +39,11 @@ export const Header: FC<Props> = ({ title }) => {
   return (
     <Sheet>
       <header className="sticky top-0 z-50 w-full border-b bg-muted">
-        <div className="container relative flex h-14 items-center gap-8">
+        <div className="container relative flex h-14 items-center gap-2">
           <SheetTrigger asChild={true}>
             <Button
               size="icon"
-              className="bg-white text-2xl text-muted hover:bg-accent hover:text-white focus:bg-accent focus:text-white active:bg-primary active:text-white md:hidden"
+              className="bg-primary text-2xl text-white hover:text-primary hover:brightness-110 focus:bg-white focus:text-primary active:bg-white active:text-primary md:hidden"
             >
               <BiMenu />
             </Button>
@@ -53,21 +54,12 @@ export const Header: FC<Props> = ({ title }) => {
               alt="Logo de CSI PRO Access"
               width={24}
             />
-            <span className="flex gap-1 whitespace-nowrap">
-              CSI PRO{" "}
-              <span className="bg-white px-1 font-bold text-muted">ACCESS</span>
-            </span>
+            <BrandingHeader highlight="ACCESS">CSI PRO</BrandingHeader>
           </Link>
           <h1 className="text-center md:hidden">{title}</h1>
           <Navbar role={role} isRoot={isRoot} />
           <div className="block flex-grow" />
           <ProfileButton />
-          {/* <Button
-            onClick={handleSignOut}
-            className="hidden bg-white text-muted hover:bg-destructive hover:text-white md:inline-flex"
-          >
-            Sign out
-          </Button> */}
         </div>
       </header>
       <SheetPortal>
@@ -80,12 +72,9 @@ export const Header: FC<Props> = ({ title }) => {
                   alt="Logo de CSI PRO Access"
                   width={24}
                 />
-                <span className="flex gap-1 whitespace-nowrap font-normal">
-                  CSI PRO{" "}
-                  <span className="bg-white px-1 font-bold text-muted">
-                    ACCESS
-                  </span>
-                </span>
+                <BrandingHeader highlight="ACCESS" size="small">
+                  CSI PRO
+                </BrandingHeader>
               </Link>
             </SheetTitle>
           </SheetHeader>
@@ -93,9 +82,9 @@ export const Header: FC<Props> = ({ title }) => {
             <Link to="/app">Home</Link>
             {/* <Link to="/app/dashboard">Dashboard</Link> */}
             <Link to="/app/logs">Access Logs</Link>
-            {(role?.canReadLogs || isRoot) && (
+            {/* {(role?.canReadLogs || isRoot) && (
               <Link to="/app/qr-code">QR Code</Link>
-            )}
+            )} */}
             {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
               <Link to="/app/members">Room Members</Link>
             )}
