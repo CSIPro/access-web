@@ -4,6 +4,7 @@ import { SuccessfulAttempts } from "./dash-bubbles/successful";
 import { UserFailedAttempts } from "./dash-bubbles/user-failed";
 import { UserSuccessfulAttempts } from "./dash-bubbles/user-successful";
 import { UserWirelessAttempts } from "./dash-bubbles/user-wireless";
+import { AccessLogs } from "../access-logs/access-logs";
 import { BrandingHeader } from "../ui/branding-header";
 
 export const Dashboard = () => {
@@ -21,6 +22,9 @@ export const Dashboard = () => {
           <BluetoothAttempts />
           <FailedAttempts />
         </div>
+      </div>
+      <div className="w-full rounded-md border-2 border-primary bg-primary-32 p-1">
+        <AccessLogs limit={3} />
       </div>
       <BrandingHeader
         highlight="STATS"

@@ -14,7 +14,7 @@ interface Props {
 }
 
 const baseStyle =
-  "flex w-full items-center justify-between rounded-lg gap-4 p-2 bg-muted";
+  "flex w-full items-center justify-between rounded-sm gap-4 p-2 bg-muted-32 border-2 border-muted";
 
 const userSchema = z.object({
   csiId: z.number(),
@@ -101,7 +101,7 @@ interface UnknownLogProps {
 
 const UnknownLog: FC<UnknownLogProps> = ({ timestamp }) => {
   return (
-    <li className={cn(baseStyle, "bg-secondary")}>
+    <li className={cn(baseStyle, "border-secondary bg-secondary-32")}>
       <LogTitle failed>Unknown user</LogTitle>
       <LogTimestamp failed timestamp={timestamp} />
     </li>
@@ -115,7 +115,7 @@ interface KnownProcessedLogProps {
 
 const SuccessLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
   return (
-    <li className={cn(baseStyle, "bg-primary")}>
+    <li className={cn(baseStyle, "border-primary bg-primary-32")}>
       <LogTitle>{user.name}</LogTitle>
       <LogTimestamp timestamp={timestamp} />
     </li>
@@ -124,7 +124,7 @@ const SuccessLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
 
 const FailedLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
   return (
-    <li className={cn(baseStyle, "bg-secondary")}>
+    <li className={cn(baseStyle, "border-secondary bg-secondary-32")}>
       <LogTitle failed>{user.name}</LogTitle>
       <LogTimestamp failed timestamp={timestamp} />
     </li>
@@ -133,7 +133,7 @@ const FailedLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
 
 const BluetoothLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
   return (
-    <li className={cn(baseStyle, "bg-tertiary")}>
+    <li className={cn(baseStyle, "border-tertiary bg-tertiary-32")}>
       <LogTitle>{user.name}</LogTitle>
       <LogTimestamp timestamp={timestamp} />
     </li>
@@ -147,7 +147,7 @@ const LogTitle: FC<{ children: ReactNode; failed?: boolean }> = ({
   return (
     <span
       className={cn(
-        "overflow-hidden overflow-ellipsis whitespace-nowrap text-2xl font-bold md:text-3xl",
+        "overflow-hidden overflow-ellipsis whitespace-nowrap text-lg font-medium md:text-3xl",
         failed && "text-md md:text-md font-normal",
       )}
     >
@@ -163,7 +163,7 @@ const LogTimestamp: FC<{ timestamp: Timestamp; failed?: boolean }> = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-end",
+        "flex flex-col items-end text-sm",
         failed && "flex-row items-center gap-2",
       )}
     >
