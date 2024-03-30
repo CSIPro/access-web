@@ -28,9 +28,13 @@ const logSchema = z.object({
 
 interface UseLogsProps {
   today?: boolean;
+  limit?: number;
 }
 
-export const useLogs = ({ today = true }: UseLogsProps = {}) => {
+export const useLogs = ({
+  today = true,
+  limit: limitTo = 40,
+}: UseLogsProps = {}) => {
   const roomCtx = useContext(RoomContext);
 
   const firestore = useFirestore();
@@ -50,7 +54,7 @@ export const useLogs = ({ today = true }: UseLogsProps = {}) => {
         logsCol,
         where("room", "==", roomCtx.selectedRoom || ""),
         orderBy("timestamp", "desc"),
-        limit(40),
+        limit(limitTo),
       );
   const { status, data } = useFirestoreCollectionData(logsQuery, {
     idField: "id",
@@ -158,6 +162,22 @@ export const useUserSuccessfulLogs = () => {
   }
 
   const successfulLogs = logsData?.filter((log) => log.accessed);
+
+  return { status: logsStatus, logs: successfulLogs };
+};
+
+export const useUserBluetoothLogs = () => {
+  const { status: logsStatus, logs: logsData } = useUserSuccessfulLogs();
+
+  if (logsStatus === "loading") {
+    return { status: "loading" };
+  }
+
+  if (logsStatus === "error") {
+    return { status: "error" };
+  }
+
+  const successfulLogs = logsData?.filter((log) => log.bluetooth) ?? [];
 
   return { status: logsStatus, logs: successfulLogs };
 };

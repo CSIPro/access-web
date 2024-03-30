@@ -2,8 +2,8 @@ import { updateDoc } from "firebase/firestore";
 import { FC, ReactNode } from "react";
 
 import { useUserDataWithId, useUserRoleWithId } from "@/hooks/use-user-data";
+import { cn } from "@/lib/utils";
 
-import { Label } from "../ui/label";
 import { LoadingSpinner } from "../ui/spinner";
 import { Switch } from "../ui/switch";
 
@@ -43,12 +43,19 @@ export const MemberItem: FC<Props> = ({ uid = "invalid" }) => {
     );
   }
 
+  const hasAccess = userRoleData?.accessGranted ?? false;
+
   return (
-    <li className="flex w-full items-center justify-between gap-2 rounded-md bg-primary p-4">
+    <li
+      className={cn(
+        "flex w-full items-center justify-between gap-2 rounded-sm border-2 border-primary bg-primary-32 p-2 transition-colors duration-300",
+        !hasAccess && "border-secondary bg-secondary-32",
+      )}
+    >
       <MemberName>{userData?.name}</MemberName>
       <MemberAccess
         uid={uid}
-        access={userRoleData?.accessGranted ?? false}
+        access={hasAccess}
         setAccess={handleAccessChange}
       />
     </li>
@@ -61,7 +68,7 @@ const MemberName = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <p className="overflow-hidden text-ellipsis whitespace-nowrap text-xl font-bold text-white md:text-3xl">
+    <p className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-medium text-white md:text-3xl">
       {children}
     </p>
   );
@@ -75,15 +82,11 @@ interface MemberAccessProps {
 
 const MemberAccess: FC<MemberAccessProps> = ({ uid, access, setAccess }) => {
   return (
-    <div className="flex items-center gap-2 rounded-full bg-muted px-2 py-2">
-      <Switch
-        id={`${uid} access switch`}
-        checked={access}
-        onCheckedChange={setAccess}
-      />
-      <Label htmlFor={`${uid} access switch`} className="hidden sm:block">
-        Access
-      </Label>
-    </div>
+    <Switch
+      id={`${uid} access switch`}
+      checked={access}
+      onCheckedChange={setAccess}
+      className="data-[state=unchecked]:bg-secondary"
+    />
   );
 };

@@ -1,10 +1,16 @@
+import { FC } from "react";
+
 import { useLogs } from "@/hooks/use-logs";
 
 import { LogItem } from "./log-item";
 import { LoadingSpinner } from "../ui/spinner";
 
-export const AccessLogs = () => {
-  const { status: logsStatus, data: logs } = useLogs({ today: false });
+interface Props {
+  limit?: number;
+}
+
+export const AccessLogs: FC<Props> = ({ limit }) => {
+  const { status: logsStatus, data: logs } = useLogs({ today: false, limit });
 
   if (logsStatus === "loading") {
     return (
@@ -24,7 +30,7 @@ export const AccessLogs = () => {
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-1">
       {logs?.map((log) => (
         <LogItem
           key={log.timestamp.toMillis()}

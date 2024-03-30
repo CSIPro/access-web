@@ -1,6 +1,12 @@
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { useSuccessfulLogs } from "@/hooks/use-logs";
 
+import {
+  DashboardItem,
+  DashboardItemData,
+  DashboardItemTitle,
+} from "./dashboard-item";
+
 export const SuccessfulAttempts = () => {
   const { status, logs } = useSuccessfulLogs();
 
@@ -21,9 +27,20 @@ export const SuccessfulAttempts = () => {
   }
 
   return (
-    <div className="col-span-full flex w-full flex-col items-start gap-4 rounded-lg bg-primary p-4 text-white sm:col-span-1 md:col-span-3">
-      <span className="text-7xl">{logs?.length || 0}</span>
-      <span className="text-lg">successful attempts</span>
-    </div>
+    <DashboardItem color="primary">
+      <DashboardItemData size="large">
+        {logs?.length.toString().padStart(2, "0") || "00"}
+      </DashboardItemData>
+      <DashboardItemTitle>Entries</DashboardItemTitle>
+    </DashboardItem>
   );
+
+  // return (
+  //   <div className="bg-primary-56 flex w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-primary p-4 text-white sm:col-span-1 md:col-span-3">
+  //     <span className="text-4xl">
+  //       {logs?.length.toString().padStart(2, "0") || "00"}
+  //     </span>
+  //     <span>Entries</span>
+  //   </div>
+  // );
 };

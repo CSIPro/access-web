@@ -28,7 +28,7 @@ export const RoleList = () => {
     <div className="flex w-full flex-col gap-2">
       {roles?.map((role) => (
         <div key={role.id} className="flex w-full flex-col gap-2">
-          <h2 className="w-full rounded-md bg-muted p-2 text-center">
+          <h2 className="w-full rounded-sm bg-primary p-2 text-center">
             {role.name}
           </h2>
           <MembersList roleId={role.id} />

@@ -15,6 +15,17 @@ export default defineConfig({
         name: "CSI PRO Access Web",
         short_name: "Access Web",
         theme_color: "#7145d6",
+        icons: [
+          {
+            sizes: "any",
+            src: "/favicon.svg",
+          },
+          {
+            sizes: "any",
+            src: "/images/access-logo.svg",
+            purpose: "monochrome",
+          },
+        ],
       },
     }),
   ],
