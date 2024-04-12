@@ -12,6 +12,7 @@ import { AppIndex } from "./routes/app";
 import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
 import { QRCodePage } from "./routes/app/qr-code";
+import { Tracker } from "./routes/app/tracker";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
@@ -59,6 +60,7 @@ function App() {
               <Route path="/app" element={<AppIndex />} />
               <Route path="/app/logs" element={<LogsPage />} />
               <Route path="/app/members" element={<RoomMembers />} />
+              <Route path="/app/trackers" element={<Tracker />} />
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
           </Route>

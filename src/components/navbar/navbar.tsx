@@ -39,7 +39,7 @@ export const Navbar: FC<Props> = ({
         </NavigationMenuItem>
         {(role?.canReadLogs || isRoot) && (
           <NavigationMenuItem>
-            <NavbarLink to="/app/logs">Access Logs</NavbarLink>
+            <NavbarLink to="/app/logs">Logs</NavbarLink>
           </NavigationMenuItem>
         )}
         {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
@@ -47,6 +47,9 @@ export const Navbar: FC<Props> = ({
             <NavbarLink to="/app/members">Members</NavbarLink>
           </NavigationMenuItem>
         )}
+        <NavigationMenuItem>
+          <NavbarLink to="/app/trackers">Trackers</NavbarLink>
+        </NavigationMenuItem>
         {/* <NavigationMenuItem>
           <NavbarLink to="/">Access Logs</NavbarLink>
         </NavigationMenuItem>
@@ -75,7 +78,7 @@ export const NavbarLink: FC<LinkProps> = ({ to, className, ...props }) => {
       active={isActive}
       className={cn(
         navigationMenuTriggerStyle(),
-        "bg-transparent hover:text-white active:text-muted data-[active]:bg-white data-[active]:font-bold data-[active]:text-muted lg:text-lg",
+        "bg-transparent hover:bg-primary hover:text-white active:text-muted data-[active]:bg-white data-[active]:font-bold data-[active]:text-muted lg:text-lg",
       )}
     >
       <RouterLink to={to} className={className} {...props}>

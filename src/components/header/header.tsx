@@ -78,7 +78,7 @@ export const Header: FC<Props> = ({ title }) => {
               </Link>
             </SheetTitle>
           </SheetHeader>
-          <div className="flex h-4/5 flex-col gap-4 pl-8 pt-4 text-lg text-white">
+          <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
             <Link to="/app">Home</Link>
             {/* <Link to="/app/dashboard">Dashboard</Link> */}
             <Link to="/app/logs">Access Logs</Link>
@@ -88,11 +88,29 @@ export const Header: FC<Props> = ({ title }) => {
             {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
               <Link to="/app/members">Room Members</Link>
             )}
+          </div>
+          <div className="py-2"></div>
+          <SheetHeader>
+            <SheetTitle asChild={true} className="pt-8">
+              <span className="flex items-center gap-2">
+                <img
+                  src="/images/access-logo.svg"
+                  alt="Logo de CSI PRO Access"
+                  width={24}
+                />
+                <BrandingHeader highlight="TRACKER" size="small">
+                  CSI PRO
+                </BrandingHeader>
+              </span>
+            </SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
+            <Link to="/app/trackers">Trackers</Link>
             <div className="flex-grow" />
             <Button
               variant="outline"
               onClick={handleSignOut}
-              className="w-fit bg-transparent text-white hover:bg-destructive hover:text-white"
+              className="w-fit bg-transparent text-white hover:bg-secondary hover:text-white focus:bg-secondary active:bg-secondary"
             >
               Sign out
             </Button>
