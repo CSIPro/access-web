@@ -30,7 +30,7 @@ export const TrackerForm = () => {
   const { selectedRoom } = useContext(RoomContext);
 
   const queryClient = useQueryClient();
-  const { status, data, mutateAsync } = useMutation(async (name: string) => {
+  const { status, mutateAsync } = useMutation(async (name: string) => {
     const res = await fetch(
       `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/add`,
       {

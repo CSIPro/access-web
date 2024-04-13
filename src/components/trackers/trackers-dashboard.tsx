@@ -11,7 +11,11 @@ import { Button } from "../ui/button";
 import { LoadingSpinner } from "../ui/spinner";
 
 export const TrackersResponse = z.object({
-  trackers: z.array(Tracker),
+  trackers: z.array(
+    z.object({
+      id: z.string(),
+    }),
+  ),
 });
 export type TrackersResponse = z.infer<typeof TrackersResponse>;
 
@@ -23,7 +27,9 @@ export const TrackersDashboard = () => {
     queryFn: async () => {
       setIsAdding(false);
       const res = await fetch(
-        `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/${selectedRoom}`,
+        `${
+          import.meta.env.VITE_ACCESS_API_URL
+        }/api/trackers/active/${selectedRoom}`,
       );
 
       const data = await res.json();
@@ -69,10 +75,7 @@ export const TrackersDashboard = () => {
           Add Tracker
         </Button>
       )}
-      {data &&
-        data.map((tracker) => (
-          <TrackerItem key={tracker.id} tracker={tracker} />
-        ))}
+      {data && data.map(({ id }) => <TrackerItem key={id} trackerId={id} />)}
     </div>
   );
 };
