@@ -5,7 +5,7 @@ import { z } from "zod";
 import { RoomContext } from "@/context/room-context";
 
 import { TrackerForm } from "./tracker-form";
-import { Tracker, TrackerItem } from "./tracker-item";
+import { TrackerItem } from "./tracker-item";
 import { BrandingHeader } from "../ui/branding-header";
 import { Button } from "../ui/button";
 import { LoadingSpinner } from "../ui/spinner";
@@ -22,7 +22,7 @@ export type TrackersResponse = z.infer<typeof TrackersResponse>;
 export const TrackersDashboard = () => {
   const [isAdding, setIsAdding] = useState(false);
   const { selectedRoom } = useContext(RoomContext);
-  const { status, data, error } = useQuery({
+  const { status, data } = useQuery({
     queryKey: ["trackers", selectedRoom],
     queryFn: async () => {
       setIsAdding(false);

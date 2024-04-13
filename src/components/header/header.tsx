@@ -38,7 +38,7 @@ export const Header: FC<Props> = ({ title }) => {
 
   return (
     <Sheet>
-      <header className="sticky top-0 z-50 w-full border-b bg-muted">
+      <header className="sticky top-0 z-50 w-full border-b border-b-stone-700 bg-muted">
         <div className="container relative flex h-14 items-center gap-2">
           <SheetTrigger asChild={true}>
             <Button

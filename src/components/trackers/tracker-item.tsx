@@ -100,7 +100,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
     await mutateAsync();
   };
 
-  if (queryStatus === "loading") {
+  if (queryStatus === "loading" || mutationStatus === "loading") {
     return (
       <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-32 p-2 text-white">
         <LoadingSpinner />
@@ -130,7 +130,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
             size="icon"
             className="h-fit w-fit rounded-sm bg-primary-64 p-1"
           >
-            {mutationStatus === "loading" ? <LoadingSpinner /> : <BiReset />}
+            <BiReset />
           </Button>
           {/* <Button
             size="icon"
