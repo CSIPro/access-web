@@ -1,16 +1,13 @@
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInSeconds,
-} from "date-fns";
 import { Timestamp } from "firebase/firestore";
 import { FC } from "react";
 import { IconContext } from "react-icons";
 import { BiReset } from "react-icons/bi";
+import { FaStar } from "react-icons/fa";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useAuth } from "reactfire";
 import { z } from "zod";
+
+import { formatRecord, formatTimer } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 import { LoadingSpinner } from "../ui/spinner";
@@ -38,6 +35,7 @@ export const Tracker = z.object({
   creator: TrackerUser,
   updatedBy: TrackerUser,
   resetBy: TrackerUser,
+  record: z.number().optional().nullable(),
   color: z.string().optional(),
 });
 export type Tracker = z.infer<typeof Tracker>;
@@ -117,30 +115,37 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
   }
 
   return (
-    <div className="flex w-full gap-2 rounded-sm border-2 border-primary bg-primary-32 p-2 text-white">
-      <div className="flex w-full flex-col gap-1">
-        <div>{queryData?.name}</div>
-        <span className="h-1 w-1/3 rounded-full bg-primary"></span>
-        <TrackerTimer id={trackerId} timeReference={queryData.timeReference} />
-      </div>
-      <IconContext.Provider value={{ className: "text-2xl" }}>
-        <div className="flex flex-col gap-1">
-          <Button
-            onClick={handleReset}
-            size="icon"
-            className="h-fit w-fit rounded-sm bg-primary-64 p-1"
-          >
-            <BiReset />
-          </Button>
-          {/* <Button
+    <div className="font-body flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 text-white">
+      <div className="flex w-full gap-2">
+        <div className="flex w-full flex-col gap-1">
+          <TrackerTimer
+            id={trackerId}
+            timeReference={queryData.timeReference}
+            record={queryData.record}
+          />
+          <span className="h-1 w-1/3 rounded-full bg-primary"></span>
+          <h3>{queryData?.name}</h3>
+        </div>
+        <IconContext.Provider value={{ className: "text-2xl" }}>
+          <div className="flex flex-col gap-1">
+            <Button
+              onClick={handleReset}
+              size="icon"
+              className="h-fit w-fit rounded-sm bg-primary-64 p-1"
+            >
+              <BiReset />
+            </Button>
+            {/* <Button
             size="icon"
             className="h-fit w-fit rounded-sm bg-primary-64 p-1"
           >
             <FiEdit2 />
           </Button> */}
-          <div className="flex-grow rounded-sm bg-primary-32 transition-all hover:bg-primary-64 focus:bg-primary-64"></div>
-        </div>
-      </IconContext.Provider>
+            {/* <div className="flex-grow rounded-sm bg-primary-32 transition-all hover:bg-primary-64 focus:bg-primary-64"></div> */}
+          </div>
+        </IconContext.Provider>
+      </div>
+      <TrackerInfo tracker={queryData} />
     </div>
   );
 };
@@ -148,9 +153,10 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
 interface TrackerTimerProps {
   id: string;
   timeReference: SerializedTimestamp;
+  record?: number | null;
 }
 
-const TrackerTimer: FC<TrackerTimerProps> = ({ id, timeReference }) => {
+const TrackerTimer: FC<TrackerTimerProps> = ({ id, timeReference, record }) => {
   const { data } = useQuery({
     queryKey: ["tracker-timer", id],
     queryFn: () => {
@@ -161,33 +167,40 @@ const TrackerTimer: FC<TrackerTimerProps> = ({ id, timeReference }) => {
         .toDate()
         .getTime();
 
-      const daysDiff = differenceInDays(new Date(), trackerDateReference);
-      const hoursDiff = differenceInHours(
-        new Date(),
-        trackerDateReference + daysDiff * 24 * 60 * 60 * 1000,
-      );
-      const minutesDiff = differenceInMinutes(
-        new Date(),
-        trackerDateReference +
-          daysDiff * 24 * 60 * 60 * 1000 +
-          hoursDiff * 60 * 60 * 1000,
-      );
-      const secondsDiff = differenceInSeconds(
-        new Date(),
-        trackerDateReference +
-          daysDiff * 24 * 60 * 60 * 1000 +
-          hoursDiff * 60 * 60 * 1000 +
-          minutesDiff * 60 * 1000,
-      );
+      const beatsRecord = record
+        ? Date.now() - trackerDateReference >= record
+        : true;
 
-      return `${daysDiff.toString().padStart(2, "0")}d ${hoursDiff
-        .toString()
-        .padStart(2, "0")}h ${minutesDiff
-        .toString()
-        .padStart(2, "0")}m ${secondsDiff.toString().padStart(2, "0")}s`;
+      return { formattedTime: formatTimer(trackerDateReference), beatsRecord };
     },
     refetchInterval: 1000,
   });
 
-  return <div>{data}</div>;
+  return (
+    <div className="font-body flex items-center gap-1 text-xl">
+      {data?.beatsRecord ? (
+        <IconContext.Provider value={{ className: "text-sm text-secondary" }}>
+          <FaStar />
+        </IconContext.Provider>
+      ) : null}
+      <span className="">{data?.formattedTime}</span>
+    </div>
+  );
+};
+
+const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
+  const record = tracker.record;
+
+  return (
+    <div className="flex w-full gap-2 text-sm">
+      <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1">
+        <h4 className="text-xs uppercase">Reset by</h4>
+        <p>{tracker.resetBy.name}</p>
+      </div>
+      <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1">
+        <h4 className="text-xs uppercase">Record</h4>
+        <p>{record ? formatRecord(record) : "None yet"}</p>
+      </div>
+    </div>
+  );
 };
