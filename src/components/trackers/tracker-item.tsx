@@ -115,7 +115,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
   }
 
   return (
-    <div className="font-body flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 text-white">
+    <div className="flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 font-body text-white">
       <div className="flex w-full gap-2">
         <div className="flex w-full flex-col gap-1">
           <TrackerTimer
@@ -177,7 +177,7 @@ const TrackerTimer: FC<TrackerTimerProps> = ({ id, timeReference, record }) => {
   });
 
   return (
-    <div className="font-body flex items-center gap-1 text-xl">
+    <div className="flex items-center gap-1 font-body text-xl">
       {data?.beatsRecord ? (
         <IconContext.Provider value={{ className: "text-sm text-secondary" }}>
           <FaStar />
