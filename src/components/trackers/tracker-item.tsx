@@ -1,9 +1,10 @@
 import { Timestamp } from "firebase/firestore";
-import { FC } from "react";
+import { FC, MouseEventHandler } from "react";
 import { IconContext } from "react-icons";
 import { BiReset } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "reactfire";
 import { z } from "zod";
 
@@ -12,11 +13,11 @@ import { formatRecord, formatTimer } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { LoadingSpinner } from "../ui/spinner";
 
-const SerializedTimestamp = z.object({
+export const SerializedTimestamp = z.object({
   _seconds: z.number(),
   _nanoseconds: z.number(),
 });
-type SerializedTimestamp = z.infer<typeof SerializedTimestamp>;
+export type SerializedTimestamp = z.infer<typeof SerializedTimestamp>;
 
 export const TrackerUser = z.object({
   id: z.string(),
@@ -35,15 +36,16 @@ export const Tracker = z.object({
   creator: TrackerUser,
   updatedBy: TrackerUser,
   resetBy: TrackerUser,
+  participants: z.array(TrackerUser).optional().default([]),
   record: z.number().optional().nullable(),
   color: z.string().optional(),
 });
 export type Tracker = z.infer<typeof Tracker>;
 
-const TrackerResponse = z.object({
+export const TrackerResponse = z.object({
   tracker: Tracker,
 });
-type TrackerResponse = z.infer<typeof TrackerResponse>;
+export type TrackerResponse = z.infer<typeof TrackerResponse>;
 
 interface Props {
   trackerId: string;
@@ -51,7 +53,7 @@ interface Props {
 
 export const TrackerItem: FC<Props> = ({ trackerId }) => {
   const auth = useAuth();
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { status: queryStatus, data: queryData } = useQuery({
     queryKey: ["tracker", trackerId],
@@ -73,34 +75,13 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
     },
   });
 
-  const { status: mutationStatus, mutateAsync } = useMutation(async () => {
-    const res = await fetch(
-      `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/reset/${trackerId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
-        },
-      },
-    );
-
-    const data = await res.json();
-
-    queryClient.invalidateQueries(["tracker", trackerId]);
-
-    return data;
-  });
-
-  const handleReset = async () => {
-    if (mutationStatus === "loading") return;
-
-    await mutateAsync();
+  const handleOpenTracker = () => {
+    navigate(`/app/tracker/${trackerId}`);
   };
 
-  if (queryStatus === "loading" || mutationStatus === "loading") {
+  if (queryStatus === "loading") {
     return (
-      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-32 p-2 text-white">
+      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 text-white">
         <LoadingSpinner />
       </div>
     );
@@ -108,14 +89,17 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
 
   if (!queryData) {
     return (
-      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-32 p-2 text-white">
+      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 text-white">
         Tracker not found
       </div>
     );
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 font-body text-white">
+    <div
+      onClick={handleOpenTracker}
+      className="flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 font-body text-white"
+    >
       <div className="flex w-full gap-2">
         <div className="flex w-full flex-col gap-1">
           <TrackerTimer
@@ -126,24 +110,6 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
           <span className="h-1 w-1/3 rounded-full bg-primary"></span>
           <h3>{queryData?.name}</h3>
         </div>
-        <IconContext.Provider value={{ className: "text-2xl" }}>
-          <div className="flex flex-col gap-1">
-            <Button
-              onClick={handleReset}
-              size="icon"
-              className="h-fit w-fit rounded-sm bg-primary-64 p-1"
-            >
-              <BiReset />
-            </Button>
-            {/* <Button
-            size="icon"
-            className="h-fit w-fit rounded-sm bg-primary-64 p-1"
-          >
-            <FiEdit2 />
-          </Button> */}
-            {/* <div className="flex-grow rounded-sm bg-primary-32 transition-all hover:bg-primary-64 focus:bg-primary-64"></div> */}
-          </div>
-        </IconContext.Provider>
       </div>
       <TrackerInfo tracker={queryData} />
     </div>
@@ -156,7 +122,11 @@ interface TrackerTimerProps {
   record?: number | null;
 }
 
-const TrackerTimer: FC<TrackerTimerProps> = ({ id, timeReference, record }) => {
+export const TrackerTimer: FC<TrackerTimerProps> = ({
+  id,
+  timeReference,
+  record,
+}) => {
   const { data } = useQuery({
     queryKey: ["tracker-timer", id],
     queryFn: () => {
@@ -188,19 +158,59 @@ const TrackerTimer: FC<TrackerTimerProps> = ({ id, timeReference, record }) => {
   );
 };
 
-const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
+export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
   const record = tracker.record;
 
+  const auth = useAuth();
+  const queryClient = useQueryClient();
+
+  const { status, mutate } = useMutation(async () => {
+    const res = await fetch(
+      `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/reset/${tracker.id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+        },
+      },
+    );
+
+    const data = await res.json();
+
+    queryClient.invalidateQueries(["tracker", tracker.id]);
+
+    return data;
+  });
+
+  const handleReset: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.stopPropagation();
+
+    if (status === "loading") return;
+
+    mutate();
+  };
+
   return (
-    <div className="flex w-full gap-2 text-sm">
-      <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1">
-        <h4 className="text-xs uppercase">Reset by</h4>
-        <p>{tracker.resetBy.name}</p>
+    <IconContext.Provider value={{ className: "text-3xl" }}>
+      <div className="flex w-full items-end gap-2 text-sm">
+        <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
+          <h4 className="text-xs uppercase">Reset by</h4>
+          <p>{tracker.resetBy.name}</p>
+        </div>
+        <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
+          <h4 className="text-xs uppercase">Record</h4>
+          <p>{record ? formatRecord(record) : "N/A"}</p>
+        </div>
+        <div className="flex-grow"></div>
+        <Button
+          onClick={handleReset}
+          size="icon"
+          className="aspect-square h-full rounded-sm bg-primary-64 p-1 hover:bg-primary focus:bg-primary active:bg-primary"
+        >
+          {status === "loading" ? <LoadingSpinner size="small" /> : <BiReset />}
+        </Button>
       </div>
-      <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1">
-        <h4 className="text-xs uppercase">Record</h4>
-        <p>{record ? formatRecord(record) : "None yet"}</p>
-      </div>
-    </div>
+    </IconContext.Provider>
   );
 };

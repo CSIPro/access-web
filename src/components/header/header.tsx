@@ -105,7 +105,7 @@ export const Header: FC<Props> = ({ title }) => {
             </SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
-            <Link to="/app/trackers">Trackers</Link>
+            <Link to="/app/tracker">Trackers</Link>
             <div className="flex-grow" />
             <Button
               variant="outline"

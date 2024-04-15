@@ -48,7 +48,7 @@ export const Navbar: FC<Props> = ({
           </NavigationMenuItem>
         )}
         <NavigationMenuItem>
-          <NavbarLink to="/app/trackers">Trackers</NavbarLink>
+          <NavbarLink to="/app/tracker">Trackers</NavbarLink>
         </NavigationMenuItem>
         {/* <NavigationMenuItem>
           <NavbarLink to="/">Access Logs</NavbarLink>

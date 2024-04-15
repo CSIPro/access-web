@@ -37,7 +37,6 @@ export const TrackersDashboard = () => {
 
       return trackers.trackers;
     },
-    refetchOnWindowFocus: false,
   });
 
   if (status === "loading") {

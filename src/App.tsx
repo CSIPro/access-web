@@ -13,6 +13,7 @@ import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
 import { QRCodePage } from "./routes/app/qr-code";
 import { TrackersPage } from "./routes/app/tracker";
+import { TrackerDetails } from "./routes/app/tracker/tracker-details";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
@@ -60,7 +61,11 @@ function App() {
               <Route path="/app" element={<AppIndex />} />
               <Route path="/app/logs" element={<LogsPage />} />
               <Route path="/app/members" element={<RoomMembers />} />
-              <Route path="/app/trackers" element={<TrackersPage />} />
+              <Route path="/app/tracker" element={<TrackersPage />} />
+              <Route
+                path="/app/tracker/:trackerId"
+                element={<TrackerDetails />}
+              />
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
           </Route>

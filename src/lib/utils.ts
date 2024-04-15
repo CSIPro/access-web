@@ -65,14 +65,22 @@ export const formatRecord = (record: number) => {
   const seconds = Math.floor((record % (60 * 1000)) / 1000);
 
   if (days <= 0) {
+    if (hours <= 0) {
+      if (minutes <= 0) {
+        return `${seconds.toString().padStart(2, "0")}s` as const;
+      }
+
+      return `${minutes.toString().padStart(2, "0")}m ${seconds
+        .toString()
+        .padStart(2, "0")}s` as const;
+    }
+
     return `${hours.toString().padStart(2, "0")}h ${minutes
       .toString()
-      .padStart(2, "0")}m ${seconds.toString().padStart(2, "0")}s`;
+      .padStart(2, "0")}m` as const;
   }
 
   return `${days.toString().padStart(2, "0")}d ${hours
     .toString()
-    .padStart(2, "0")}h ${minutes.toString().padStart(2, "0")}m ${seconds
-    .toString()
-    .padStart(2, "0")}s`;
+    .padStart(2, "0")}h ${minutes.toString().padStart(2, "0")}m` as const;
 };
