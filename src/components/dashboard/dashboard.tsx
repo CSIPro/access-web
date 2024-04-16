@@ -23,7 +23,7 @@ export const Dashboard = () => {
           <FailedAttempts />
         </div>
       </div>
-      <div className="w-full rounded-md border-2 border-primary bg-primary-32 p-1">
+      <div className="w-full rounded-md border-2 border-primary p-1">
         <AccessLogs limit={3} />
       </div>
       <BrandingHeader

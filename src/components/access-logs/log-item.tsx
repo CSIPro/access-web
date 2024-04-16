@@ -101,7 +101,7 @@ interface UnknownLogProps {
 
 const UnknownLog: FC<UnknownLogProps> = ({ timestamp }) => {
   return (
-    <li className={cn(baseStyle, "border-secondary bg-secondary-32")}>
+    <li className={cn(baseStyle, "border-secondary bg-secondary-16")}>
       <LogTitle failed>Unknown user</LogTitle>
       <LogTimestamp failed timestamp={timestamp} />
     </li>
@@ -115,7 +115,7 @@ interface KnownProcessedLogProps {
 
 const SuccessLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
   return (
-    <li className={cn(baseStyle, "border-primary bg-primary-32")}>
+    <li className={cn(baseStyle, "border-primary bg-primary-16")}>
       <LogTitle>{user.name}</LogTitle>
       <LogTimestamp timestamp={timestamp} />
     </li>
@@ -124,7 +124,7 @@ const SuccessLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
 
 const FailedLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
   return (
-    <li className={cn(baseStyle, "border-secondary bg-secondary-32")}>
+    <li className={cn(baseStyle, "border-secondary bg-secondary-16")}>
       <LogTitle failed>{user.name}</LogTitle>
       <LogTimestamp failed timestamp={timestamp} />
     </li>
@@ -133,7 +133,7 @@ const FailedLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
 
 const BluetoothLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
   return (
-    <li className={cn(baseStyle, "border-tertiary bg-tertiary-32")}>
+    <li className={cn(baseStyle, "border-tertiary bg-tertiary-16")}>
       <LogTitle>{user.name}</LogTitle>
       <LogTimestamp timestamp={timestamp} />
     </li>

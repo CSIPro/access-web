@@ -3,9 +3,9 @@ import { FC, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const colors = {
-  primary: "bg-primary-32 border-primary border-2",
-  secondary: "bg-secondary-32 border-secondary border-2",
-  tertiary: "bg-tertiary-32 border-tertiary border-2",
+  primary: "bg-primary-16 border-primary border-2",
+  secondary: "bg-secondary-16 border-secondary border-2",
+  tertiary: "bg-tertiary-16 border-tertiary border-2",
 };
 
 interface DashboardItemProps {
