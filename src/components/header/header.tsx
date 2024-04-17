@@ -1,6 +1,7 @@
 import { FC, useContext } from "react";
 import { BiMenu } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { IoArrowBack } from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "reactfire";
 
 import { RoleContext } from "@/context/role-context";
@@ -22,12 +23,20 @@ import {
 
 interface Props {
   title: string;
+  backTo?: string;
 }
 
-export const Header: FC<Props> = ({ title }) => {
+export const Header: FC<Props> = ({ title, backTo }) => {
+  const navigate = useNavigate();
   const auth = useAuth();
   const userCtx = useContext(UserContext);
   const roleCtx = useContext(RoleContext);
+
+  const handleBack = () => {
+    if (!backTo) return;
+
+    navigate(backTo);
+  };
 
   const handleSignOut = () => {
     void auth.signOut();
@@ -40,14 +49,24 @@ export const Header: FC<Props> = ({ title }) => {
     <Sheet>
       <header className="sticky top-0 z-50 w-full border-b border-b-stone-700 bg-muted">
         <div className="container relative flex h-14 items-center gap-2">
-          <SheetTrigger asChild={true}>
+          {backTo ? (
             <Button
               size="icon"
+              onClick={handleBack}
               className="bg-primary text-2xl text-white hover:text-primary hover:brightness-110 focus:bg-white focus:text-primary active:bg-white active:text-primary md:hidden"
             >
-              <BiMenu />
+              <IoArrowBack />
             </Button>
-          </SheetTrigger>
+          ) : (
+            <SheetTrigger asChild={true}>
+              <Button
+                size="icon"
+                className="bg-primary text-2xl text-white hover:text-primary hover:brightness-110 focus:bg-white focus:text-primary active:bg-white active:text-primary md:hidden"
+              >
+                <BiMenu />
+              </Button>
+            </SheetTrigger>
+          )}
           <Link to="/app" className="hidden items-center gap-2 md:flex">
             <img
               src="/images/access-logo.svg"

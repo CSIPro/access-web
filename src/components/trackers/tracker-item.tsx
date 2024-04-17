@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "reactfire";
 import { z } from "zod";
 
-import { formatRecord, formatTimer } from "@/lib/utils";
+import { cn, formatRecord, formatTimer } from "@/lib/utils";
 
 import { TimerSegment } from "./timer-segment";
 import { TrackerItemProvider, useTrackerItemContext } from "./tracker-context";
@@ -34,6 +34,7 @@ export const Tracker = z.object({
   isActive: z.boolean().default(true),
   createdAt: SerializedTimestamp,
   updatedAt: SerializedTimestamp,
+  resetAt: SerializedTimestamp.optional(),
   roomId: z.string(),
   timeReference: SerializedTimestamp,
   creator: TrackerUser,
@@ -84,7 +85,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
 
   if (queryStatus === "loading") {
     return (
-      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 text-white">
+      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-08 p-2 text-white">
         <LoadingSpinner />
       </div>
     );
@@ -92,7 +93,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
 
   if (!queryData) {
     return (
-      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 text-white">
+      <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-08 p-2 text-white">
         Tracker not found
       </div>
     );
@@ -102,7 +103,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
     <TrackerItemProvider>
       <div
         onClick={handleOpenTracker}
-        className="relative flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 font-body text-white after:absolute after:bottom-1 after:right-1 after:top-1 after:w-1 after:rounded-full after:bg-primary"
+        className="relative flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-08 p-2 font-body text-white after:absolute after:bottom-1 after:right-1 after:top-1 after:w-1 after:rounded-full after:bg-primary"
       >
         <h3 className="text-xl">{queryData?.name}</h3>
         <TrackerTimer
@@ -120,12 +121,14 @@ interface TrackerTimerProps {
   id: string;
   timeReference: SerializedTimestamp;
   record?: number | null;
+  size?: "normal" | "large";
 }
 
 export const TrackerTimer: FC<TrackerTimerProps> = ({
   id,
   timeReference,
   record,
+  size = "normal",
 }) => {
   const trackerCtx = useTrackerItemContext();
   const auth = useAuth();
@@ -197,7 +200,12 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
 
   return (
     <IconContext.Provider value={{ className: "text-3xl" }}>
-      <div className="flex flex-shrink-0 items-center gap-1 font-mono text-lg">
+      <div
+        className={cn(
+          "flex flex-shrink-0 items-stretch gap-1 font-mono text-lg",
+          size === "large" && "text-2xl",
+        )}
+      >
         <TimerSegment>{`${data?.days}d`}</TimerSegment>
         <TimerSegment>{`${data?.hours}h`}</TimerSegment>
         <TimerSegment>{`${data?.minutes}m`}</TimerSegment>
@@ -205,7 +213,7 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
         <Button
           onClick={handleReset}
           size="icon"
-          className="aspect-square h-full rounded-sm bg-primary-64 p-1 hover:bg-primary focus:bg-primary active:bg-primary"
+          className="aspect-square h-auto w-auto rounded-sm bg-primary-64 p-1 hover:bg-primary focus:bg-primary active:bg-primary"
         >
           {status === "loading" ? <LoadingSpinner size="small" /> : <BiReset />}
         </Button>
@@ -219,7 +227,7 @@ export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
 
   return (
     <IconContext.Provider value={{ className: "text-xl" }}>
-      <div className="flex w-full items-stretch gap-2 text-sm">
+      <div className="flex w-full items-stretch gap-1 text-sm">
         <div className="flex items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
           <BiReset />
           <p className="line-clamp-1">{tracker.resetBy.name}</p>

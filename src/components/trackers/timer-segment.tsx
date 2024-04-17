@@ -14,7 +14,7 @@ export const TimerSegment: FC<Props> = ({ children }) => {
   return (
     <span
       className={cn(
-        "color-white rounded-sm border-2 border-primary bg-muted-16 p-1 font-mono",
+        "color-white rounded-sm border-2 border-primary bg-primary-08 p-1 font-mono",
         trackerCtx.beatsRecord && "animate-glow-bg",
       )}
     >

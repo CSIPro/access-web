@@ -126,8 +126,8 @@ module.exports = {
           to: { height: 0 },
         },
         "glow-bg": {
-          from: { backgroundColor: "hsl(var(--muted-16))" },
-          to: { backgroundColor: "hsl(var(--primary-24))" },
+          from: { backgroundColor: "hsl(var(--primary-08))" },
+          to: { backgroundColor: "hsl(var(--primary-32))" },
         },
       },
       animation: {
