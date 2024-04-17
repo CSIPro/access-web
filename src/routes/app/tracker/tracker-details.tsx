@@ -2,12 +2,12 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { useAuth } from "reactfire";
 
+import { Header } from "@/components/header/header";
 import {
   TrackerResponse,
   TrackerTimer,
 } from "@/components/trackers/tracker-item";
 import { LoadingSpinner } from "@/components/ui/spinner";
-import { Header } from "@/components/header/header";
 
 export const TrackerDetails = () => {
   const params = useParams();

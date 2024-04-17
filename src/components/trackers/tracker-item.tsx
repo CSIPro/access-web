@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import { FC, MouseEventHandler } from "react";
+import toast from "react-hot-toast";
 import { IconContext } from "react-icons";
 import { BiReset } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
@@ -10,6 +11,8 @@ import { z } from "zod";
 
 import { formatRecord, formatTimer } from "@/lib/utils";
 
+import { TimerSegment } from "./timer-segment";
+import { TrackerItemProvider, useTrackerItemContext } from "./tracker-context";
 import { Button } from "../ui/button";
 import { LoadingSpinner } from "../ui/spinner";
 
@@ -96,23 +99,20 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
   }
 
   return (
-    <div
-      onClick={handleOpenTracker}
-      className="flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 font-body text-white"
-    >
-      <div className="flex w-full gap-2">
-        <div className="flex w-full flex-col gap-1">
-          <TrackerTimer
-            id={trackerId}
-            timeReference={queryData.timeReference}
-            record={queryData.record}
-          />
-          <span className="h-1 w-1/3 rounded-full bg-primary"></span>
-          <h3>{queryData?.name}</h3>
-        </div>
+    <TrackerItemProvider>
+      <div
+        onClick={handleOpenTracker}
+        className="relative flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-16 p-2 font-body text-white after:absolute after:bottom-1 after:right-1 after:top-1 after:w-1 after:rounded-full after:bg-primary"
+      >
+        <h3 className="text-xl">{queryData?.name}</h3>
+        <TrackerTimer
+          id={trackerId}
+          timeReference={queryData.timeReference}
+          record={queryData.record}
+        />
+        <TrackerInfo tracker={queryData} />
       </div>
-      <TrackerInfo tracker={queryData} />
-    </div>
+    </TrackerItemProvider>
   );
 };
 
@@ -127,6 +127,10 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
   timeReference,
   record,
 }) => {
+  const trackerCtx = useTrackerItemContext();
+  const auth = useAuth();
+  const queryClient = useQueryClient();
+
   const { data } = useQuery({
     queryKey: ["tracker-timer", id],
     queryFn: () => {
@@ -141,47 +145,47 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
         ? Date.now() - trackerDateReference >= record
         : true;
 
-      return { formattedTime: formatTimer(trackerDateReference), beatsRecord };
+      trackerCtx.setBeatsRecord(beatsRecord);
+
+      return { ...formatTimer(trackerDateReference), beatsRecord };
     },
     refetchInterval: 1000,
   });
 
-  return (
-    <div className="flex items-center gap-1 font-body text-xl">
-      {data?.beatsRecord ? (
-        <IconContext.Provider value={{ className: "text-sm text-secondary" }}>
-          <FaStar />
-        </IconContext.Provider>
-      ) : null}
-      <span className="">{data?.formattedTime}</span>
-    </div>
-  );
-};
-
-export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
-  const record = tracker.record;
-
-  const auth = useAuth();
-  const queryClient = useQueryClient();
-
-  const { status, mutate } = useMutation(async () => {
-    const res = await fetch(
-      `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/reset/${tracker.id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+  const { status, mutate } = useMutation<{ message: string }, Error>(
+    async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/reset/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+          },
         },
+      );
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("You're not authorized to reset this tracker");
+        }
+      }
+
+      const data = await res.json();
+
+      queryClient.invalidateQueries(["tracker", id]);
+
+      return data;
+    },
+    {
+      onSuccess: (_) => {
+        toast.success("Tracker reset successfully");
       },
-    );
-
-    const data = await res.json();
-
-    queryClient.invalidateQueries(["tracker", tracker.id]);
-
-    return data;
-  });
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    },
+  );
 
   const handleReset: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
@@ -193,16 +197,11 @@ export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
 
   return (
     <IconContext.Provider value={{ className: "text-3xl" }}>
-      <div className="flex w-full items-end gap-2 text-sm">
-        <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
-          <h4 className="text-xs uppercase">Reset by</h4>
-          <p>{tracker.resetBy.name}</p>
-        </div>
-        <div className="flex flex-col items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
-          <h4 className="text-xs uppercase">Record</h4>
-          <p>{record ? formatRecord(record) : "N/A"}</p>
-        </div>
-        <div className="flex-grow"></div>
+      <div className="flex flex-shrink-0 items-center gap-1 font-mono text-lg">
+        <TimerSegment>{`${data?.days}d`}</TimerSegment>
+        <TimerSegment>{`${data?.hours}h`}</TimerSegment>
+        <TimerSegment>{`${data?.minutes}m`}</TimerSegment>
+        <TimerSegment>{`${data?.seconds}s`}</TimerSegment>
         <Button
           onClick={handleReset}
           size="icon"
@@ -210,6 +209,27 @@ export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
         >
           {status === "loading" ? <LoadingSpinner size="small" /> : <BiReset />}
         </Button>
+      </div>
+    </IconContext.Provider>
+  );
+};
+
+export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
+  const record = tracker.record;
+
+  return (
+    <IconContext.Provider value={{ className: "text-xl" }}>
+      <div className="flex w-full items-stretch gap-2 text-sm">
+        <div className="flex items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
+          <BiReset />
+          <p className="line-clamp-1">{tracker.resetBy.name}</p>
+        </div>
+        <div className="flex items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
+          <FaStar />
+          <p className="line-clamp-1">
+            {record ? formatRecord(record) : "N/A"}
+          </p>
+        </div>
       </div>
     </IconContext.Provider>
   );

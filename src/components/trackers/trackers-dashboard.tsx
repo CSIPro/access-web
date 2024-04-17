@@ -48,7 +48,7 @@ export const TrackersDashboard = () => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex h-full w-full flex-col gap-2">
       <BrandingHeader
         highlight="TRACKER"
         highlightClassName="bg-primary text-white"
@@ -75,6 +75,7 @@ export const TrackersDashboard = () => {
         </Button>
       )}
       {data && data.map(({ id }) => <TrackerItem key={id} trackerId={id} />)}
+      {data && <div className="h-96 w-full"></div>}
     </div>
   );
 };

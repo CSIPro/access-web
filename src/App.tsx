@@ -81,7 +81,17 @@ function App() {
           <Route path="/oauth/link/:code" element={<GithubLink />} />
         </Routes>
       </BrowserRouter>
-      <Toaster position="bottom-center" />
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          className:
+            "border-2 border-primary bg-primary-16 text-white font-body",
+          error: {
+            className:
+              "border-2 border-secondary bg-secondary-16 text-white font-body",
+          },
+        }}
+      />
     </main>
   );
 }

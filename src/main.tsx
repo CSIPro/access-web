@@ -14,7 +14,6 @@ import {
 } from "reactfire";
 
 import App from "./App.tsx";
-import { Toaster } from "./components/ui/toaster.tsx";
 import "./index.css";
 import { firebaseConfig } from "./firebase.ts";
 
@@ -33,7 +32,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <AuthProvider sdk={auth}>
             <FirestoreProvider sdk={firestore}>
               <App />
-              <Toaster />
             </FirestoreProvider>
           </AuthProvider>
         </AnalyticsProvider>

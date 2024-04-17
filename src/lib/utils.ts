@@ -45,17 +45,12 @@ export const formatTimer = (time: number) => {
       minutesDiff * 60 * 1000,
   );
 
-  if (daysDiff <= 0) {
-    return `${hoursDiff.toString().padStart(2, "0")}h ${minutesDiff
-      .toString()
-      .padStart(2, "0")}m ${secondsDiff.toString().padStart(2, "0")}s` as const;
-  }
-
-  return `${daysDiff.toString().padStart(2, "0")}d ${hoursDiff
-    .toString()
-    .padStart(2, "0")}h ${minutesDiff
-    .toString()
-    .padStart(2, "0")}m ${secondsDiff.toString().padStart(2, "0")}s` as const;
+  return {
+    seconds: secondsDiff.toString().padStart(2, "0"),
+    minutes: minutesDiff.toString().padStart(2, "0"),
+    hours: hoursDiff.toString().padStart(2, "0"),
+    days: daysDiff.toString().padStart(2, "0"),
+  };
 };
 
 export const formatRecord = (record: number) => {

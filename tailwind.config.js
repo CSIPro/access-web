@@ -125,10 +125,15 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "glow-bg": {
+          from: { backgroundColor: "hsl(var(--muted-16))" },
+          to: { backgroundColor: "hsl(var(--primary-24))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "glow-bg": "glow-bg 1500ms infinite alternate ease-in-out",
       },
     },
   },
