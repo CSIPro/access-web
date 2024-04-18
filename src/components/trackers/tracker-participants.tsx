@@ -318,6 +318,7 @@ export const RemoveParticipants: FC<{
               >
                 <Checkbox
                   id={id}
+                  disabled={id === auth.currentUser?.uid}
                   onCheckedChange={(checked) => {
                     if (checked) {
                       setSelectedIds((prev) => [...prev, id]);
@@ -327,7 +328,13 @@ export const RemoveParticipants: FC<{
                   }}
                   className="border-secondary data-[state=checked]:bg-secondary"
                 />
-                <label htmlFor={id} className="w-full select-none">
+                <label
+                  htmlFor={id}
+                  className={cn(
+                    "w-full select-none",
+                    id === auth.currentUser?.uid && "opacity-50",
+                  )}
+                >
                   {name}
                 </label>
               </li>

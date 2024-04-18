@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Timestamp } from "firebase/firestore";
+import { useContext } from "react";
 import { BiEditAlt, BiReset } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 import { IoPerson, IoTime } from "react-icons/io5";
@@ -20,10 +21,16 @@ import {
 } from "@/components/trackers/tracker-participants";
 import { BrandingHeader } from "@/components/ui/branding-header";
 import { LoadingSpinner } from "@/components/ui/spinner";
-import { formatRecord } from "@/lib/utils";
+import { RoleContext } from "@/context/role-context";
+import { UserContext } from "@/context/user-context";
+import { findRole, formatRecord } from "@/lib/utils";
 
 export const TrackerDetails = () => {
   const params = useParams();
+
+  const roleCtx = useContext(RoleContext);
+  const userCtx = useContext(UserContext);
+
   const auth = useAuth();
   const { status, data } = useQuery({
     queryKey: ["tracker", params.trackerId],
@@ -68,6 +75,11 @@ export const TrackerDetails = () => {
       </>
     );
   }
+
+  const userRole = findRole(userCtx.user?.role, roleCtx.roles);
+  const hasPrivileges =
+    (auth.currentUser?.uid === data.creator.id ?? false) ||
+    (userRole?.level ?? 0) >= 40;
 
   const creationDate = new Timestamp(
     data.createdAt._seconds,
@@ -163,19 +175,22 @@ export const TrackerDetails = () => {
             Admins and moderators also have access to this tracker.
           </p>
           <TrackerParticipants participants={data.participants} />
-          <div className="flex gap-2">
-            <AddParticipants
-              trackerId={data.id}
-              participants={data.participants}
-            />
-            <RemoveParticipants
-              trackerId={data.id}
-              participants={data.participants}
-            />
-          </div>
+          {hasPrivileges && (
+            <div className="flex gap-2">
+              <AddParticipants
+                trackerId={data.id}
+                participants={data.participants}
+              />
+              <RemoveParticipants
+                trackerId={data.id}
+                participants={data.participants}
+              />
+            </div>
+          )}
           <BrandingHeader highlight="Lapses">Time</BrandingHeader>
           <TrackerLapses trackerId={data.id} />
         </div>
+        <div className="h-[50vh]"></div>
       </div>
     </>
   );
