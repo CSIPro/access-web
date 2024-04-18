@@ -12,6 +12,11 @@ import {
   TrackerResponse,
   TrackerTimer,
 } from "@/components/trackers/tracker-item";
+import {
+  AddParticipants,
+  RemoveParticipants,
+  TrackerParticipants,
+} from "@/components/trackers/tracker-participants";
 import { BrandingHeader } from "@/components/ui/branding-header";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { formatRecord } from "@/lib/utils";
@@ -35,7 +40,6 @@ export const TrackerDetails = () => {
       );
 
       const data = await res.json();
-      console.log(data);
       const tracker = TrackerResponse.parse(data);
 
       return tracker.tracker;
@@ -157,10 +161,17 @@ export const TrackerDetails = () => {
           <p className="">
             Admins and moderators also have access to this tracker.
           </p>
-          {data.participants &&
-            data.participants.map((participant) => (
-              <p key={participant.id}>{participant.name}</p>
-            ))}
+          <TrackerParticipants participants={data.participants} />
+          <div className="flex gap-2">
+            <AddParticipants
+              trackerId={data.id}
+              participants={data.participants}
+            />
+            <RemoveParticipants
+              trackerId={data.id}
+              participants={data.participants}
+            />
+          </div>
         </div>
       </div>
     </>

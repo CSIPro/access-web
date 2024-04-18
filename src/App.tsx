@@ -85,10 +85,10 @@ function App() {
         position="bottom-center"
         toastOptions={{
           className:
-            "border-2 border-primary bg-primary-16 text-white font-body",
+            "border-2 border-primary bg-muted text-white font-body text-lg",
           error: {
             className:
-              "border-2 border-secondary bg-secondary-16 text-white font-body",
+              "border-2 border-secondary bg-muted text-white font-body text-lg",
           },
         }}
       />
