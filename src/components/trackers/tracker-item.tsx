@@ -177,6 +177,7 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
       const data = await res.json();
 
       queryClient.invalidateQueries(["tracker", id]);
+      queryClient.invalidateQueries(["tracker-lapses", id]);
 
       return data;
     },

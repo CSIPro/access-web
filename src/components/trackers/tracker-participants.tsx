@@ -130,6 +130,8 @@ export const AddParticipants: FC<{
       onSuccess: (_) => {
         toast.success("Participants added successfully");
         queryClient.invalidateQueries(["tracker", trackerId]);
+        queryClient.invalidateQueries(["tracker-lapses", trackerId]);
+        setSelectedIds([]);
         setDialogOpen(false);
       },
       onError: (error) => {
@@ -268,6 +270,8 @@ export const RemoveParticipants: FC<{
       onSuccess: (_) => {
         toast.success("Participants removed successfully");
         queryClient.invalidateQueries(["tracker", trackerId]);
+        queryClient.invalidateQueries(["tracker-lapses", trackerId]);
+        setSelectedIds([]);
         setDialogOpen(false);
       },
       onError: (error) => {

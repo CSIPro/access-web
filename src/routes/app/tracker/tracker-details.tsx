@@ -12,6 +12,7 @@ import {
   TrackerResponse,
   TrackerTimer,
 } from "@/components/trackers/tracker-item";
+import { TrackerLapses } from "@/components/trackers/tracker-lapses";
 import {
   AddParticipants,
   RemoveParticipants,
@@ -172,6 +173,8 @@ export const TrackerDetails = () => {
               participants={data.participants}
             />
           </div>
+          <BrandingHeader highlight="Lapses">Time</BrandingHeader>
+          <TrackerLapses trackerId={data.id} />
         </div>
       </div>
     </>
