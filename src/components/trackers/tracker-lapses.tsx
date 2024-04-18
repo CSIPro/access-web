@@ -1,6 +1,6 @@
-import { format, formatDistance, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { Timestamp } from "firebase/firestore";
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { useQuery } from "react-query";
 import { useAuth } from "reactfire";
 import { z } from "zod";
