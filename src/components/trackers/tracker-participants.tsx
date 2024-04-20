@@ -44,7 +44,10 @@ interface Props {
 export const TrackerParticipants: FC<Props> = ({ trackerId }) => {
   const auth = useAuth();
 
-  const { status, data } = useQuery({
+  const { status, data, error } = useQuery<
+    APIGetParticipantsResponse["participants"],
+    Error
+  >({
     queryKey: ["tracker-participants", trackerId],
     queryFn: async () => {
       const res = await fetch(
@@ -58,6 +61,21 @@ export const TrackerParticipants: FC<Props> = ({ trackerId }) => {
           },
         },
       );
+
+      if (!res.ok) {
+        switch (res.status) {
+          case 403:
+            toast.error("You are not authorized to view Time Trackers");
+            break;
+          case 429:
+            toast.error("Too many requests. Please try again later");
+            break;
+          default:
+            toast.error("Failed to fetch Time Trackers");
+        }
+
+        throw new Error("Failed to fetch Time Trackers");
+      }
 
       const data = await res.json();
       const participants = APIGetParticipantsResponse.safeParse(data);
@@ -82,8 +100,14 @@ export const TrackerParticipants: FC<Props> = ({ trackerId }) => {
             <ParticipantItem key={`Participant item ${id}`} name={name} />
           ))}
         </ul>
+      ) : error ? (
+        <div className="flex h-full w-full items-center justify-center">
+          <p>{error.message}</p>
+        </div>
       ) : (
-        <span>Failed to fetch participants</span>
+        <div className="flex h-full w-full items-center justify-center">
+          <p>Failed to fetch Time Trackers</p>
+        </div>
       )}
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
@@ -125,6 +149,17 @@ export const AddParticipants: FC<{
       );
 
       if (!res.ok) {
+        switch (res.status) {
+          case 403:
+            toast.error("You are not authorized to view users");
+            break;
+          case 429:
+            toast.error("Too many requests. Please try again later");
+            break;
+          default:
+            toast.error("Failed to fetch users");
+        }
+
         throw new Error("Failed to fetch users");
       }
 
@@ -136,9 +171,6 @@ export const AddParticipants: FC<{
       }
 
       return members.data.members;
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
     enabled: dialogOpen,
   });
@@ -182,7 +214,6 @@ export const AddParticipants: FC<{
         setDialogOpen(false);
       },
       onError: (error) => {
-        toast.error(error.message);
         setDialogOpen(false);
       },
     },

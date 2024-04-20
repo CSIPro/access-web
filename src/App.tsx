@@ -90,6 +90,9 @@ function App() {
             className:
               "border-2 border-secondary bg-muted text-white font-body text-lg",
           },
+          style: {
+            backgroundColor: "#0d0d0d",
+          },
         }}
       />
     </main>
