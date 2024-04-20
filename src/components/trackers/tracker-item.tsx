@@ -214,7 +214,7 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
         <Button
           onClick={handleReset}
           size="icon"
-          className="aspect-square h-auto w-auto rounded-sm bg-primary-64 p-1 hover:bg-primary focus:bg-primary active:bg-primary"
+          className="aspect-square h-auto w-auto rounded-sm p-1 hover:brightness-110 focus:brightness-110 active:brightness-110"
         >
           {status === "loading" ? <LoadingSpinner size="small" /> : <BiReset />}
         </Button>

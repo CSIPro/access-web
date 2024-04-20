@@ -183,6 +183,7 @@ export const TrackerDetails = () => {
               />
               <RemoveParticipants
                 trackerId={data.id}
+                ownerId={data.creator.id}
                 participants={data.participants}
               />
             </div>

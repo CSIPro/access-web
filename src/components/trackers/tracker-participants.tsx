@@ -39,7 +39,7 @@ export const TrackerParticipants: FC<Props> = ({ participants }) => {
 
   return (
     <ScrollArea className="w-full whitespace-nowrap rounded-sm border-2 border-primary py-2">
-      <ul className="flex gap-2 px-2">
+      <ul className="grid w-max grid-flow-col-dense grid-rows-2 gap-2 px-2">
         {participants.map(({ id, name }) => (
           <ParticipantItem key={`Participant item ${id}`} name={name} />
         ))}
@@ -50,7 +50,11 @@ export const TrackerParticipants: FC<Props> = ({ participants }) => {
 };
 
 export const ParticipantItem: FC<{ name: string }> = ({ name }) => {
-  return <li className="rounded bg-primary-16 px-2 py-1 text-lg">{name}</li>;
+  return (
+    <li className="rounded bg-primary-16 px-2 py-1 text-lg text-violet-200">
+      {name}
+    </li>
+  );
 };
 
 export const AddParticipants: FC<{
@@ -229,8 +233,9 @@ export const AddParticipants: FC<{
 };
 export const RemoveParticipants: FC<{
   trackerId: string;
+  ownerId: string;
   participants: TrackerUser[];
-}> = ({ trackerId, participants }) => {
+}> = ({ trackerId, ownerId, participants }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -318,7 +323,7 @@ export const RemoveParticipants: FC<{
               >
                 <Checkbox
                   id={id}
-                  disabled={id === auth.currentUser?.uid}
+                  disabled={id === auth.currentUser?.uid || id === ownerId}
                   onCheckedChange={(checked) => {
                     if (checked) {
                       setSelectedIds((prev) => [...prev, id]);
@@ -332,7 +337,8 @@ export const RemoveParticipants: FC<{
                   htmlFor={id}
                   className={cn(
                     "w-full select-none",
-                    id === auth.currentUser?.uid && "opacity-50",
+                    (id === auth.currentUser?.uid || id === ownerId) &&
+                      "opacity-50",
                   )}
                 >
                   {name}
