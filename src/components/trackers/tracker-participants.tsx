@@ -22,28 +22,69 @@ import {
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { LoadingSpinner } from "../ui/spinner";
 
-export const APIParticipantsResponse = z.object({
+export const APIPostParticipantsResponse = z.object({
   message: z.string(),
   participants: z.array(z.string()),
 });
-export type APIParticipantsResponse = z.infer<typeof APIParticipantsResponse>;
+export type APIPostParticipantsResponse = z.infer<
+  typeof APIPostParticipantsResponse
+>;
+
+export const APIGetParticipantsResponse = z.object({
+  participants: z.array(TrackerUser),
+});
+export type APIGetParticipantsResponse = z.infer<
+  typeof APIGetParticipantsResponse
+>;
 
 interface Props {
-  participants: TrackerUser[];
+  trackerId: string;
 }
 
-export const TrackerParticipants: FC<Props> = ({ participants }) => {
-  if (participants.length === 0) {
-    return <span>No participants</span>;
-  }
+export const TrackerParticipants: FC<Props> = ({ trackerId }) => {
+  const auth = useAuth();
+
+  const { status, data } = useQuery({
+    queryKey: ["tracker-participants", trackerId],
+    queryFn: async () => {
+      const res = await fetch(
+        `${
+          import.meta.env.VITE_ACCESS_API_URL
+        }/api/trackers/participants/${trackerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const data = await res.json();
+      const participants = APIGetParticipantsResponse.safeParse(data);
+
+      if (!participants.success) {
+        throw new Error(participants.error.message);
+      }
+
+      return participants.data.participants;
+    },
+  });
 
   return (
     <ScrollArea className="w-full whitespace-nowrap rounded-sm border-2 border-primary py-2">
-      <ul className="grid w-max grid-flow-col-dense grid-rows-2 gap-2 px-2">
-        {participants.map(({ id, name }) => (
-          <ParticipantItem key={`Participant item ${id}`} name={name} />
-        ))}
-      </ul>
+      {status === "loading" ? (
+        <div className="flex h-full w-full items-center justify-center">
+          <LoadingSpinner size="small" />
+        </div>
+      ) : data ? (
+        <ul className="grid w-max grid-flow-col-dense grid-rows-2 gap-2 px-2">
+          {data.map(({ id, name }) => (
+            <ParticipantItem key={`Participant item ${id}`} name={name} />
+          ))}
+        </ul>
+      ) : (
+        <span>Failed to fetch participants</span>
+      )}
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
@@ -59,7 +100,7 @@ export const ParticipantItem: FC<{ name: string }> = ({ name }) => {
 
 export const AddParticipants: FC<{
   trackerId: string;
-  participants: TrackerUser[];
+  participants: string[];
 }> = ({ trackerId, participants }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -99,6 +140,7 @@ export const AddParticipants: FC<{
     onError: (error) => {
       toast.error(error.message);
     },
+    enabled: dialogOpen,
   });
 
   const { status: mutationStatus, mutate } = useMutation<string[], Error>(
@@ -122,7 +164,7 @@ export const AddParticipants: FC<{
       }
 
       const data = await res.json();
-      const response = APIParticipantsResponse.safeParse(data);
+      const response = APIPostParticipantsResponse.safeParse(data);
 
       if (!response.success) {
         throw new Error(response.error.message);
@@ -135,6 +177,7 @@ export const AddParticipants: FC<{
         toast.success("Participants added successfully");
         queryClient.invalidateQueries(["tracker", trackerId]);
         queryClient.invalidateQueries(["tracker-lapses", trackerId]);
+        queryClient.invalidateQueries(["tracker-participants", trackerId]);
         setSelectedIds([]);
         setDialogOpen(false);
       },
@@ -153,7 +196,7 @@ export const AddParticipants: FC<{
   };
 
   const filteredMembers = data?.filter(
-    ({ id }) => !participants.some((p) => p.id === id),
+    ({ id }) => !participants.some((pUid) => pUid === id),
   );
 
   return (
@@ -231,10 +274,12 @@ export const AddParticipants: FC<{
     </Dialog>
   );
 };
+
+// Unusable due to rate limits, way too expensive.
 export const RemoveParticipants: FC<{
   trackerId: string;
   ownerId: string;
-  participants: TrackerUser[];
+  participants: string[];
 }> = ({ trackerId, ownerId, participants }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -263,7 +308,7 @@ export const RemoveParticipants: FC<{
       }
 
       const data = await res.json();
-      const response = APIParticipantsResponse.safeParse(data);
+      const response = APIPostParticipantsResponse.safeParse(data);
 
       if (!response.success) {
         throw new Error(response.error.message);
@@ -313,35 +358,35 @@ export const RemoveParticipants: FC<{
         </DialogHeader>
         <ScrollArea>
           <ul className="flex flex-col gap-1 p-2 text-lg">
-            {participants.map(({ id, name }) => (
+            {participants.map((pUid) => (
               <li
-                key={`User ${id}`}
+                key={`User ${pUid}`}
                 className={cn(
                   "flex items-center gap-2 rounded-sm px-2 py-1 transition-colors",
-                  selectedIds.includes(id) && "bg-secondary-16",
+                  selectedIds.includes(pUid) && "bg-secondary-16",
                 )}
               >
                 <Checkbox
-                  id={id}
-                  disabled={id === auth.currentUser?.uid || id === ownerId}
+                  id={pUid}
+                  disabled={pUid === auth.currentUser?.uid || pUid === ownerId}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      setSelectedIds((prev) => [...prev, id]);
+                      setSelectedIds((prev) => [...prev, pUid]);
                     } else {
-                      setSelectedIds((prev) => prev.filter((i) => i !== id));
+                      setSelectedIds((prev) => prev.filter((i) => i !== pUid));
                     }
                   }}
                   className="border-secondary data-[state=checked]:bg-secondary"
                 />
                 <label
-                  htmlFor={id}
+                  htmlFor={pUid}
                   className={cn(
                     "w-full select-none",
-                    (id === auth.currentUser?.uid || id === ownerId) &&
+                    (pUid === auth.currentUser?.uid || pUid === ownerId) &&
                       "opacity-50",
                   )}
                 >
-                  {name}
+                  Unknown
                 </label>
               </li>
             ))}

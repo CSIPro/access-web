@@ -37,10 +37,14 @@ export const Tracker = z.object({
   resetAt: SerializedTimestamp.optional(),
   roomId: z.string(),
   timeReference: SerializedTimestamp,
-  creator: TrackerUser,
-  updatedBy: TrackerUser,
-  resetBy: TrackerUser,
-  participants: z.array(TrackerUser).optional().default([]),
+  creator: TrackerUser.optional(),
+  updatedBy: TrackerUser.optional(),
+  resetBy: TrackerUser.optional(),
+  resetById: z.string(),
+  createdById: z.string(),
+  updatedById: z.string(),
+  participants: z.array(z.string()).default([]),
+  participantsData: z.array(TrackerUser).optional().default([]),
   record: z.number().optional().nullable(),
   color: z.string().optional(),
 });
@@ -63,7 +67,9 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
     queryKey: ["tracker", trackerId],
     queryFn: async () => {
       const res = await fetch(
-        `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/${trackerId}`,
+        `${
+          import.meta.env.VITE_ACCESS_API_URL
+        }/api/trackers/${trackerId}?include=resetBy`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -231,7 +237,9 @@ export const TrackerInfo: FC<{ tracker: Tracker }> = ({ tracker }) => {
       <div className="flex w-full items-stretch gap-1 text-sm">
         <div className="flex items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
           <BiReset />
-          <p className="line-clamp-1">{tracker.resetBy.name}</p>
+          <p className="line-clamp-1">
+            {tracker.resetBy?.name ?? tracker.resetById}
+          </p>
         </div>
         <div className="flex items-center gap-1 rounded-sm bg-primary-24 p-1 px-2">
           <FaStar />

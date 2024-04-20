@@ -17,7 +17,14 @@ import App from "./App.tsx";
 import "./index.css";
 import { firebaseConfig } from "./firebase.ts";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 const firebase = initializeApp(firebaseConfig);
 const analytics = getAnalytics(firebase);

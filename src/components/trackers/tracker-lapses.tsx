@@ -11,7 +11,6 @@ import { z } from "zod";
 import { formatRecord } from "@/lib/utils";
 
 import { SerializedTimestamp, TrackerUser } from "./tracker-item";
-import { TrackerParticipants } from "./tracker-participants";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -31,7 +30,7 @@ export const TrackerLapse = z.object({
   message: z.string().optional(),
   changeType: z.enum(["add", "reset", "edit", "delete", "rollback"]),
   payload: z.object({
-    participants: z.array(TrackerUser).optional(),
+    participants: z.array(z.string()).optional(),
     record: z.number().optional().nullable(),
     resetAt: SerializedTimestamp.optional(),
     timeReference: SerializedTimestamp.optional(),
@@ -40,7 +39,7 @@ export const TrackerLapse = z.object({
   }),
   previousState: z
     .object({
-      participants: z.array(TrackerUser).optional(),
+      participants: z.array(z.string()).optional(),
       record: z.number().optional().nullable(),
       resetAt: SerializedTimestamp.optional(),
       timeReference: SerializedTimestamp.optional(),
@@ -96,7 +95,11 @@ export const TrackerLapses: FC<Props> = ({ trackerId }) => {
   return (
     <ScrollArea className="rounded-sm border-2 border-primary">
       <div className="flex w-full items-start p-2 py-4">
-        {status === "loading" && <LoadingSpinner size="small" />}
+        {status === "loading" && (
+          <div className="flex h-full w-full items-center justify-center">
+            <LoadingSpinner size="small" />
+          </div>
+        )}
         {data?.map((lapse) => (
           <TrackerLapseItem key={lapse.id} lapse={lapse} />
         ))}
@@ -263,17 +266,11 @@ const LapseDetails: FC<{ lapse: TrackerLapse; onSubmit: () => void }> = ({
             <h2 className="self-start font-medium text-violet-300">
               Participants
             </h2>
-            <TrackerParticipants participants={lapse.payload.participants} />
-            <IoArrowDown />
-            {lapse.previousState.participants ? (
-              <TrackerParticipants
-                participants={lapse.previousState?.participants}
-              />
-            ) : (
-              <span className="rounded-sm border-2 border-primary bg-muted px-2 py-1">
-                N/A
-              </span>
-            )}
+            <p className="text-center">
+              There were changes to participants in this time lapse, but this
+              app doesn&apos;t show participant diffs due to it being
+              computationally expensive.
+            </p>
           </div>
         ) : null}
         <Button

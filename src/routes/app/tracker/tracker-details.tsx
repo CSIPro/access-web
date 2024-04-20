@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { Timestamp } from "firebase/firestore";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { BiEditAlt, BiReset } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 import { IoPerson, IoTime } from "react-icons/io5";
@@ -16,10 +16,10 @@ import {
 import { TrackerLapses } from "@/components/trackers/tracker-lapses";
 import {
   AddParticipants,
-  RemoveParticipants,
   TrackerParticipants,
 } from "@/components/trackers/tracker-participants";
 import { BrandingHeader } from "@/components/ui/branding-header";
+import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { RoleContext } from "@/context/role-context";
 import { UserContext } from "@/context/user-context";
@@ -27,6 +27,9 @@ import { findRole, formatRecord } from "@/lib/utils";
 
 export const TrackerDetails = () => {
   const params = useParams();
+
+  const [showParticipants, setShowParticipants] = useState(false);
+  const [showLapses, setShowLapses] = useState(false);
 
   const roleCtx = useContext(RoleContext);
   const userCtx = useContext(UserContext);
@@ -38,7 +41,7 @@ export const TrackerDetails = () => {
       const res = await fetch(
         `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/${
           params.trackerId
-        }`,
+        }?include=resetBy,updatedBy,creator`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -78,8 +81,7 @@ export const TrackerDetails = () => {
 
   const userRole = findRole(userCtx.user?.role, roleCtx.roles);
   const hasPrivileges =
-    (auth.currentUser?.uid === data.creator.id ?? false) ||
-    (userRole?.level ?? 0) >= 40;
+    auth.currentUser?.uid === data.createdById || (userRole?.level ?? 0) >= 40;
 
   const creationDate = new Timestamp(
     data.createdAt._seconds,
@@ -132,7 +134,7 @@ export const TrackerDetails = () => {
                 <IoPerson />
                 <span>Created by</span>
               </div>
-              <span>{data.creator.name}</span>
+              <span>{data.creator?.name ?? "Unknown"}</span>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-primary bg-primary-08 px-2 py-1">
               <div className="flex items-center justify-center gap-1">
@@ -146,7 +148,7 @@ export const TrackerDetails = () => {
                 <BiReset />
                 <span>Reset by</span>
               </div>
-              <span>{data.resetBy.name}</span>
+              <span>{data.resetBy?.name ?? "Unknown"}</span>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-primary bg-primary-08 px-2 py-1">
               <div className="flex items-center justify-center gap-1">
@@ -160,7 +162,7 @@ export const TrackerDetails = () => {
                 <BiEditAlt />
                 <span>Updated by</span>
               </div>
-              <span>{data.updatedBy.name}</span>
+              <span>{data.updatedBy?.name ?? "Unknown"}</span>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-primary bg-primary-08 px-2 py-1">
               <div className="flex items-center justify-center gap-1">
@@ -170,26 +172,47 @@ export const TrackerDetails = () => {
               <span>{formattedUpdateDate}</span>
             </div>
           </div>
-          <BrandingHeader highlight="Trackers">Time</BrandingHeader>
-          <p className="">
-            Admins and moderators also have access to this tracker.
-          </p>
-          <TrackerParticipants participants={data.participants} />
-          {hasPrivileges && (
-            <div className="flex gap-2">
-              <AddParticipants
-                trackerId={data.id}
-                participants={data.participants}
-              />
-              <RemoveParticipants
-                trackerId={data.id}
-                ownerId={data.creator.id}
-                participants={data.participants}
-              />
-            </div>
+          {hasPrivileges ? (
+            <>
+              <BrandingHeader highlight="Trackers">Time</BrandingHeader>
+              {showParticipants ? (
+                <>
+                  <p className="">
+                    Admins and moderators also have access to this tracker.
+                  </p>
+                  <TrackerParticipants trackerId={data.id} />
+                  <div className="flex gap-2">
+                    <AddParticipants
+                      trackerId={data.id}
+                      participants={data.participants}
+                    />
+                  </div>
+                </>
+              ) : (
+                <Button
+                  onClick={() => setShowParticipants(true)}
+                  className="bg-primary hover:bg-primary hover:brightness-110 focus:bg-primary focus:brightness-110 active:bg-primary active:brightness-110"
+                >
+                  Load participants
+                </Button>
+              )}
+              <BrandingHeader highlight="Lapses">Time</BrandingHeader>
+              {showLapses ? (
+                <TrackerLapses trackerId={data.id} />
+              ) : (
+                <Button
+                  onClick={() => setShowLapses(true)}
+                  className="bg-primary hover:bg-primary hover:brightness-110 focus:bg-primary focus:brightness-110 active:bg-primary active:brightness-110"
+                >
+                  Load time lapses
+                </Button>
+              )}
+            </>
+          ) : (
+            <p className="text-center">
+              Some features have been disabled due to their computational cost
+            </p>
           )}
-          <BrandingHeader highlight="Lapses">Time</BrandingHeader>
-          <TrackerLapses trackerId={data.id} />
         </div>
         <div className="h-[50vh]"></div>
       </div>
