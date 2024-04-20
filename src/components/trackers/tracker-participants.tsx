@@ -213,7 +213,7 @@ export const AddParticipants: FC<{
         setSelectedIds([]);
         setDialogOpen(false);
       },
-      onError: (error) => {
+      onError: (_) => {
         setDialogOpen(false);
       },
     },
