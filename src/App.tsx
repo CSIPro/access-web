@@ -92,6 +92,7 @@ function App() {
           },
           style: {
             backgroundColor: "#0d0d0d",
+            color: "white",
           },
         }}
       />
