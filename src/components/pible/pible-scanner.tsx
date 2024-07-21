@@ -52,13 +52,13 @@ export const PibleScanner = () => {
       >
         <img src="/images/access-logo.svg" alt="Logo de CSI PRO Access" />
       </Button>
-      <div className="relative flex h-16 w-full items-center justify-between gap-24 overflow-hidden rounded-full border-2 border-primary bg-primary-32 px-2">
-        <div className="absolute left-0 top-0 h-full w-full bg-black bg-opacity-20 backdrop-blur-sm"></div>
-        <div></div>
-        <div className="">
+      <div className="relative flex h-16 w-full items-center justify-between gap-24 overflow-hidden rounded-full border-2 border-primary bg-primary/30 px-2">
+        <div className="absolute left-0 top-0 h-full w-full bg-muted/20 backdrop-blur-sm"></div>
+        <div className="flex-shrink-0 flex-grow basis-1/3"></div>
+        <div className="flex-shrink-0 flex-grow basis-1/3">
           <RoomSelector
             compact
-            className="rounded-full border-2 border-primary bg-primary-48 backdrop-blur-sm"
+            className="rounded-full border-2 border-primary bg-primary/40 backdrop-blur-sm"
           />
         </div>
       </div>
