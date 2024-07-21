@@ -7,10 +7,13 @@ import {
   where,
 } from "firebase/firestore";
 import { useContext } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import * as z from "zod";
 
-import { RoomContext } from "@/context/room-context";
+import { RoomContext, useRoomContext } from "@/context/room-context";
+import { firebaseAuth } from "@/firebase";
+import { BASE_API_URL, NestError } from "@/lib/utils";
 
 const logSchema = z.object({
   accessed: z.boolean(),
@@ -196,4 +199,103 @@ export const useUserFailedLogs = () => {
   const successfulLogs = logsData?.filter((log) => !log.accessed);
 
   return { status: logsStatus, logs: successfulLogs };
+};
+
+export const NestAccessType = z.enum(["keypad", "mobile", "webapp"]);
+
+export const NestLog = z.object({
+  id: z.string(),
+  userId: z.string().nullable(),
+  roomId: z.string(),
+  accessed: z.boolean(),
+  wireless: z.boolean(),
+  accessType: NestAccessType,
+  attempt: z
+    .object({ csiId: z.string(), passcode: z.string() })
+    .optional()
+    .nullable(),
+  createdAt: z.string().datetime(),
+  user: z
+    .object({
+      id: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+      dateOfBirth: z.string().date(),
+    })
+    .optional()
+    .nullable(),
+});
+
+export type NestLog = z.infer<typeof NestLog>;
+
+export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
+  const { selectedRoom } = useRoomContext();
+
+  const logsQuery = useQuery({
+    queryKey: ["logs", selectedRoom, limitTo],
+    queryFn: async () => {
+      const res = await fetch(
+        `${BASE_API_URL}/access-logs/room/${selectedRoom}/?limit=${limitTo}`,
+      );
+
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(await res.json());
+
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        }
+
+        throw new Error("An error occurred while fetching logs");
+      }
+
+      const resData = await res.json();
+      const logsParse = NestLog.array().safeParse(resData);
+
+      if (!logsParse.success) {
+        throw new Error("An error occurred while parsing logs");
+      }
+
+      return logsParse.data;
+    },
+    refetchInterval: 10000,
+  });
+
+  return logsQuery;
+};
+
+export const useLogActions = (id: string) => {
+  const queryClient = useQueryClient();
+  const authUser = firebaseAuth.currentUser;
+
+  const deleteLog = useMutation(async () => {
+    if (!authUser) {
+      throw new Error("You don't seem to be logged in...");
+    }
+
+    const token = await authUser.getIdToken();
+
+    const res = await fetch(`${BASE_API_URL}/access-logs/delete-log/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const errorParse = NestError.safeParse(data);
+
+      if (errorParse.success) {
+        throw new Error(errorParse.data.message);
+      }
+
+      throw new Error("Something went wrong while deleting the log");
+    }
+
+    queryClient.invalidateQueries(["logs"]);
+  });
+
+  return { deleteLog };
 };

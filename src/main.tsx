@@ -1,7 +1,3 @@
-import { getAnalytics } from "firebase/analytics";
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -15,28 +11,23 @@ import {
 
 import App from "./App.tsx";
 import "./index.css";
-import { firebaseConfig } from "./firebase.ts";
+import { analytics, firebase, firebaseAuth, firestore } from "./firebase.ts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       retry: false,
     },
   },
 });
-
-const firebase = initializeApp(firebaseConfig);
-const analytics = getAnalytics(firebase);
-const auth = getAuth(firebase);
-const firestore = getFirestore(firebase);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <FirebaseAppProvider firebaseApp={firebase}>
         <AnalyticsProvider sdk={analytics}>
-          <AuthProvider sdk={auth}>
+          <AuthProvider sdk={firebaseAuth}>
             <FirestoreProvider sdk={firestore}>
               <App />
             </FirestoreProvider>

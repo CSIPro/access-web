@@ -15,6 +15,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const BASE_API_URL = import.meta.env.VITE_ACCESS_API_URL;
+
+export const NestError = z.object({
+  statusCode: z.number(),
+  message: z.string(),
+});
+
+export type NestError = z.infer<typeof NestError>;
+
 export const findRole = (
   userRole: z.infer<typeof userRoomRoleSchema> | undefined,
   roles: z.infer<typeof roleSchema>[] | undefined,
