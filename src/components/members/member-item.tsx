@@ -1,62 +1,76 @@
-import { updateDoc } from "firebase/firestore";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState } from "react";
 
-import { useUserDataWithId, useUserRoleWithId } from "@/hooks/use-user-data";
-import { cn } from "@/lib/utils";
+import { useUserContext } from "@/context/user-context";
+import { Member, useMemberActions } from "@/hooks/use-room-members";
+import { useNestUser } from "@/hooks/use-user-data";
+import { cn, formatUserName } from "@/lib/utils";
 
 import { LoadingSpinner } from "../ui/spinner";
 import { Switch } from "../ui/switch";
 
 interface Props {
-  uid?: string;
+  member: Member;
 }
 
-export const MemberItem: FC<Props> = ({ uid = "invalid" }) => {
-  const { status: userStatus, data: userData } = useUserDataWithId(uid);
-  const {
-    status: userRoleStatus,
-    doc: userRoleDoc,
-    data: userRoleData,
-  } = useUserRoleWithId(uid);
+export const MemberItem: FC<Props> = ({ member }) => {
+  const { user, membership } = useUserContext();
 
-  const handleAccessChange = (access: boolean) => {
-    if (!userRoleDoc) {
-      return;
+  const [localAccess, setLocalAccess] = useState(member.canAccess);
+
+  const memberQuery = useNestUser(member.user.id);
+  const { accessUpdate } = useMemberActions(member.user.id!);
+
+  if (memberQuery.status === "loading") {
+    return (
+      <li className="flex w-full items-center justify-center gap-2 p-2">
+        <LoadingSpinner />
+      </li>
+    );
+  }
+
+  if (memberQuery.status === "error") {
+    return (
+      <li className="flex w-full items-center justify-center gap-2 p-2">
+        <p>Error al cargar el usuario</p>
+      </li>
+    );
+  }
+
+  const canSetAccess =
+    user!.isRoot ||
+    (membership!.role.canManageAccess &&
+      membership!.role.level! > member.role.level!);
+  const canManageRoles =
+    user!.isRoot ||
+    (membership!.role.canManageRoles &&
+      membership!.role.level! > member.role.level!);
+
+  const handleUpdateAccess = async (value: boolean) => {
+    if (!canSetAccess) return;
+
+    try {
+      setLocalAccess(value);
+      accessUpdate.mutate(value);
+    } catch (error) {
+      setLocalAccess(!value);
+      console.error(error);
     }
-
-    updateDoc(userRoleDoc, { accessGranted: access });
   };
 
-  if (userStatus === "loading" || userRoleStatus === "loading") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <LoadingSpinner onBackground />
-      </div>
-    );
-  }
-
-  if (userStatus === "error" || userRoleStatus === "error") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        Something went wrong
-      </div>
-    );
-  }
-
-  const hasAccess = userRoleData?.accessGranted ?? false;
+  const memberName = formatUserName(member.user);
 
   return (
     <li
       className={cn(
         "flex w-full items-center justify-between gap-2 rounded-sm border-2 border-primary bg-primary-32 p-2 transition-colors duration-300",
-        !hasAccess && "border-secondary bg-secondary-32",
+        !localAccess && "border-secondary bg-secondary-32",
       )}
     >
-      <MemberName>{userData?.name}</MemberName>
+      <MemberName>{memberName}</MemberName>
       <MemberAccess
-        uid={uid}
-        access={hasAccess}
-        setAccess={handleAccessChange}
+        accessGranted={localAccess}
+        setAccess={handleUpdateAccess}
+        disabled={!canSetAccess}
       />
     </li>
   );
@@ -75,17 +89,21 @@ const MemberName = ({ children }: { children: ReactNode }) => {
 };
 
 interface MemberAccessProps {
-  uid: string;
-  access: boolean;
-  setAccess: (access: boolean) => void;
+  accessGranted?: boolean;
+  setAccess: (value: boolean) => void;
+  disabled?: boolean;
 }
 
-const MemberAccess: FC<MemberAccessProps> = ({ uid, access, setAccess }) => {
+const MemberAccess: FC<MemberAccessProps> = ({
+  accessGranted,
+  setAccess,
+  disabled,
+}) => {
   return (
     <Switch
-      id={`${uid} access switch`}
-      checked={access}
-      onCheckedChange={setAccess}
+      checked={accessGranted}
+      onCheckedChange={disabled ? () => {} : setAccess}
+      disabled={disabled}
       className="data-[state=unchecked]:bg-secondary"
     />
   );

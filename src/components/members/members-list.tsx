@@ -1,38 +1,17 @@
 import { FC } from "react";
 
-import { useRoomMembersByRole } from "@/hooks/use-room-members";
+import { Member } from "@/hooks/use-room-members";
 
 import { MemberItem } from "./member-item";
-import { LoadingSpinner } from "../ui/spinner";
 
 interface Props {
-  roleId: string;
+  members: Array<Member>;
 }
 
-export const MembersList: FC<Props> = ({ roleId }) => {
-  const { status, data } = useRoomMembersByRole(roleId);
-
-  if (status === "loading") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <LoadingSpinner onBackground />
-      </div>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        Something went wrong
-      </div>
-    );
-  }
-
-  const members = data?.docs.map((member) => member.ref.parent.parent?.id);
-
+export const MembersList: FC<Props> = ({ members }) => {
   return (
     <ul className="flex w-full flex-col gap-1">
-      {members?.map((uid) => <MemberItem key={uid} uid={uid} />)}
+      {members?.map((member) => <MemberItem key={member.id} member={member} />)}
     </ul>
   );
 };

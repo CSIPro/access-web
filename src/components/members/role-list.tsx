@@ -1,12 +1,10 @@
-import { useContext } from "react";
-
-import { RoleContext } from "@/context/role-context";
+import { useNestMembersByRole } from "@/hooks/use-room-members";
 
 import { MembersList } from "./members-list";
 import { LoadingSpinner } from "../ui/spinner";
 
 export const RoleList = () => {
-  const { status, roles } = useContext(RoleContext);
+  const { status, data } = useNestMembersByRole();
 
   if (status === "loading") {
     return (
@@ -19,19 +17,19 @@ export const RoleList = () => {
   if (status === "error") {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        Something went wrong
+        No fue posible conectar con el servidor
       </div>
     );
   }
 
   return (
     <div className="flex w-full flex-col gap-2">
-      {roles?.map((role) => (
-        <div key={role.id} className="flex w-full flex-col gap-2">
+      {data?.map((role) => (
+        <div key={role.key} className="flex w-full flex-col gap-2">
           <h2 className="w-full rounded-sm bg-primary p-2 text-center">
-            {role.name}
+            {role.title}
           </h2>
-          <MembersList roleId={role.id} />
+          <MembersList members={role.data} />
         </div>
       ))}
     </div>
