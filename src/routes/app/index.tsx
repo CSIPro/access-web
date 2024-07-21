@@ -5,7 +5,7 @@ import { PibleScanner } from "@/components/pible/pible-scanner";
 export const AppIndex = () => {
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
-      <Header title="Home" />
+      <Header title="Inicio" />
       <main className="flex h-full w-full flex-col items-center gap-2 p-2">
         <Dashboard />
         <div className="h-64" />

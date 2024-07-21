@@ -51,5 +51,5 @@ export const AuthCallback = () => {
     }
   }, [handleGitHubCallback]);
 
-  return <Splash loading message="Authenticating..." />;
+  return <Splash loading message="Autenticando..." />;
 };

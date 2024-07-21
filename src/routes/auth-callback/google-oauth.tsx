@@ -17,12 +17,12 @@ export const GoogleOAuth = () => {
     try {
       const result = await getRedirectResult(auth);
       if (!result) {
-        throw new Error("Unable to sign in with Google");
+        throw new Error("No fue posible iniciar sesión con Google");
       }
 
       const credential = GoogleAuthProvider.credentialFromResult(result);
       if (!credential) {
-        throw new Error("Unable to sign in with Google");
+        throw new Error("No fue posible iniciar sesión con Google");
       }
 
       await signInWithCredential(auth, credential);
@@ -37,5 +37,5 @@ export const GoogleOAuth = () => {
     void handleGoogleCallback();
   }, [handleGoogleCallback]);
 
-  return <Splash loading message="Authenticating..." />;
+  return <Splash loading message="Autenticando..." />;
 };

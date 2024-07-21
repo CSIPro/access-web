@@ -35,7 +35,7 @@ export const AuthButton: FC<Props> = ({ provider, ...rest }) => {
         const result = await signInWithPopup(auth, google);
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (!credential) {
-          toast.error("Unable to sign in with Google");
+          toast.error("No fue posible autenticar con Google");
           return;
         }
       },
@@ -55,7 +55,7 @@ export const AuthButton: FC<Props> = ({ provider, ...rest }) => {
         width={24}
         className="absolute left-4 top-1/2 -translate-y-1/2 transform"
       />
-      {`Sign in with ${providers[provider].name}`}
+      {`Iniciar sesión con ${providers[provider].name}`}
     </Button>
   );
 };

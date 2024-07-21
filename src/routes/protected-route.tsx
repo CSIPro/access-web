@@ -1,38 +1,32 @@
-import { doc } from "firebase/firestore";
 import { FC, ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useFirestore, useFirestoreDocData } from "reactfire";
 
 import { Splash } from "@/components/splash/splash";
+import { useNestUser } from "@/hooks/use-user-data";
 
 interface Props {
   isAuthenticated: boolean;
-  userUid?: string;
   redirectPath?: string;
   children?: ReactNode;
 }
 
 export const AuthedRoute: FC<Props> = ({
   isAuthenticated,
-  userUid = "invalid",
   redirectPath = "/login",
   children,
 }) => {
-  const firestore = useFirestore();
-  const { status, data, error } = useFirestoreDocData(
-    doc(firestore, "users", `${userUid}`),
-  );
+  const { status, data, error } = useNestUser();
 
   if (!isAuthenticated) {
     return <Navigate to={redirectPath} replace />;
   }
 
   if (status === "loading") {
-    return <Splash loading />;
+    return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 
   if (error) {
-    return <Splash message="Error connecting to the Firestore database" />;
+    return <Splash message="No fue posible conectar con el servidor" />;
   }
 
   if (!data) {
@@ -45,24 +39,20 @@ export const AuthedRoute: FC<Props> = ({
 export const UnauthedRoute: FC<Props> = ({
   isAuthenticated,
   redirectPath = "/",
-  userUid = "invalid",
   children,
 }) => {
-  const firestore = useFirestore();
-  const { status, data, error } = useFirestoreDocData(
-    doc(firestore, "users", `${userUid}`),
-  );
+  const { status, data, error } = useNestUser();
 
   if (isAuthenticated) {
     return <Navigate to={redirectPath} replace />;
   }
 
   if (status === "loading") {
-    return <Splash loading />;
+    return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 
   if (error) {
-    return <Splash message="Error connecting to the Firestore database" />;
+    return <Splash message="No fue posible conectar con el servidor" />;
   }
 
   if (data) {

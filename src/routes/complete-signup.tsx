@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "reactfire";
 
 import { SignupForm } from "@/components/signup/signup-form";
 import { Button } from "@/components/ui/button";
+import { firebaseAuth } from "@/firebase";
 
 export const CompleteSignup = () => {
   const navigate = useNavigate();
-  const auth = useAuth();
+  const auth = firebaseAuth;
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -19,7 +19,7 @@ export const CompleteSignup = () => {
         CSI PRO{" "}
         <span className="bg-white px-2 font-bold text-muted">ACCESS</span>
       </h1>
-      <h2 className="text-xl">Complete the sign up process</h2>
+      <h2 className="text-xl">Termina el proceso de registro</h2>
       <SignupForm />
       <div className="w-full px-4">
         <Button
@@ -27,7 +27,7 @@ export const CompleteSignup = () => {
           onClick={handleSignOut}
           className="w-full"
         >
-          Log out
+          Salir
         </Button>
       </div>
     </div>

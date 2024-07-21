@@ -29,7 +29,9 @@ function App() {
   }
 
   if (status === "error") {
-    return <Splash message={error?.message ?? "Something went wrong"} />;
+    return (
+      <Splash message={error?.message ?? "No pareces estar autenticado"} />
+    );
   }
 
   return (
@@ -38,12 +40,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={
-              <AuthedRoute
-                isAuthenticated={data.signedIn}
-                userUid={data.user?.uid}
-              />
-            }
+            element={<AuthedRoute isAuthenticated={data.signedIn} />}
           >
             <Route path="/" element={<Navigate to="/app" replace />} />
             <Route

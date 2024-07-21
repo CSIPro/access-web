@@ -1,9 +1,11 @@
-import { BluetoothAttempts } from "./dash-bubbles/bluetooth";
-import { FailedAttempts } from "./dash-bubbles/failed";
-import { SuccessfulAttempts } from "./dash-bubbles/successful";
-import { UserFailedAttempts } from "./dash-bubbles/user-failed";
-import { UserSuccessfulAttempts } from "./dash-bubbles/user-successful";
-import { UserWirelessAttempts } from "./dash-bubbles/user-wireless";
+import { useRoomStats } from "@/hooks/use-room-stats";
+import { useUserStats } from "@/hooks/use-user-stats";
+
+import {
+  BluetoothAttempts,
+  FailedAttempts,
+  SuccessfulAttempts,
+} from "./dash-bubbles/stats-item";
 import { AccessLogs } from "../access-logs/access-logs";
 import { BrandingHeader } from "../ui/branding-header";
 
@@ -16,13 +18,7 @@ export const Dashboard = () => {
       >
         ROOM
       </BrandingHeader>
-      <div className="flex w-full gap-2">
-        <SuccessfulAttempts />
-        <div className="flex flex-col gap-2">
-          <BluetoothAttempts />
-          <FailedAttempts />
-        </div>
-      </div>
+      <RoomStats />
       <div className="w-full rounded-md border-2 border-primary p-1">
         <AccessLogs limit={3} />
       </div>
@@ -32,13 +28,35 @@ export const Dashboard = () => {
       >
         PERSONAL
       </BrandingHeader>
-      <div className="flex w-full gap-2">
-        <div className="flex flex-col gap-2">
-          <UserWirelessAttempts />
-          <UserFailedAttempts />
-        </div>
-        <UserSuccessfulAttempts />
+      <PersonalStats />
+    </div>
+  );
+};
+
+const RoomStats = () => {
+  const { data: stats } = useRoomStats();
+
+  return (
+    <div className="flex w-full gap-2">
+      <SuccessfulAttempts value={stats?.successful} />
+      <div className="flex flex-col gap-2">
+        <BluetoothAttempts value={stats?.wireless} />
+        <FailedAttempts value={stats?.failed} />
       </div>
+    </div>
+  );
+};
+
+const PersonalStats = () => {
+  const { data: stats } = useUserStats();
+
+  return (
+    <div className="flex w-full gap-2">
+      <div className="flex flex-col gap-2">
+        <BluetoothAttempts value={stats?.wireless} />
+        <FailedAttempts value={stats?.failed} />
+      </div>
+      <SuccessfulAttempts value={stats?.successful} />
     </div>
   );
 };

@@ -46,5 +46,5 @@ export const GithubLink = () => {
     return <Navigate to="/" replace />;
   }
 
-  return <Splash loading message="Verifying..." />;
+  return <Splash loading message="Verificando..." />;
 };
