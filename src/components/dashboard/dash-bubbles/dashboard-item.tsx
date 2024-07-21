@@ -3,9 +3,9 @@ import { FC, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const colors = {
-  primary: "bg-primary-16 border-primary border-2",
-  secondary: "bg-secondary-16 border-secondary border-2",
-  tertiary: "bg-tertiary-16 border-tertiary border-2",
+  primary: "bg-primary/20 border-primary border-2",
+  secondary: "bg-secondary/20 border-secondary border-2",
+  tertiary: "bg-tertiary/20 border-tertiary border-2",
 };
 
 interface DashboardItemProps {
@@ -17,7 +17,7 @@ export const DashboardItem: FC<DashboardItemProps> = ({ color, children }) => {
   return (
     <div
       className={cn(
-        "flex h-full w-full flex-col items-center justify-center rounded-md border-2 border-muted bg-muted-32 p-6",
+        "flex h-full w-full flex-col items-center justify-center rounded-md border-2 border-muted bg-muted/30 p-6",
         colors[color],
       )}
     >
