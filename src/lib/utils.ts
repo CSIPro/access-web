@@ -4,12 +4,15 @@ import {
   differenceInHours,
   differenceInMinutes,
   differenceInSeconds,
+  format,
 } from "date-fns";
+import { es } from "date-fns/locale";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
 import { roleSchema } from "@/hooks/use-roles";
-import { userRoomRoleSchema } from "@/hooks/use-user-data";
+import { NestRoom } from "@/hooks/use-rooms";
+import { NestUser, userRoomRoleSchema } from "@/hooks/use-user-data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -23,6 +26,29 @@ export const NestError = z.object({
 });
 
 export type NestError = z.infer<typeof NestError>;
+
+export const formatRoomName = (room: NestRoom) => {
+  return `${room.name} (${room.building}${
+    room.roomNumber ? `-${room.roomNumber}` : ""
+  })`;
+};
+
+export const formatUserName = (user: Partial<NestUser>) => {
+  if (user.firstName && user.lastName) {
+    return `${user.firstName} ${user.lastName}`;
+  }
+
+  return "Desconocido";
+};
+
+export const formatBirthday = (date: string) => {
+  const birthday = new Date(date);
+  const offset = birthday.getTimezoneOffset() * 60000;
+
+  const localDate = new Date(birthday.getTime() + offset);
+
+  return format(localDate, "MMMM dd", { locale: es });
+};
 
 export const findRole = (
   userRole: z.infer<typeof userRoomRoleSchema> | undefined,

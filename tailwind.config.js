@@ -125,15 +125,45 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
-        "glow-bg": {
-          from: { backgroundColor: "hsl(var(--primary-08))" },
-          to: { backgroundColor: "hsl(var(--primary-32))" },
+        "flash-success": {
+          "50%": {
+            backgroundColor: "hsl(var(--primary) / 0.5)",
+          },
+        },
+        "flash-wireless": {
+          "50%": {
+            backgroundColor: "hsl(var(--tertiary) / 0.5)",
+          },
+        },
+        "flash-error": {
+          "50%": {
+            backgroundColor: "hsl(var(--secondary) / 0.5)",
+          },
+        },
+        "flash-unknown": {
+          "50%": {
+            backgroundColor: "hsl(var(--accent) / 0.5)",
+          },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        blink: {
+          "50%": { opacity: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "glow-bg": "glow-bg 1500ms infinite alternate ease-in-out",
+        "flash-success-infinite":
+          "flash-success ease-in-out 4s alternate infinite",
+        "flash-success": "flash-success ease-in-out 2s 4 alternate",
+        "flash-wireless": "flash-wireless ease-in-out 2s 4 alternate",
+        "flash-error": "flash-error ease-in-out 2s 4 alternate",
+        "flash-unknown": "flash-unknown ease-in-out 2s 4 alternate",
+        "fade-in": "fade-in 0.6s ease-out",
+        blink: "blink 2s step-start infinite",
       },
     },
   },

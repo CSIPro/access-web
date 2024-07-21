@@ -1,8 +1,9 @@
 import { FC } from "react";
 
-import { useLogs } from "@/hooks/use-logs";
+import { useNestLogs } from "@/hooks/use-logs";
+import { formatUserName } from "@/lib/utils";
 
-import { LogItem } from "./log-item";
+import { LogItem, LogTimestamp, LogTitle } from "./log-item";
 import { LoadingSpinner } from "../ui/spinner";
 
 interface Props {
@@ -10,13 +11,13 @@ interface Props {
 }
 
 export const AccessLogs: FC<Props> = ({ limit }) => {
-  const { status: logsStatus, data: logs } = useLogs({ today: false, limit });
+  const { status: logsStatus, data: logs } = useNestLogs({ limitTo: limit });
 
   if (logsStatus === "loading") {
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />
-        <p>Loading logs...</p>
+        <p>Obteniendo registros...</p>
       </div>
     );
   }
@@ -24,7 +25,7 @@ export const AccessLogs: FC<Props> = ({ limit }) => {
   if (logsStatus === "error") {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center">
-        <p>Something went wrong while retrieving logs</p>
+        <p>No fue posible conectar con el servidor</p>
       </div>
     );
   }
@@ -33,12 +34,17 @@ export const AccessLogs: FC<Props> = ({ limit }) => {
     <ul className="flex w-full flex-col gap-1">
       {logs?.map((log) => (
         <LogItem
-          key={log.timestamp.toMillis()}
-          user={log.user}
+          key={log.id}
+          known={!!log.user}
           accessed={log.accessed}
-          bluetooth={log.bluetooth}
-          timestamp={log.timestamp}
-        />
+          wireless={log.wireless}
+          birthday={log.user?.dateOfBirth}
+        >
+          <LogTitle>
+            {log.user ? formatUserName(log.user) : "Desconocido"}
+          </LogTitle>
+          <LogTimestamp timestamp={log.createdAt} />
+        </LogItem>
       ))}
     </ul>
   );

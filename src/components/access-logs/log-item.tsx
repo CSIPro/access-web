@@ -1,146 +1,108 @@
+import { cva } from "class-variance-authority";
 import { format } from "date-fns";
-import { Timestamp, doc } from "firebase/firestore";
+import { es } from "date-fns/locale";
+import { motion, useTime, useTransform } from "framer-motion";
 import { FC, ReactNode } from "react";
-import { useFirestore, useFirestoreDocData } from "reactfire";
-import * as z from "zod";
 
 import { cn } from "@/lib/utils";
 
+const logVariants = cva(
+  [
+    "flex gap-8 justify-between items-center w-full px-4 py-2 rounded-lg border-2",
+  ],
+  {
+    variants: {
+      procedence: {
+        known: "border-primary bg-primary/20 animate-flash-success",
+        unknown: "border-accent bg-accent/20 animate-flash-unknown",
+        wireless: "border-tertiary bg-tertiary/20 animate-flash-wireless",
+        error: "border-secondary bg-secondary/20 animate-flash-error",
+      },
+    },
+    defaultVariants: {
+      procedence: "known",
+    },
+  },
+);
+
 interface Props {
-  user?: string;
+  known?: boolean;
   accessed?: boolean;
-  bluetooth?: boolean;
-  timestamp: Timestamp;
+  wireless?: boolean;
+  birthday?: string;
+  children: ReactNode;
 }
-
-const baseStyle =
-  "flex w-full items-center justify-between rounded-sm gap-4 p-2 bg-muted-32 border-2 border-muted";
-
-const userSchema = z.object({
-  csiId: z.number(),
-  name: z.string(),
-  passcode: z.string(),
-  unisonId: z.string(),
-  createdAt: z.custom<Timestamp>(),
-  dateOfBirth: z.custom<Timestamp>(),
-});
 
 export const LogItem: FC<Props> = ({
-  user,
+  known = false,
   accessed = false,
-  bluetooth = false,
-  timestamp,
+  wireless = false,
+  birthday,
+  children,
 }) => {
-  if (user) {
+  const procedence = known
+    ? accessed
+      ? wireless
+        ? "wireless"
+        : "known"
+      : "error"
+    : "unknown";
+
+  const baseDate = new Date();
+  const dateOfBirth = known ? new Date(birthday!) : null;
+
+  const isBirthday = dateOfBirth
+    ? dateOfBirth.getDate() === baseDate.getDate() &&
+      dateOfBirth.getMonth() === baseDate.getMonth()
+    : false;
+
+  if (isBirthday) {
     return (
-      <KnownLog
-        accessed={accessed}
-        bluetooth={bluetooth}
-        user={user}
-        timestamp={timestamp}
-      />
+      <BirthdayLog className={logVariants({ procedence })}>
+        {children}
+      </BirthdayLog>
     );
   }
 
-  return <UnknownLog timestamp={timestamp} />;
+  return (
+    <motion.div layout className={logVariants({ procedence })}>
+      {children}
+    </motion.div>
+  );
 };
 
-interface KnownLogProps {
-  accessed: boolean;
-  bluetooth: boolean;
-  user: string;
-  timestamp: Timestamp;
+interface BirthdayLogProps {
+  className?: string;
+  children: ReactNode;
 }
 
-const KnownLog: FC<KnownLogProps> = ({
-  accessed,
-  bluetooth,
-  user,
-  timestamp,
-}) => {
-  const firestore = useFirestore();
-  const userDoc = doc(firestore, "users", user);
-  const { status, data } = useFirestoreDocData(userDoc, {
-    idField: "id",
-  });
+const BirthdayLog: FC<BirthdayLogProps> = ({ children, className }) => {
+  const time = useTime();
+  const rotate = useTransform(time, [0, 6000], [0, 360], { clamp: false });
 
-  if (status === "loading") {
-    return (
-      <li className={cn(baseStyle)}>
-        <span>Loading...</span>
-        <LogTimestamp timestamp={timestamp} />
-      </li>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <li className={cn(baseStyle)}>
-        <span>Error</span>
-        <LogTimestamp timestamp={timestamp} />
-      </li>
-    );
-  }
-
-  const userData = userSchema.parse(data);
-
-  if (accessed && !bluetooth) {
-    return <SuccessLog user={userData} timestamp={timestamp} />;
-  }
-
-  if (accessed && bluetooth) {
-    return <BluetoothLog user={userData} timestamp={timestamp} />;
-  }
-
-  return <FailedLog user={userData} timestamp={timestamp} />;
-};
-
-interface UnknownLogProps {
-  timestamp: Timestamp;
-}
-
-const UnknownLog: FC<UnknownLogProps> = ({ timestamp }) => {
   return (
-    <li className={cn(baseStyle, "border-secondary bg-secondary-16")}>
-      <LogTitle failed>Unknown user</LogTitle>
-      <LogTimestamp failed timestamp={timestamp} />
-    </li>
+    <motion.div
+      layout
+      className={cn("relative flex h-20 overflow-hidden rounded-lg border-0")}
+    >
+      <motion.div
+        style={{ rotate }}
+        className="absolute -left-[50%] -right-[50%] -top-[50vw] aspect-square rounded-lg  bg-[linear-gradient(90deg,rgba(223,0,0,1)_0%,rgba(214,91,0,1)_15%,rgba(233,245,0,1)_30%,rgba(23,255,17,1)45%,rgba(29,255,255,1)_60%,rgba(5,17,255,1)_75%,rgba(202,0,253,1)_90%)] bg-center"
+      ></motion.div>
+      <div className="absolute inset-1.5 rounded-md bg-muted"></div>
+      <div
+        className={cn(
+          className,
+          "absolute inset-1.5 flex w-auto items-center justify-between gap-8 rounded-md border-0 px-4 py-2",
+        )}
+      >
+        {children}
+      </div>
+    </motion.div>
   );
 };
 
-interface KnownProcessedLogProps {
-  user: z.infer<typeof userSchema>;
-  timestamp: Timestamp;
-}
-
-const SuccessLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
-  return (
-    <li className={cn(baseStyle, "border-primary bg-primary-16")}>
-      <LogTitle>{user.name}</LogTitle>
-      <LogTimestamp timestamp={timestamp} />
-    </li>
-  );
-};
-
-const FailedLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
-  return (
-    <li className={cn(baseStyle, "border-secondary bg-secondary-16")}>
-      <LogTitle failed>{user.name}</LogTitle>
-      <LogTimestamp failed timestamp={timestamp} />
-    </li>
-  );
-};
-
-const BluetoothLog: FC<KnownProcessedLogProps> = ({ user, timestamp }) => {
-  return (
-    <li className={cn(baseStyle, "border-tertiary bg-tertiary-16")}>
-      <LogTitle>{user.name}</LogTitle>
-      <LogTimestamp timestamp={timestamp} />
-    </li>
-  );
-};
-
-const LogTitle: FC<{ children: ReactNode; failed?: boolean }> = ({
+export const LogTitle: FC<{ children: ReactNode; failed?: boolean }> = ({
   children,
   failed = false,
 }) => {
@@ -156,19 +118,15 @@ const LogTitle: FC<{ children: ReactNode; failed?: boolean }> = ({
   );
 };
 
-const LogTimestamp: FC<{ timestamp: Timestamp; failed?: boolean }> = ({
-  timestamp,
-  failed = false,
-}) => {
+export const LogTimestamp: FC<{ timestamp: string }> = ({ timestamp }) => {
+  const timestampDate = new Date(timestamp);
+
   return (
-    <div
-      className={cn(
-        "flex flex-col items-end text-sm",
-        failed && "flex-row items-center gap-2",
-      )}
-    >
-      <p>{format(timestamp.toDate(), "HH:mm:ss")}</p>
-      <p className="whitespace-nowrap">{format(timestamp.toDate(), "PPP")}</p>
+    <div className={cn("flex flex-col items-end text-sm")}>
+      <p>{format(timestampDate, "HH:mm:ss", { locale: es })}</p>
+      <p className="whitespace-nowrap">
+        {format(timestampDate, "PPP", { locale: es })}
+      </p>
     </div>
   );
 };
