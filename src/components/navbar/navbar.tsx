@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { LinkProps, Link as RouterLink, useLocation } from "react-router-dom";
-import { z } from "zod";
 
-import { roleSchema } from "@/hooks/use-roles";
+import { NestRole } from "@/hooks/use-roles";
 import { cn } from "@/lib/utils";
 
 import {
@@ -17,7 +16,7 @@ import {
 interface Props {
   orientation?: "horizontal" | "vertical";
   isRoot?: boolean;
-  role?: z.infer<typeof roleSchema>;
+  role?: Partial<NestRole>;
 }
 
 export const Navbar: FC<Props> = ({
@@ -42,26 +41,11 @@ export const Navbar: FC<Props> = ({
             <NavbarLink to="/app/logs">Logs</NavbarLink>
           </NavigationMenuItem>
         )}
-        {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
+        {(role?.canManageAccess || role?.canManageRoles || isRoot) && (
           <NavigationMenuItem>
             <NavbarLink to="/app/members">Members</NavbarLink>
           </NavigationMenuItem>
         )}
-        <NavigationMenuItem>
-          <NavbarLink to="/app/tracker">Trackers</NavbarLink>
-        </NavigationMenuItem>
-        {/* <NavigationMenuItem>
-          <NavbarLink to="/">Access Logs</NavbarLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavbarLink to="/">Rooms</NavbarLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavbarLink to="/">User management</NavbarLink>
-        </NavigationMenuItem> */}
-        <NavigationMenuItem>
-          <NavbarLink to="/app/qr-code">QR Code</NavbarLink>
-        </NavigationMenuItem>
       </NavigationMenuList>
       <NavigationMenuViewport />
     </NavigationMenu>

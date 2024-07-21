@@ -1,12 +1,10 @@
-import { FC, useContext } from "react";
+import { FC } from "react";
 import { BiMenu } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "reactfire";
 
-import { RoleContext } from "@/context/role-context";
-import { UserContext } from "@/context/user-context";
-import { findRole } from "@/lib/utils";
+import { useUserContext } from "@/context/user-context";
 
 import { Navbar } from "../navbar/navbar";
 import { BrandingHeader } from "../ui/branding-header";
@@ -29,8 +27,7 @@ interface Props {
 export const Header: FC<Props> = ({ title, backTo }) => {
   const navigate = useNavigate();
   const auth = useAuth();
-  const userCtx = useContext(UserContext);
-  const roleCtx = useContext(RoleContext);
+  const { user, membership } = useUserContext();
 
   const handleBack = () => {
     if (!backTo) return;
@@ -41,9 +38,6 @@ export const Header: FC<Props> = ({ title, backTo }) => {
   const handleSignOut = () => {
     void auth.signOut();
   };
-
-  const role = findRole(userCtx.user?.role, roleCtx.roles);
-  const isRoot = userCtx.user?.isRoot;
 
   return (
     <Sheet>
@@ -76,7 +70,7 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             <BrandingHeader highlight="ACCESS">CSI PRO</BrandingHeader>
           </Link>
           <h1 className="text-center md:hidden">{title}</h1>
-          <Navbar role={role} isRoot={isRoot} />
+          <Navbar role={membership?.role} isRoot={user?.isRoot} />
           <div className="block flex-grow" />
           <ProfileButton />
         </div>
@@ -98,33 +92,14 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             </SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
-            <Link to="/app">Home</Link>
-            {/* <Link to="/app/dashboard">Dashboard</Link> */}
+            <Link to="/app">Inicio</Link>
             <Link to="/app/logs">Access Logs</Link>
-            {/* {(role?.canReadLogs || isRoot) && (
-              <Link to="/app/qr-code">QR Code</Link>
-            )} */}
-            {(role?.canGrantOrRevokeAccess || role?.canSetRoles || isRoot) && (
-              <Link to="/app/members">Room Members</Link>
-            )}
+            {(membership?.role.canManageAccess ||
+              membership?.role.canManageRoles ||
+              user?.isRoot) && <Link to="/app/members">Room Members</Link>}
           </div>
           <div className="py-2"></div>
-          <SheetHeader>
-            <SheetTitle asChild={true} className="pt-8">
-              <span className="flex items-center gap-2">
-                <img
-                  src="/images/access-logo.svg"
-                  alt="Logo de CSI PRO Access"
-                  width={24}
-                />
-                <BrandingHeader highlight="TRACKER" size="small">
-                  CSI PRO
-                </BrandingHeader>
-              </span>
-            </SheetTitle>
-          </SheetHeader>
           <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
-            <Link to="/app/tracker">Trackers</Link>
             <div className="flex-grow" />
             <Button
               variant="outline"
