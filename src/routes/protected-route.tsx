@@ -25,10 +25,6 @@ export const AuthedRoute: FC<Props> = ({
     return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 
-  if (error) {
-    return <Splash message="No fue posible conectar con el servidor" />;
-  }
-
   if (!data) {
     return <Navigate to="/complete-signup" replace />;
   }
