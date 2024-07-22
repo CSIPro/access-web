@@ -19,7 +19,9 @@ async function onPush(event) {
   }
 }
 
-async function onNotificationClick(event) {
+function onNotificationClick(event) {
+  const notification = event.notification;
+
   const urlToOpen = new URL(self.location.origin).href;
 
   const promiseChain = clients
@@ -43,7 +45,8 @@ async function onNotificationClick(event) {
       } else {
         return clients.openWindow(urlToOpen);
       }
-    });
+    })
+    .then(() => notification.close());
 
   event.waitUntil(promiseChain);
 }
