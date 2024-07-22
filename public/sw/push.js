@@ -11,6 +11,7 @@ async function onPush(event) {
 
     await event.waitUntil(
       self.registration.showNotification(title, {
+        icon: "/favicon.svg",
         ...rest,
       }),
     );
