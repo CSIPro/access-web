@@ -8,8 +8,11 @@ export const authenticateLocal = async (user: NestUser) => {
       publicKey: {
         challenge: new Uint8Array(32),
         rp: {
-          id: "localhost",
-          name: "CSI PRO Access",
+          id:
+            import.meta.env.MODE === "development"
+              ? "localhost"
+              : "isi.unison.mx",
+          name: import.meta.env.VITE_APP_TITLE,
         },
         pubKeyCredParams: [
           {
