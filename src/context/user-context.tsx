@@ -1,4 +1,5 @@
 import { FC, ReactNode, createContext, useContext } from "react";
+import toast from "react-hot-toast";
 import { useMutation, UseMutationResult } from "react-query";
 import { z } from "zod";
 
@@ -6,6 +7,7 @@ import { Splash } from "@/components/splash/splash";
 import { firebaseAuth } from "@/firebase";
 import { Membership, useMemberships } from "@/hooks/use-memberships";
 import { NestUser, useNestUser } from "@/hooks/use-user-data";
+import { authenticateLocal } from "@/lib/local-auth";
 import { BASE_API_URL, NestError } from "@/lib/utils";
 
 import { useRoomContext } from "./room-context";
@@ -35,88 +37,104 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const registerForNotifications = useMutation(
     async (registration: ServiceWorkerRegistration) => {
-      const authUser = firebaseAuth.currentUser;
+      try {
+        const authUser = firebaseAuth.currentUser;
 
-      if (!authUser) {
-        throw new Error("No user found");
-      }
-
-      const keyRes = await fetch(`${BASE_API_URL}/notifications/public-key`, {
-        headers: {
-          Authorization: `Bearer ${await authUser.getIdToken()}`,
-        },
-      });
-
-      const keyData = await keyRes.json();
-
-      if (!keyRes.ok) {
-        const errorParse = NestError.safeParse(keyData);
-
-        if (errorParse.success) {
-          throw new Error(errorParse.data.message);
+        if (!authUser) {
+          throw new Error("No fue posible obtener tus datos de usuario");
         }
 
-        throw new Error("Error fetching public key");
-      }
-
-      const keyParse = KeyResponse.safeParse(keyData);
-
-      if (!keyParse.success) {
-        throw new Error("Error parsing public key");
-      }
-
-      const publicKey = keyParse.data.publicKey;
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: publicKey,
-      });
-
-      const subRes = await fetch(
-        `${BASE_API_URL}/notifications/subscribe/${data!.id}`,
-        {
-          method: "POST",
+        const keyRes = await fetch(`${BASE_API_URL}/notifications/public-key`, {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${await authUser.getIdToken()}`,
           },
-          body: JSON.stringify({
-            subscription,
-          }),
-        },
-      );
+        });
 
-      if (!subRes.ok) {
-        const data = await subRes.json();
+        const keyData = await keyRes.json();
 
-        const error = NestError.safeParse(data);
+        if (!keyRes.ok) {
+          const errorParse = NestError.safeParse(keyData);
 
-        if (error.success) {
-          throw new Error(error.data.message);
+          if (errorParse.success) {
+            throw new Error(errorParse.data.message);
+          } else {
+            throw new Error("No fue posible conectar con el servidor");
+          }
+
+          return;
         }
 
-        throw new Error(
-          "Something went wrong while subscribing to notifications",
+        const keyParse = KeyResponse.safeParse(keyData);
+
+        if (!keyParse.success) {
+          throw new Error("Ocurrió un problema al autenticar con el servidor");
+          return;
+        }
+
+        const publicKey = keyParse.data.publicKey;
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: publicKey,
+        });
+
+        const subRes = await fetch(
+          `${BASE_API_URL}/notifications/subscribe/${data!.id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${await authUser.getIdToken()}`,
+            },
+            body: JSON.stringify({
+              subscription,
+            }),
+          },
+        );
+
+        if (!subRes.ok) {
+          const data = await subRes.json();
+
+          const error = NestError.safeParse(data);
+
+          if (error.success) {
+            throw new Error(error.data.message);
+          }
+
+          throw new Error(
+            "No fue posible suscribirte al servicio de notificaciones",
+          );
+        }
+
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          console.log("Message from service worker", event.data);
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Ocurrió un problema al suscribirte al servicio de notificaciones",
         );
       }
-
-      navigator.serviceWorker.addEventListener("message", (event) => {
-        console.log("Message from service worker", event.data);
-      });
     },
   );
 
   const submitPasscode = async (passcode: string) => {
-    if (!data) {
-      throw new Error("No user data found");
-    }
-
-    passcode = passcode.toUpperCase();
-
     try {
+      if (!data) {
+        throw new Error("No fue posible obtener tus datos de usuario");
+      }
+
+      passcode = passcode.toUpperCase();
+
+      if (!(await authenticateLocal(data))) {
+        return;
+      }
+
       const authUser = firebaseAuth.currentUser;
       if (!authUser) {
-        throw new Error("No user found");
+        throw new Error("No pareces estar autenticado");
       }
 
       const token = await authUser.getIdToken();
@@ -144,12 +162,16 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
           throw new Error(error.data.message);
         }
 
-        throw new Error("Something went wrong while creating the user");
+        throw new Error("No fue posible actualizar tu código de acceso");
       }
     } catch (error) {
       console.error(error);
 
-      throw error;
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un problema al actualizar tu código de acceso",
+      );
     }
   };
 

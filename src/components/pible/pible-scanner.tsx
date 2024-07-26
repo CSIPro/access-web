@@ -1,33 +1,76 @@
 import { Buffer } from "buffer";
 
-import axios from "axios";
-import { useUser } from "reactfire";
+import toast from "react-hot-toast";
+import { z } from "zod";
+
+import { useUserContext } from "@/context/user-context";
+import { firebaseAuth } from "@/firebase";
+import { authenticateLocal } from "@/lib/local-auth";
+import { NestError } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 import { RoomSelector } from "../ui/room-selector";
 
-export const PibleScanner = () => {
-  const { data: userData } = useUser();
+const serviceUuid = import.meta.env.VITE_BLE_SERVICE_UUID;
+const characteristicUuid = import.meta.env.VITE_BLE_CHARACTERISTIC_UUID;
 
-  const testBluetooth = async () => {
-    const serviceUuid = import.meta.env.VITE_BLE_SERVICE_UUID;
-    const characteristicUuid = import.meta.env.VITE_BLE_CHARACTERISTIC_UUID;
+const TokenRes = z.object({
+  token: z.string(),
+});
+
+export const PibleScanner = () => {
+  const { user } = useUserContext();
+
+  const bluetoothScan = async () => {
+    const authUser = firebaseAuth.currentUser;
+
+    if (!authUser) {
+      toast.error("No pareces estar autenticado");
+      return;
+    }
+
+    if (!(await authenticateLocal(user!))) {
+      return;
+    }
 
     try {
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [serviceUuid] }],
       });
 
-      const res = await axios.get(
-        `${import.meta.env.VITE_ACCESS_API_URL}/api/users/generate-token`,
+      const res = await fetch(
+        `${import.meta.env.VITE_ACCESS_API_URL}/users/generate-token`,
         {
           headers: {
-            Authorization: `Bearer ${await userData?.getIdToken()}`,
+            Authorization: `Bearer ${await authUser.getIdToken()}`,
+            "Content-Type": "application/json",
           },
         },
       );
 
-      const token = res.data?.token;
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(data);
+
+        if (errorParse.success) {
+          toast.error(errorParse.data.message);
+        } else {
+          toast.error("La llave no pudo ser generada");
+        }
+
+        return;
+      }
+
+      const resParse = TokenRes.safeParse(data);
+
+      if (!resParse.success) {
+        toast.error("La llave no pudo ser generada");
+
+        return;
+      }
+
+      const token = resParse.data.token;
 
       const server = await device.gatt?.connect();
       const service = await server?.getPrimaryService(serviceUuid);
@@ -40,13 +83,14 @@ export const PibleScanner = () => {
       server?.disconnect();
     } catch (error) {
       console.error(error);
+      toast.error("Ocurrió un problema al conectar con el dispositivo");
     }
   };
 
   return (
     <div className="fixed bottom-8 flex w-full px-1.5">
       <Button
-        onClick={testBluetooth}
+        onClick={bluetoothScan}
         size="icon"
         className="absolute -top-1/2 left-1/2 z-10 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white bg-primary-56 p-2 backdrop-blur-sm transition-all hover:bg-primary focus:bg-primary"
       >

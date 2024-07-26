@@ -29,6 +29,7 @@ import { useRoomContext } from "@/context/room-context";
 import { useUserContext } from "@/context/user-context";
 import { firebaseAuth } from "@/firebase";
 import { useMemberships } from "@/hooks/use-memberships";
+import { authenticateLocal } from "@/lib/local-auth";
 import {
   BASE_API_URL,
   formatRoomName,
@@ -147,12 +148,16 @@ export const NotificationsPage = () => {
     form.setValue("appendAuthor", value);
   };
 
-  const onSubmit = (data: NotificationForm) => {
+  const onSubmit = async (data: NotificationForm) => {
     data.title = data.title.trim();
     data.body = data.body.trim();
 
     if (data.appendAuthor) {
       data.body += `\n\n- ${formatUserName(user!)}.`;
+    }
+
+    if (!(await authenticateLocal(user!))) {
+      return;
     }
 
     sendNotification.mutate(data);
