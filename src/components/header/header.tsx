@@ -94,7 +94,7 @@ export const Header: FC<Props> = ({ title, backTo }) => {
               </Link>
             </SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
+          <div className="flex h-3/4 flex-col gap-4 pl-8 pt-4 text-lg text-white">
             <Link to="/app">Inicio</Link>
             <Link to="/app/logs">Access Logs</Link>
             {(membership?.role.canManageAccess ||
@@ -104,9 +104,8 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             {canSendNotifications && (
               <Link to="/app/notifications">Notificaciones</Link>
             )}
-          </div>
-          <div className="py-2"></div>
-          <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
+            {/* <div className="py-2"></div>
+          <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white"> */}
             <div className="flex-grow" />
             <Button
               variant="outline"
@@ -115,7 +114,11 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             >
               Cerrar sesión
             </Button>
+            <span className="text-sm text-gray-500">{`${
+              import.meta.env.VITE_APP_TITLE
+            } v${APP_VERSION}`}</span>
           </div>
+          {/* </div> */}
         </SheetContent>
       </SheetPortal>
     </Sheet>
