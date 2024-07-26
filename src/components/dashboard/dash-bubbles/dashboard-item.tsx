@@ -1,11 +1,12 @@
 import { FC, ReactNode } from "react";
+import { IconContext } from "react-icons";
 
 import { cn } from "@/lib/utils";
 
 const colors = {
-  primary: "bg-primary/20 border-primary border-2",
-  secondary: "bg-secondary/20 border-secondary border-2",
-  tertiary: "bg-tertiary/20 border-tertiary border-2",
+  primary: "bg-primary/20 border-primary border-2 text-primary/80",
+  secondary: "bg-secondary/20 border-secondary border-2 text-secondary/80",
+  tertiary: "bg-tertiary/20 border-tertiary border-2 text-tertiary/80",
 };
 
 interface DashboardItemProps {
@@ -17,7 +18,7 @@ export const DashboardItem: FC<DashboardItemProps> = ({ color, children }) => {
   return (
     <div
       className={cn(
-        "flex h-full w-full flex-col items-center justify-center rounded-md border-2 border-muted bg-muted/30 p-6",
+        "relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-md border-2 border-muted bg-muted/30 p-6",
         colors[color],
       )}
     >
@@ -26,10 +27,34 @@ export const DashboardItem: FC<DashboardItemProps> = ({ color, children }) => {
   );
 };
 
+const iconSizes = {
+  small: "4rem",
+  normal: "5rem",
+  large: "10rem",
+};
+
+interface ItemBackgroundProps {
+  children: ReactNode;
+  iconSize?: keyof typeof iconSizes;
+}
+
+export const DashboardItemBackground: FC<ItemBackgroundProps> = ({
+  children,
+  iconSize = "normal",
+}) => {
+  return (
+    <IconContext.Provider value={{ size: iconSizes[iconSize] }}>
+      <div className="absolute inset-0 flex items-center justify-center">
+        {children}
+      </div>
+    </IconContext.Provider>
+  );
+};
+
 const sizes = {
   small: "text-2xl",
   medium: "text-4xl",
-  large: "text-5xl",
+  large: "text-7xl",
 };
 
 interface DashboardItemDataProps {
@@ -41,9 +66,7 @@ export const DashboardItemData: FC<DashboardItemDataProps> = ({
   size = "medium",
   children,
 }) => {
-  return (
-    <span className={cn("text-4xl text-white", sizes[size])}>{children}</span>
-  );
+  return <span className={cn("z-10 text-white", sizes[size])}>{children}</span>;
 };
 
 interface DashboardItemTitleProps {
@@ -53,5 +76,5 @@ interface DashboardItemTitleProps {
 export const DashboardItemTitle: FC<DashboardItemTitleProps> = ({
   children,
 }) => {
-  return <span className="text-lg text-white">{children}</span>;
+  return <span className="z-10 text-lg text-gray-200">{children}</span>;
 };

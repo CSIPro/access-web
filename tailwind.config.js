@@ -17,8 +17,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        body: ["Inter", "sans-serif"],
-        sans: ["Poppins", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
         mono: ["Fira Mono", "monospace"],
         roboto: ["Roboto", "sans-serif"],
       },
