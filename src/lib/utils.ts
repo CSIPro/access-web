@@ -50,6 +50,23 @@ export const formatBirthday = (date: string) => {
   return format(localDate, "MMMM dd", { locale: es });
 };
 
+export const generatePasscode = (): string => {
+  const totalLength = Math.floor(Math.random() * 4 + 4);
+  const possible = "0123456789ABCD";
+
+  let text = "";
+
+  for (let i = 0; i < totalLength; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  if (!/^(?=.*[\d])(?=.*[A-D])[\dA-D]{4,10}$/gm.test(text)) {
+    return generatePasscode();
+  }
+
+  return text;
+};
+
 export const findRole = (
   userRole: z.infer<typeof userRoomRoleSchema> | undefined,
   roles: z.infer<typeof roleSchema>[] | undefined,

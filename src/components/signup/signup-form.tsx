@@ -1,14 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { MdAutoAwesome, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { Navigate } from "react-router-dom";
 
 import { useNestRequestHelpers } from "@/hooks/use-requests";
 import { useNestRooms } from "@/hooks/use-rooms";
 import { SignUpForm, useCreateUser } from "@/hooks/use-user-data";
-import { formatRoomName } from "@/lib/utils";
+import { formatRoomName, generatePasscode } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
@@ -34,6 +35,7 @@ import { LoadingSpinner } from "../ui/spinner";
 import { useToast } from "../ui/use-toast";
 
 export const SignupForm = () => {
+  const [showPasscode, setShowPasscode] = useState(false);
   const createUser = useCreateUser();
   const { createRequest } = useNestRequestHelpers();
   const { status, data: rooms } = useNestRooms();
@@ -93,6 +95,17 @@ export const SignupForm = () => {
     return <p>No fue posible conectar con el servidor</p>;
   }
 
+  const toggleShowPasscode = () => {
+    setShowPasscode((prev) => !prev);
+  };
+
+  const autoGeneratePasscode = () => {
+    form.setValue("passcode", generatePasscode());
+    setShowPasscode(true);
+  };
+
+  const passcodeType = showPasscode ? "text" : "password";
+
   return (
     <Form {...form}>
       <form
@@ -145,12 +158,30 @@ export const SignupForm = () => {
           control={form.control}
           name="passcode"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel className="text-white">Contraseña</FormLabel>
-              <FormControl>
-                <Input placeholder="A1B2C3" type="password" {...field} />
-              </FormControl>
-              <FormMessage />
+              <div className="flex w-full items-center gap-2">
+                <FormControl>
+                  <Input placeholder="A1B2C3" type={passcodeType} {...field} />
+                </FormControl>
+                <FormMessage />
+                <Button
+                  type="button"
+                  size="icon"
+                  className="text-lg"
+                  onClick={toggleShowPasscode}
+                >
+                  {showPasscode ? <MdVisibility /> : <MdVisibilityOff />}
+                </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  className="text-lg"
+                  onClick={autoGeneratePasscode}
+                >
+                  <MdAutoAwesome />
+                </Button>
+              </div>
             </FormItem>
           )}
         />
