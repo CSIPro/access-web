@@ -87,7 +87,7 @@ export const PibleScanner = () => {
   };
 
   return (
-    <div className="fixed bottom-8 flex w-full px-1.5">
+    <div className="fixed bottom-8 z-10 flex w-full px-1.5">
       <Button
         onClick={bluetoothScan}
         size="icon"
