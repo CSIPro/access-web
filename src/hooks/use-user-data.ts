@@ -6,7 +6,7 @@ import * as z from "zod";
 
 import { RoomContext } from "@/context/room-context";
 import { firebaseAuth } from "@/firebase";
-import { BASE_API_URL, NestError } from "@/lib/utils";
+import { BASE_API_URL, NestError, PASSCODE_REGEX } from "@/lib/utils";
 
 export const userRoomRoleSchema = z.object({
   id: z.string(),
@@ -296,7 +296,7 @@ export const SignUpForm = z.object({
     .max(10, {
       message: "Tu contraseña no puede exceder los 10 caracteres",
     })
-    .regex(/^(?=.*[\d])(?=.*[A-D])[\dA-D]{4,10}$/, {
+    .regex(PASSCODE_REGEX, {
       message:
         "Tu contraseña debe contener al menos un número y una letra de la A a la D",
     }),

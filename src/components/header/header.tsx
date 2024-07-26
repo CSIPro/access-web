@@ -96,7 +96,8 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             <Link to="/app/logs">Access Logs</Link>
             {(membership?.role.canManageAccess ||
               membership?.role.canManageRoles ||
-              user?.isRoot) && <Link to="/app/members">Room Members</Link>}
+              user?.isRoot) && <Link to="/app/members">Miembros</Link>}
+            <Link to="/app/passcode">Contraseña</Link>
           </div>
           <div className="py-2"></div>
           <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">
@@ -106,7 +107,7 @@ export const Header: FC<Props> = ({ title, backTo }) => {
               onClick={handleSignOut}
               className="w-fit bg-transparent text-white hover:bg-secondary hover:text-white focus:bg-secondary active:bg-secondary"
             >
-              Sign out
+              Cerrar sesión
             </Button>
           </div>
         </SheetContent>

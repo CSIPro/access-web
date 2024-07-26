@@ -50,6 +50,8 @@ export const formatBirthday = (date: string) => {
   return format(localDate, "MMMM dd", { locale: es });
 };
 
+export const PASSCODE_REGEX = /^(?=.*[\d])(?=.*[A-D])[\dA-D]{4,10}$/;
+
 export const generatePasscode = (): string => {
   const totalLength = Math.floor(Math.random() * 4 + 4);
   const possible = "0123456789ABCD";
@@ -60,7 +62,7 @@ export const generatePasscode = (): string => {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
 
-  if (!/^(?=.*[\d])(?=.*[A-D])[\dA-D]{4,10}$/gm.test(text)) {
+  if (!PASSCODE_REGEX.test(text)) {
     return generatePasscode();
   }
 

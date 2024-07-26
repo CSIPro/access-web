@@ -46,6 +46,9 @@ export const Navbar: FC<Props> = ({
             <NavbarLink to="/app/members">Members</NavbarLink>
           </NavigationMenuItem>
         )}
+        <NavigationMenuItem>
+          <NavbarLink to="/app/passcode">Contraseña</NavbarLink>
+        </NavigationMenuItem>
       </NavigationMenuList>
       <NavigationMenuViewport />
     </NavigationMenu>

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { MdAutoAwesome, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { Navigate } from "react-router-dom";
 
@@ -32,14 +33,12 @@ import {
   SelectValue,
 } from "../ui/select";
 import { LoadingSpinner } from "../ui/spinner";
-import { useToast } from "../ui/use-toast";
 
 export const SignupForm = () => {
   const [showPasscode, setShowPasscode] = useState(false);
   const createUser = useCreateUser();
   const { createRequest } = useNestRequestHelpers();
   const { status, data: rooms } = useNestRooms();
-  const { toast } = useToast();
 
   const form = useForm<SignUpForm>({
     resolver: zodResolver(SignUpForm),
@@ -66,21 +65,13 @@ export const SignupForm = () => {
 
   useEffect(() => {
     if (createUser.error) {
-      toast({
-        title: "Error",
-        description: createUser.error.message,
-        variant: "destructive",
-      });
+      toast(createUser.error.message);
     }
 
     if (createRequest.error) {
-      toast({
-        title: "Error",
-        description: createRequest.error.message,
-        variant: "destructive",
-      });
+      toast(createRequest.error.message);
     }
-  }, [createUser, createRequest, toast]);
+  }, [createUser, createRequest]);
 
   if (status === "loading") {
     return (
@@ -164,7 +155,6 @@ export const SignupForm = () => {
                 <FormControl>
                   <Input placeholder="A1B2C3" type={passcodeType} {...field} />
                 </FormControl>
-                <FormMessage />
                 <Button
                   type="button"
                   size="icon"
@@ -182,6 +172,7 @@ export const SignupForm = () => {
                   <MdAutoAwesome />
                 </Button>
               </div>
+              <FormMessage />
             </FormItem>
           )}
         />
