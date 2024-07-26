@@ -39,6 +39,9 @@ export const Header: FC<Props> = ({ title, backTo }) => {
     void auth.signOut();
   };
 
+  const canSendNotifications =
+    user?.isRoot || (membership?.role?.level ?? 0) >= 50;
+
   return (
     <Sheet>
       <header className="sticky top-0 z-50 w-full border-b border-b-stone-700 bg-muted">
@@ -98,6 +101,9 @@ export const Header: FC<Props> = ({ title, backTo }) => {
               membership?.role.canManageRoles ||
               user?.isRoot) && <Link to="/app/members">Miembros</Link>}
             <Link to="/app/passcode">Contraseña</Link>
+            {canSendNotifications && (
+              <Link to="/app/notifications">Notificaciones</Link>
+            )}
           </div>
           <div className="py-2"></div>
           <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white">

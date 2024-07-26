@@ -24,6 +24,8 @@ export const Navbar: FC<Props> = ({
   isRoot = false,
   orientation = "horizontal",
 }) => {
+  const canSendNotifications = isRoot || (role?.level ?? 0) >= 50;
+
   return (
     <NavigationMenu
       orientation={orientation}
@@ -49,6 +51,11 @@ export const Navbar: FC<Props> = ({
         <NavigationMenuItem>
           <NavbarLink to="/app/passcode">Contraseña</NavbarLink>
         </NavigationMenuItem>
+        {canSendNotifications && (
+          <NavigationMenuItem>
+            <NavbarLink to="/app/notifications">Notificaciones</NavbarLink>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
       <NavigationMenuViewport />
     </NavigationMenu>

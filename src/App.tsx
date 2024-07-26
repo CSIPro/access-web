@@ -11,6 +11,7 @@ import { UserProvider } from "./context/user-context";
 import { AppIndex } from "./routes/app";
 import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
+import { NotificationsPage } from "./routes/app/notifications";
 import { PasscodePage } from "./routes/app/passcode";
 import { QRCodePage } from "./routes/app/qr-code";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
@@ -58,6 +59,10 @@ function App() {
               <Route path="/app/logs" element={<LogsPage />} />
               <Route path="/app/members" element={<RoomMembers />} />
               <Route path="/app/passcode" element={<PasscodePage />} />
+              <Route
+                path="/app/notifications"
+                element={<NotificationsPage />}
+              />
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
           </Route>
