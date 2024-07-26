@@ -82,13 +82,13 @@ function App() {
         position="bottom-center"
         toastOptions={{
           className:
-            "border-2 border-primary bg-muted text-white font-sans text-lg",
+            "border-2 border-primary bg-primary/80 bg-muted text-white font-sans text-lg",
           error: {
             className:
-              "border-2 border-secondary bg-muted text-white font-sans text-lg",
+              "border-2 border-secondary bg-secondary/80 bg-muted text-white font-sans text-lg",
           },
           style: {
-            backgroundColor: "#0d0d0d",
+            // backgroundColor: "#0d0d0d",
             color: "white",
           },
         }}
