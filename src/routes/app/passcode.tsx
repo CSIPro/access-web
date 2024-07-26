@@ -56,6 +56,9 @@ export const PasscodePage = () => {
         toast.success("Contraseña actualizada");
         navigate("/app");
       },
+      onError: (error) => {
+        toast.error(error.message);
+      },
     },
   );
 

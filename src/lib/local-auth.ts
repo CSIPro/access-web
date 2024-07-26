@@ -1,5 +1,3 @@
-import toast from "react-hot-toast";
-
 import { NestUser } from "@/hooks/use-user-data";
 
 import { formatUserName } from "./utils";
@@ -15,7 +13,7 @@ export const authenticateLocal = async (user: NestUser) => {
         },
         pubKeyCredParams: [
           {
-            alg: -8,
+            alg: -7,
             type: "public-key",
           },
         ],
@@ -29,8 +27,6 @@ export const authenticateLocal = async (user: NestUser) => {
 
     return !!credential;
   } catch (error) {
-    toast.error("La autenticación local falló");
-
-    return false;
+    throw new Error("No se pudo autenticar con tu dispositivo");
   }
 };

@@ -24,16 +24,15 @@ export const PibleScanner = () => {
   const bluetoothScan = async () => {
     const authUser = firebaseAuth.currentUser;
 
-    if (!authUser) {
-      toast.error("No pareces estar autenticado");
-      return;
-    }
-
-    if (!(await authenticateLocal(user!))) {
-      return;
-    }
-
     try {
+      if (!authUser) {
+        throw new Error("No pareces estar autenticado");
+      }
+
+      if (!(await authenticateLocal(user!))) {
+        return;
+      }
+
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [serviceUuid] }],
       });
@@ -54,20 +53,16 @@ export const PibleScanner = () => {
         const errorParse = NestError.safeParse(data);
 
         if (errorParse.success) {
-          toast.error(errorParse.data.message);
-        } else {
-          toast.error("La llave no pudo ser generada");
+          throw new Error(errorParse.data.message);
         }
 
-        return;
+        throw new Error("La llave no pudo ser generada");
       }
 
       const resParse = TokenRes.safeParse(data);
 
       if (!resParse.success) {
-        toast.error("La llave no pudo ser generada");
-
-        return;
+        throw new Error("La llave no pudo ser generada");
       }
 
       const token = resParse.data.token;
@@ -83,7 +78,11 @@ export const PibleScanner = () => {
       server?.disconnect();
     } catch (error) {
       console.error(error);
-      toast.error("Ocurrió un problema al conectar con el dispositivo");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un problema al conectar con el dispositivo",
+      );
     }
   };
 

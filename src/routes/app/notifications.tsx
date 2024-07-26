@@ -55,6 +55,10 @@ type NotificationForm = z.infer<typeof NotificationForm>;
 const pushNotification = async (form: NotificationForm) => {
   const authUser = firebaseAuth.currentUser;
 
+  if (!authUser) {
+    throw new Error("No pareces estar autenticado");
+  }
+
   const { title, body, roomId } = form;
 
   const res = await fetch(
@@ -63,7 +67,7 @@ const pushNotification = async (form: NotificationForm) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${await authUser?.getIdToken()}`,
+        Authorization: `Bearer ${await authUser.getIdToken()}`,
       },
       body: JSON.stringify({ title, body }),
     },

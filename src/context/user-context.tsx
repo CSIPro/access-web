@@ -37,124 +37,59 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const registerForNotifications = useMutation(
     async (registration: ServiceWorkerRegistration) => {
-      try {
-        const authUser = firebaseAuth.currentUser;
+      const authUser = firebaseAuth.currentUser;
 
-        if (!authUser) {
-          throw new Error("No fue posible obtener tus datos de usuario");
-        }
-
-        const keyRes = await fetch(`${BASE_API_URL}/notifications/public-key`, {
-          headers: {
-            Authorization: `Bearer ${await authUser.getIdToken()}`,
-          },
-        });
-
-        const keyData = await keyRes.json();
-
-        if (!keyRes.ok) {
-          const errorParse = NestError.safeParse(keyData);
-
-          if (errorParse.success) {
-            throw new Error(errorParse.data.message);
-          } else {
-            throw new Error("No fue posible conectar con el servidor");
-          }
-
-          return;
-        }
-
-        const keyParse = KeyResponse.safeParse(keyData);
-
-        if (!keyParse.success) {
-          throw new Error("Ocurrió un problema al autenticar con el servidor");
-          return;
-        }
-
-        const publicKey = keyParse.data.publicKey;
-
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: publicKey,
-        });
-
-        const subRes = await fetch(
-          `${BASE_API_URL}/notifications/subscribe/${data!.id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${await authUser.getIdToken()}`,
-            },
-            body: JSON.stringify({
-              subscription,
-            }),
-          },
-        );
-
-        if (!subRes.ok) {
-          const data = await subRes.json();
-
-          const error = NestError.safeParse(data);
-
-          if (error.success) {
-            throw new Error(error.data.message);
-          }
-
-          throw new Error(
-            "No fue posible suscribirte al servicio de notificaciones",
-          );
-        }
-
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          console.log("Message from service worker", event.data);
-        });
-      } catch (error) {
-        console.error(error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Ocurrió un problema al suscribirte al servicio de notificaciones",
-        );
-      }
-    },
-  );
-
-  const submitPasscode = async (passcode: string) => {
-    try {
-      if (!data) {
+      if (!authUser) {
         throw new Error("No fue posible obtener tus datos de usuario");
       }
 
-      passcode = passcode.toUpperCase();
+      const keyRes = await fetch(`${BASE_API_URL}/notifications/public-key`, {
+        headers: {
+          Authorization: `Bearer ${await authUser.getIdToken()}`,
+        },
+      });
 
-      if (!(await authenticateLocal(data))) {
-        return;
+      const keyData = await keyRes.json();
+
+      if (!keyRes.ok) {
+        const errorParse = NestError.safeParse(keyData);
+
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        }
+
+        throw new Error("No fue posible conectar con el servidor");
       }
 
-      const authUser = firebaseAuth.currentUser;
-      if (!authUser) {
-        throw new Error("No pareces estar autenticado");
+      const keyParse = KeyResponse.safeParse(keyData);
+
+      if (!keyParse.success) {
+        throw new Error("Ocurrió un problema al autenticar con el servidor");
       }
 
-      const token = await authUser.getIdToken();
+      const publicKey = keyParse.data.publicKey;
 
-      const res = await fetch(
-        `${BASE_API_URL}/users/${data?.id}/update-passcode`,
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: publicKey,
+      });
+
+      const subRes = await fetch(
+        `${BASE_API_URL}/notifications/subscribe/${data!.id}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${await authUser.getIdToken()}`,
           },
           body: JSON.stringify({
-            passcode,
+            subscription,
           }),
         },
       );
 
-      if (!res.ok) {
-        const data = await res.json();
+      if (!subRes.ok) {
+        const data = await subRes.json();
 
         const error = NestError.safeParse(data);
 
@@ -162,16 +97,59 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
           throw new Error(error.data.message);
         }
 
-        throw new Error("No fue posible actualizar tu código de acceso");
+        throw new Error(
+          "No fue posible suscribirte al servicio de notificaciones",
+        );
       }
-    } catch (error) {
-      console.error(error);
 
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Ocurrió un problema al actualizar tu código de acceso",
-      );
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        console.log("Message from service worker", event.data);
+      });
+    },
+  );
+
+  const submitPasscode = async (passcode: string) => {
+    if (!data) {
+      throw new Error("No fue posible obtener tus datos de usuario");
+    }
+
+    passcode = passcode.toUpperCase();
+
+    if (!(await authenticateLocal(data))) {
+      return;
+    }
+
+    const authUser = firebaseAuth.currentUser;
+    if (!authUser) {
+      throw new Error("No pareces estar autenticado");
+    }
+
+    const token = await authUser.getIdToken();
+
+    const res = await fetch(
+      `${BASE_API_URL}/users/${data?.id}/update-passcode`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          passcode,
+        }),
+      },
+    );
+
+    if (!res.ok) {
+      const data = await res.json();
+
+      const error = NestError.safeParse(data);
+
+      if (error.success) {
+        throw new Error(error.data.message);
+      }
+
+      throw new Error("No fue posible actualizar tu código de acceso");
     }
   };
 
