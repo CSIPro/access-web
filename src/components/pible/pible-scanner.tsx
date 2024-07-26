@@ -3,9 +3,7 @@ import { Buffer } from "buffer";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { useUserContext } from "@/context/user-context";
 import { firebaseAuth } from "@/firebase";
-import { authenticateLocal } from "@/lib/local-auth";
 import { NestError } from "@/lib/utils";
 
 import { Button } from "../ui/button";
@@ -19,18 +17,12 @@ const TokenRes = z.object({
 });
 
 export const PibleScanner = () => {
-  const { user } = useUserContext();
-
   const bluetoothScan = async () => {
     const authUser = firebaseAuth.currentUser;
 
     try {
       if (!authUser) {
         throw new Error("No pareces estar autenticado");
-      }
-
-      if (!(await authenticateLocal(user!))) {
-        return;
       }
 
       const device = await navigator.bluetooth.requestDevice({
