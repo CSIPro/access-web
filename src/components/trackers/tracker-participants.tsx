@@ -244,7 +244,7 @@ export const AddParticipants: FC<{
       <DialogTrigger asChild>
         <Button className="w-full text-lg">Add people</Button>
       </DialogTrigger>
-      <DialogContent className="h-1/2 w-4/5 rounded-md border-2 border-primary bg-muted font-body text-white">
+      <DialogContent className="h-1/2 w-4/5 rounded-md border-2 border-primary bg-muted font-sans text-white">
         <DialogHeader>
           <DialogTitle>Add people to this tracker</DialogTitle>
         </DialogHeader>
@@ -383,7 +383,7 @@ export const RemoveParticipants: FC<{
       <DialogTrigger asChild>
         <Button className="w-full bg-secondary text-lg">Remove people</Button>
       </DialogTrigger>
-      <DialogContent className="h-1/2 w-4/5 rounded-md border-2 border-primary bg-muted font-body text-white">
+      <DialogContent className="h-1/2 w-4/5 rounded-md border-2 border-primary bg-muted font-sans text-white">
         <DialogHeader>
           <DialogTitle>Remove people from this tracker</DialogTitle>
         </DialogHeader>

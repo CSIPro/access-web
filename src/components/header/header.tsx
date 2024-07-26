@@ -72,7 +72,7 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             />
             <BrandingHeader highlight="ACCESS">CSI PRO</BrandingHeader>
           </Link>
-          <h1 className="text-center md:hidden">{title}</h1>
+          <h1 className="text-center font-poppins md:hidden">{title}</h1>
           <Navbar role={membership?.role} isRoot={user?.isRoot} />
           <div className="block flex-grow" />
           <ProfileButton />

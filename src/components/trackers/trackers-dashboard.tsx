@@ -113,7 +113,7 @@ export const TrackersDashboard = () => {
         : null}
       {data && data.map(({ id }) => <TrackerItem key={id} trackerId={id} />)}
       {data && <div className="h-96 w-full"></div>}
-      {error && <p className="text-center font-body">{error.message}</p>}
+      {error && <p className="text-center font-sans">{error.message}</p>}
     </div>
   );
 };

@@ -109,7 +109,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
     <TrackerItemProvider>
       <div
         onClick={handleOpenTracker}
-        className="relative flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-08 p-2 font-body text-white after:absolute after:bottom-1 after:right-1 after:top-1 after:w-1 after:rounded-full after:bg-primary"
+        className="relative flex w-full flex-col gap-2 rounded-sm border-2 border-primary bg-primary-08 p-2 font-sans text-white after:absolute after:bottom-1 after:right-1 after:top-1 after:w-1 after:rounded-full after:bg-primary"
       >
         <h3 className="text-xl">{queryData?.name}</h3>
         <TrackerTimer

@@ -108,7 +108,7 @@ export const TrackerDetails = () => {
   return (
     <>
       <Header title="Tracker Details" backTo="/app/tracker" />
-      <div className="flex min-h-screen w-full flex-col items-center gap-2 bg-muted p-2 font-body">
+      <div className="flex min-h-screen w-full flex-col items-center gap-2 bg-muted p-2 font-sans">
         <h1 className="text-center text-2xl">{data.name}</h1>
         <div className="flex w-full items-center justify-center">
           <TrackerTimer

@@ -148,7 +148,7 @@ export const TrackerLapseItem: FC<{ lapse: TrackerLapse }> = ({ lapse }) => {
             </div>
           </div>
         </DialogTrigger>
-        <DialogContent className="w-5/6 rounded-md border-2 border-primary bg-muted font-body text-white">
+        <DialogContent className="w-5/6 rounded-md border-2 border-primary bg-muted font-sans text-white">
           <DialogHeader>
             <DialogTitle>Revert time lapse</DialogTitle>
           </DialogHeader>

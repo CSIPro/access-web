@@ -26,7 +26,7 @@ export const BrandingHeader: FC<Props> = ({
   return (
     <span
       className={cn(
-        "font-poppins flex select-none items-center justify-center gap-1 font-normal uppercase",
+        "flex select-none items-center justify-center gap-1 font-poppins font-normal uppercase",
         sizes[size],
         className,
       )}
