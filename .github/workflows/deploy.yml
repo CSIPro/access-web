@@ -14,6 +14,7 @@ jobs:
       BRIDGE_HOSTNAME: ${{ secrets.BRIDGE_HOSTNAME }}
       PRODUCTION_HOSTNAME: ${{ secrets.PRODUCTION_HOSTNAME }}
       DEPLOY_USERNAME: ${{ secrets.DEPLOY_USERNAME }}
+      VITE_APP_TITLE: ${{ secrets.APP_TITLE }}
       VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
       VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
       VITE_FIREBASE_DB_URL: ${{ secrets.FIREBASE_DB_URL }}
@@ -61,7 +62,8 @@ jobs:
 
       - name: Generate .env file
         run: |
-          echo "VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY" > .env.local
+          echo "VITE_APP_TITLE=$VITE_APP_TITLE" > .env.local
+          echo "VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY" >> .env.local
           echo "VITE_FIREBASE_AUTH_DOMAIN=$VITE_FIREBASE_AUTH_DOMAIN" >> .env.local
           echo "VITE_FIREBASE_DB_URL=$VITE_FIREBASE_DB_URL" >> .env.local
           echo "VITE_FIREBASE_PROJECT_ID=$VITE_FIREBASE_PROJECT_ID" >> .env.local
