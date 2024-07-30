@@ -39,9 +39,6 @@ export const Header: FC<Props> = ({ title, backTo }) => {
     void auth.signOut();
   };
 
-  const canSendNotifications =
-    user?.isRoot || (membership?.role?.level ?? 0) >= 50;
-
   return (
     <Sheet>
       <header className="sticky top-0 z-50 w-full border-b border-b-stone-700 bg-muted">
@@ -73,13 +70,15 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             <BrandingHeader highlight="ACCESS">CSI PRO</BrandingHeader>
           </Link>
           <h1 className="text-center font-poppins md:hidden">{title}</h1>
-          <Navbar role={membership?.role} isRoot={user?.isRoot} />
+          <div className="hidden md:inline-flex">
+            <Navbar role={membership?.role} isRoot={user?.isRoot} />
+          </div>
           <div className="block flex-grow" />
           <ProfileButton />
         </div>
       </header>
       <SheetPortal>
-        <SheetContent side="left">
+        <SheetContent side="left" className="border-r-0">
           <SheetHeader>
             <SheetTitle asChild={true} className="pt-8">
               <Link to="/app" className="flex items-center gap-2">
@@ -95,17 +94,11 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             </SheetTitle>
           </SheetHeader>
           <div className="flex h-3/4 flex-col gap-4 pl-8 pt-4 text-lg text-white">
-            <Link to="/app">Inicio</Link>
-            <Link to="/app/logs">Access Logs</Link>
-            {(membership?.role.canManageAccess ||
-              membership?.role.canManageRoles ||
-              user?.isRoot) && <Link to="/app/members">Miembros</Link>}
-            <Link to="/app/passcode">Contraseña</Link>
-            {canSendNotifications && (
-              <Link to="/app/notifications">Notificaciones</Link>
-            )}
-            {/* <div className="py-2"></div>
-          <div className="flex flex-col gap-4 pl-8 pt-4 text-lg text-white"> */}
+            <Navbar
+              orientation="vertical"
+              role={membership?.role}
+              isRoot={user?.isRoot}
+            />
             <div className="flex-grow" />
             <Button
               variant="outline"
@@ -118,7 +111,6 @@ export const Header: FC<Props> = ({ title, backTo }) => {
               import.meta.env.VITE_APP_TITLE
             } v${APP_VERSION}`}</span>
           </div>
-          {/* </div> */}
         </SheetContent>
       </SheetPortal>
     </Sheet>

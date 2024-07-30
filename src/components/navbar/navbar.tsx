@@ -27,20 +27,14 @@ export const Navbar: FC<Props> = ({
   const canSendNotifications = isRoot || (role?.level ?? 0) >= 50;
 
   return (
-    <NavigationMenu
-      orientation={orientation}
-      className={cn(
-        "hidden bg-muted font-medium md:flex",
-        orientation === "vertical" && "flex-col",
-      )}
-    >
+    <NavigationMenu orientation={orientation}>
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavbarLink to="/app">Home</NavbarLink>
         </NavigationMenuItem>
         {(role?.canReadLogs || isRoot) && (
           <NavigationMenuItem>
-            <NavbarLink to="/app/logs">Logs</NavbarLink>
+            <NavbarLink to="/app/logs">Access Logs</NavbarLink>
           </NavigationMenuItem>
         )}
         {(role?.canManageAccess || role?.canManageRoles || isRoot) && (
