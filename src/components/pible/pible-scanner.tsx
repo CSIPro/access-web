@@ -30,7 +30,7 @@ export const PibleScanner = () => {
       });
 
       const res = await fetch(
-        `${import.meta.env.VITE_ACCESS_API_URL}/users/generate-token`,
+        `${import.meta.env.VITE_ACCESS_API_URL}/users/generate-token/webapp`,
         {
           headers: {
             Authorization: `Bearer ${await authUser.getIdToken()}`,
