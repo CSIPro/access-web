@@ -15,7 +15,7 @@ export const GithubLink = () => {
     mutationFn: async () => {
       const serverUrl = `${
         import.meta.env.VITE_ACCESS_API_URL
-      }/api/auth/oauth/callback/web?code=${params["code"]}`;
+      }/auth/oauth/callback/web?code=${params["code"]}`;
 
       try {
         const response = await axios.post(
