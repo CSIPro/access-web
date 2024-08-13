@@ -4,7 +4,7 @@ import { es } from "date-fns/locale";
 import { motion, useTime, useTransform } from "framer-motion";
 import { FC, ReactNode } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn, dateWithoutOffset } from "@/lib/utils";
 
 const logVariants = cva(
   [
@@ -49,7 +49,8 @@ export const LogItem: FC<Props> = ({
     : "unknown";
 
   const baseDate = new Date();
-  const dateOfBirth = known ? new Date(birthday!) : null;
+
+  const dateOfBirth = known ? dateWithoutOffset(new Date(birthday!)) : null;
 
   const isBirthday = dateOfBirth
     ? dateOfBirth.getDate() === baseDate.getDate() &&

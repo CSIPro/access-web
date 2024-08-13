@@ -50,6 +50,12 @@ export const formatBirthday = (date: string) => {
   return format(localDate, "MMMM dd", { locale: es });
 };
 
+export const dateWithoutOffset = (date: Date) => {
+  const offset = date.getTimezoneOffset() * 60000;
+
+  return new Date(date.getTime() + offset);
+};
+
 export const PASSCODE_REGEX = /^(?=.*[\d])(?=.*[A-D])[\dA-D]{4,10}$/;
 
 export const generatePasscode = (): string => {
