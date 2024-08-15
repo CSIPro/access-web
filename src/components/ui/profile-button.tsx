@@ -20,7 +20,7 @@ export const ProfileButton = () => {
     const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
     const callbackUrl = `${
       import.meta.env.VITE_ACCESS_API_URL
-    }/api/auth/oauth/callback/link`;
+    }/auth/oauth/callback/link`;
 
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
       callbackUrl,
