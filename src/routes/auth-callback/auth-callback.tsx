@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   GithubAuthProvider,
   getAuth,
@@ -18,21 +17,24 @@ export const AuthCallback = () => {
     async (code: string) => {
       try {
         const serverUrl = `${
-          import.meta.env.VITE_GITHUB_CALLBACK_URL as string
-        }/?code=${code}`;
+          import.meta.env.VITE_ACCESS_API_URL as string
+        }/auth/oauth/callback/web?code=${code}`;
 
-        const response = await axios.post(
-          serverUrl,
-          {},
-          { headers: { Accept: "application/json" } },
-        );
+        const res = await fetch(serverUrl, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+        });
 
-        if (response.status === 200) {
-          const token = response.data.accessToken as string;
+        const data = await res.json();
 
-          const credential = GithubAuthProvider.credential(token);
-          await signInWithCredential(auth, credential);
+        if (!res.ok) {
+          throw new Error(data.message);
         }
+
+        const token = data.accessToken as string;
+
+        const credential = GithubAuthProvider.credential(token);
+        await signInWithCredential(auth, credential);
       } catch (error) {
         console.error(error);
       } finally {
