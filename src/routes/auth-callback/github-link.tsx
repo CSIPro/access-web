@@ -18,20 +18,21 @@ export const GithubLink = () => {
       }/auth/oauth/callback/web?code=${params["code"]}`;
 
       try {
-        const response = await axios.post(
-          serverUrl,
-          {},
-          { headers: { Accept: "application/json" } },
-        );
+        const res = await fetch(serverUrl, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+        });
 
-        console.log(response.status);
-        if (response.status === 200) {
-          const token = response.data.accessToken as string;
-          console.log(token);
+        const data = await res.json();
 
-          const credential = GithubAuthProvider.credential(token);
-          await linkWithCredential(auth.currentUser!, credential);
+        if (!res.ok) {
+          throw new Error(data.message);
         }
+
+        const token = data.accessToken as string;
+
+        const credential = GithubAuthProvider.credential(token);
+        await linkWithCredential(auth.currentUser!, credential);
       } catch (error) {
         console.error(error);
       } finally {
