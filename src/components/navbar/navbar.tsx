@@ -16,15 +16,18 @@ import {
 interface Props {
   orientation?: "horizontal" | "vertical";
   isRoot?: boolean;
+  isEventOrganizer?: boolean;
   role?: Partial<NestRole>;
 }
 
 export const Navbar: FC<Props> = ({
   role,
   isRoot = false,
+  isEventOrganizer = false,
   orientation = "horizontal",
 }) => {
   const canSendNotifications = isRoot || (role?.level ?? 0) >= 50;
+  const canManageEvents = isEventOrganizer || canSendNotifications;
 
   return (
     <NavigationMenu orientation={orientation}>
@@ -48,6 +51,11 @@ export const Navbar: FC<Props> = ({
         {canSendNotifications && (
           <NavigationMenuItem>
             <NavbarLink to="/app/notifications">Notificaciones</NavbarLink>
+          </NavigationMenuItem>
+        )}
+        {canManageEvents && (
+          <NavigationMenuItem>
+            <NavbarLink to="/app/events">Eventos</NavbarLink>
           </NavigationMenuItem>
         )}
       </NavigationMenuList>

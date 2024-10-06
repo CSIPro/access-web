@@ -9,6 +9,9 @@ import { RoleProvider } from "./context/role-context";
 import { RoomProvider } from "./context/room-context";
 import { UserProvider } from "./context/user-context";
 import { AppIndex } from "./routes/app";
+import { ArchivedEvents } from "./routes/app/events/archived-events";
+import { Events } from "./routes/app/events/events";
+import { IncomingEvents } from "./routes/app/events/incoming-events";
 import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
 import { NotificationsPage } from "./routes/app/notifications";
@@ -63,6 +66,16 @@ function App() {
                 path="/app/notifications"
                 element={<NotificationsPage />}
               />
+              <Route path="/app/events" element={<Events />}>
+                <Route
+                  path="/app/events/incoming"
+                  element={<IncomingEvents />}
+                />
+                <Route
+                  path="/app/events/archived"
+                  element={<ArchivedEvents />}
+                />
+              </Route>
               <Route path="/app/qr-code" element={<QRCodePage />} />
             </Route>
           </Route>
