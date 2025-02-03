@@ -6,6 +6,7 @@ import { Button } from "./button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -40,6 +41,15 @@ export const ProfileButton = () => {
     return <span>Something went wrong while fetching user data</span>;
   }
 
+  const hasGoogle =
+    userData?.providerData.some(
+      (provider) => provider.providerId === "google.com",
+    ) ?? false;
+  const hasGithub =
+    userData?.providerData.some(
+      (provider) => provider.providerId === "github.com",
+    ) ?? false;
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -55,36 +65,64 @@ export const ProfileButton = () => {
           </span>
         </IconContext.Provider>
       </DialogTrigger>
-      <DialogContent className="w-4/5 rounded-sm">
+      <DialogContent className="w-4/5 rounded-md border-muted bg-muted text-white ">
         <DialogHeader>
           <DialogTitle>User profile</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-2">
-          <IconContext.Provider value={{ className: "h-full w-full p-1" }}>
-            <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full ring-2 ring-primary">
-              {userData?.photoURL ? (
-                <img src={userData?.photoURL} alt="User's profile picture" />
-              ) : (
-                <BsPersonFill />
+        <hr />
+        <DialogDescription asChild className="flex text-white">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <IconContext.Provider
+                value={{ className: "h-full w-full p-2 text-primary" }}
+              >
+                <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full ring-2 ring-primary">
+                  {userData?.photoURL ? (
+                    <img
+                      src={userData?.photoURL}
+                      alt="User's profile picture"
+                    />
+                  ) : (
+                    <BsPersonFill />
+                  )}
+                </span>
+              </IconContext.Provider>
+              <p>{userData?.displayName}</p>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              {hasGoogle && (
+                <img
+                  src="/images/auth/google-g.png"
+                  alt="Google logo"
+                  className="aspect-square w-6"
+                />
               )}
-            </span>
-          </IconContext.Provider>
-          <p>{userData?.displayName}</p>
-          <Button
-            onClick={handleLinkGithub}
-            className="flex gap-2 bg-muted hover:bg-muted focus:bg-muted"
-          >
-            <img
-              src="/images/auth/github-white.svg"
-              alt="GitHub logo"
-              className="aspect-square w-6"
-            />
-            Link with GitHub
-          </Button>
-          <Button variant="destructive" onClick={handleSignOut}>
-            Sign out
-          </Button>
-        </div>
+              {hasGithub && (
+                <img
+                  src="/images/auth/github-white.svg"
+                  alt="GitHub logo"
+                  className="aspect-square w-6"
+                />
+              )}
+            </div>
+            {!hasGithub && (
+              <Button
+                onClick={handleLinkGithub}
+                className="flex gap-2 bg-primary/50"
+              >
+                <img
+                  src="/images/auth/github-white.svg"
+                  alt="GitHub logo"
+                  className="aspect-square w-6"
+                />
+                Link with GitHub
+              </Button>
+            )}
+            <Button variant="destructive" onClick={handleSignOut}>
+              Sign out
+            </Button>
+          </div>
+        </DialogDescription>
       </DialogContent>
     </Dialog>
   );
