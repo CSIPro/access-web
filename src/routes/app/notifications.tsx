@@ -168,7 +168,7 @@ export const NotificationsPage = () => {
   };
 
   const items = user?.isRoot
-    ? rooms ?? []
+    ? (rooms ?? [])
     : (rooms ?? []).filter((room) =>
         (memberships ?? []).some((m) => m.room.id === room.id),
       );

@@ -15,7 +15,7 @@ export const AuthedRoute: FC<Props> = ({
   redirectPath = "/login",
   children,
 }) => {
-  const { status, data, error } = useNestUser();
+  const { status, data } = useNestUser();
 
   if (!isAuthenticated) {
     return <Navigate to={redirectPath} replace />;

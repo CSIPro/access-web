@@ -1,4 +1,3 @@
-import axios from "axios";
 import { GithubAuthProvider, getAuth, linkWithCredential } from "firebase/auth";
 import { useMutation } from "react-query";
 import { Navigate, useNavigate, useParams } from "react-router-dom";

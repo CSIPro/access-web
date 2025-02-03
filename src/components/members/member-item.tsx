@@ -40,10 +40,10 @@ export const MemberItem: FC<Props> = ({ member }) => {
     user!.isRoot ||
     (membership!.role.canManageAccess &&
       membership!.role.level! > member.role.level!);
-  const canManageRoles =
-    user!.isRoot ||
-    (membership!.role.canManageRoles &&
-      membership!.role.level! > member.role.level!);
+  // const canManageRoles =
+  //   user!.isRoot ||
+  //   (membership!.role.canManageRoles &&
+  //     membership!.role.level! > member.role.level!);
 
   const handleUpdateAccess = async (value: boolean) => {
     if (!canSetAccess) return;

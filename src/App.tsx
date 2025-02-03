@@ -14,13 +14,13 @@ import { RoomMembers } from "./routes/app/members";
 import { NotificationsPage } from "./routes/app/notifications";
 import { PasscodePage } from "./routes/app/passcode";
 import { QRCodePage } from "./routes/app/qr-code";
+import { RoomRequests } from "./routes/app/requests";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
 import { AuthedRoute } from "./routes/protected-route";
-import { RoomRequests } from "./routes/app/requests";
 
 function App() {
   const { status, data, error } = useSigninCheck();

@@ -1,9 +1,22 @@
+import { format } from "date-fns";
+import es from "date-fns/locale/es";
+import { FC, useState } from "react";
+import {
+  IoCalendar,
+  IoEllipsisHorizontal,
+  IoLocation,
+  IoPerson,
+} from "react-icons/io5";
+import { MdLocalPolice } from "react-icons/md";
+
 import {
   PopulatedNestRequest,
   RequestStatusLabels,
   useNestRequestHelpers,
 } from "@/hooks/use-requests";
-import { FC, useState } from "react";
+import { cn, formatUserName } from "@/lib/utils";
+
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,17 +26,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { cn, formatUserName } from "@/lib/utils";
-import { format } from "date-fns";
-import es from "date-fns/locale/es";
-import {
-  IoCalendar,
-  IoEllipsisHorizontal,
-  IoLocation,
-  IoPerson,
-} from "react-icons/io5";
-import { MdLocalPolice } from "react-icons/md";
-import { Button } from "../ui/button";
 
 interface Props {
   request: PopulatedNestRequest;
@@ -79,7 +81,7 @@ export const RequestItem: FC<Props> = ({ request }) => {
         <hr />
         <DialogDescription
           asChild
-          className="flex flex-col items-start gap-1 text-white text-base"
+          className="flex flex-col items-start gap-1 text-base text-white"
         >
           <div>
             <div className="flex w-full items-center gap-2">
