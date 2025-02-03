@@ -30,7 +30,7 @@ export const Navbar: FC<Props> = ({
     <NavigationMenu orientation={orientation}>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavbarLink to="/app">Home</NavbarLink>
+          <NavbarLink to="/app">Inicio</NavbarLink>
         </NavigationMenuItem>
         {(role?.canReadLogs || isRoot) && (
           <NavigationMenuItem>
@@ -39,7 +39,12 @@ export const Navbar: FC<Props> = ({
         )}
         {(role?.canManageAccess || role?.canManageRoles || isRoot) && (
           <NavigationMenuItem>
-            <NavbarLink to="/app/members">Members</NavbarLink>
+            <NavbarLink to="/app/members">Miembros</NavbarLink>
+          </NavigationMenuItem>
+        )}
+        {(role?.canHandleRequests || isRoot) && (
+          <NavigationMenuItem>
+            <NavbarLink to="/app/room-requests">Solicitudes</NavbarLink>
           </NavigationMenuItem>
         )}
         <NavigationMenuItem>

@@ -20,6 +20,7 @@ import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
 import { AuthedRoute } from "./routes/protected-route";
+import { RoomRequests } from "./routes/app/requests";
 
 function App() {
   const { status, data, error } = useSigninCheck();
@@ -58,6 +59,7 @@ function App() {
               <Route path="/app" element={<AppIndex />} />
               <Route path="/app/logs" element={<LogsPage />} />
               <Route path="/app/members" element={<RoomMembers />} />
+              <Route path="/app/room-requests" element={<RoomRequests />} />
               <Route path="/app/passcode" element={<PasscodePage />} />
               <Route
                 path="/app/notifications"
