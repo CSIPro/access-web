@@ -8,6 +8,12 @@ import { BASE_API_URL, NestError } from "@/lib/utils";
 export const NestRequestStatus = z.enum(["pending", "approved", "rejected"]);
 export type NestRequestStatus = z.infer<typeof NestRequestStatus>;
 
+export const RequestStatusLabels: Record<NestRequestStatus, string> = {
+  approved: "Aprobada",
+  pending: "Pendiente",
+  rejected: "Rechazada",
+};
+
 export const PlainNestRequest = z.object({
   id: z.string(),
   userId: z.string(),
