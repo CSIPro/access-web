@@ -47,7 +47,7 @@ export const formatBirthday = (date: string) => {
 
   const localDate = new Date(birthday.getTime() + offset);
 
-  return format(localDate, "MMMM dd", { locale: es });
+  return format(localDate, "dd 'de' MMMM", { locale: es });
 };
 
 export const dateWithoutOffset = (date: Date) => {
