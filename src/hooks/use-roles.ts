@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { useFirestore, useFirestoreCollectionData } from "reactfire";
 import * as z from "zod";
 
+import { loadFromCache, saveToCache } from "@/lib/cache";
 import { BASE_API_URL, NestError } from "@/lib/utils";
 
 export const roleSchema = z.object({
@@ -70,6 +71,28 @@ export const useNestRoles = () => {
       }
 
       return rolesParse.data;
+    },
+    onSuccess: (data) => saveToCache("ROLES", data),
+    initialData: () => {
+      const cachedRoles = loadFromCache("ROLES");
+
+      const rolesParse = NestRole.array().safeParse(cachedRoles);
+
+      if (!rolesParse.success) {
+        return [];
+      }
+
+      return rolesParse.data;
+    },
+    staleTime: 1000,
+    initialDataUpdatedAt: () => {
+      const cachedDate = loadFromCache("ROLES_LAST_FETCHED");
+
+      if (!cachedDate) {
+        return 0;
+      }
+
+      return cachedDate ? +cachedDate : undefined;
     },
   });
 

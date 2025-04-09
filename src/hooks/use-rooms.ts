@@ -4,6 +4,8 @@ import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import * as z from "zod";
 
 import { firebaseAuth } from "@/firebase";
+import { loadFromCache, saveToCache } from "@/lib/cache";
+import { getFromStorage } from "@/lib/local-storage";
 import { BASE_API_URL, NestError } from "@/lib/utils";
 
 export const roomSchema = z.object({
@@ -108,6 +110,24 @@ export const useNestRooms = () => {
       }
 
       return roomsParse.data;
+    },
+    onSuccess: (data) => saveToCache("ROOMS", data),
+    initialData: () => {
+      const cachedRooms = loadFromCache("ROOMS");
+
+      const roomsParse = NestRoom.array().safeParse(cachedRooms);
+
+      if (!roomsParse.success) {
+        return [];
+      }
+
+      return roomsParse.data;
+    },
+    staleTime: 1000,
+    initialDataUpdatedAt: () => {
+      const lastFetched = getFromStorage("ROOMS_LAST_FETCHED");
+
+      return lastFetched ? +lastFetched : undefined;
     },
   });
 

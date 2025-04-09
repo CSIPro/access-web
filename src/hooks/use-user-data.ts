@@ -6,6 +6,7 @@ import * as z from "zod";
 
 import { RoomContext } from "@/context/room-context";
 import { firebaseAuth } from "@/firebase";
+import { loadFromCache, saveToCache } from "@/lib/cache";
 import { BASE_API_URL, NestError, PASSCODE_REGEX } from "@/lib/utils";
 
 export const userRoomRoleSchema = z.object({
@@ -241,6 +242,29 @@ export const useNestUser = (userId?: string) => {
         console.error(userParse);
 
         throw new Error("Failed to parse user data");
+      }
+
+      return userParse.data;
+    },
+    onSuccess: (data) => {
+      if (userId) {
+        return;
+      }
+
+      saveToCache("USER", data);
+      saveToCache("USER_ID", data.id);
+    },
+    initialData: () => {
+      if (userId) {
+        return;
+      }
+
+      const cachedData = loadFromCache("USER");
+
+      const userParse = NestUser.safeParse(cachedData);
+
+      if (!userParse.success) {
+        return;
       }
 
       return userParse.data;
