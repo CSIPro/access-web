@@ -15,6 +15,8 @@ import { NotificationsPage } from "./routes/app/notifications";
 import { PasscodePage } from "./routes/app/passcode";
 import { QRCodePage } from "./routes/app/qr-code";
 import { RoomRequests } from "./routes/app/requests";
+import { RoomRestrictions } from "./routes/app/restrictions";
+import { CreateRestriction } from "./routes/app/restrictions/create";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
@@ -61,6 +63,11 @@ function App() {
               <Route path="/app/members" element={<RoomMembers />} />
               <Route path="/app/room-requests" element={<RoomRequests />} />
               <Route path="/app/passcode" element={<PasscodePage />} />
+              <Route path="/app/restrictions" element={<RoomRestrictions />} />
+              <Route
+                path="/app/restrictions/create"
+                element={<CreateRestriction />}
+              />
               <Route
                 path="/app/notifications"
                 element={<NotificationsPage />}

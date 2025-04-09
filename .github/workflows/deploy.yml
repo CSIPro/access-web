@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - access-restrictions
 
 jobs:
   deploy:
@@ -36,7 +37,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v3
@@ -48,6 +49,9 @@ jobs:
 
       - name: Lint project
         run: pnpm lint
+
+      - name: Build project
+        run: pnpm build
 
       - name: Set up SSH
         run: |
@@ -79,7 +83,4 @@ jobs:
 
       - name: Transfer files to Production
         run: |
-          rsync -rvz --delete --exclude=".git" --exclude="node_modules" ./ unison-production:/var/www/access.csipro.isi.unison.mx/
-
-      - name: SSH to Production and install dependencies
-        run: ssh unison-production "cd /var/www/access.csipro.isi.unison.mx && rm -rf node_modules && ~/.local/share/pnpm/pnpm install && ~/.local/share/pnpm/pnpm build"
+          rsync -rvz --delete ./dist/ unison-production:/var/www/access-web/

@@ -47,6 +47,11 @@ export const Navbar: FC<Props> = ({
             <NavbarLink to="/app/room-requests">Solicitudes</NavbarLink>
           </NavigationMenuItem>
         )}
+        {(role?.canManageRoom || isRoot) && (
+          <NavigationMenuItem>
+            <NavbarLink to="/app/restrictions">Restricciones</NavbarLink>
+          </NavigationMenuItem>
+        )}
         <NavigationMenuItem>
           <NavbarLink to="/app/passcode">Contraseña</NavbarLink>
         </NavigationMenuItem>
