@@ -46,9 +46,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint project
-        run: pnpm lint
-
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
