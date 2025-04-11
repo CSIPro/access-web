@@ -118,7 +118,7 @@ export const useNestRooms = () => {
       const roomsParse = NestRoom.array().safeParse(cachedRooms);
 
       if (!roomsParse.success) {
-        return [];
+        return undefined;
       }
 
       return roomsParse.data;
