@@ -2,6 +2,8 @@ import { IconContext } from "react-icons";
 import { BsPersonFill } from "react-icons/bs";
 import { useAuth, useUser } from "reactfire";
 
+import { deleteAllFromStorage } from "@/lib/local-storage";
+
 import { Button } from "./button";
 import {
   Dialog,
@@ -30,6 +32,7 @@ export const ProfileButton = () => {
   };
 
   const handleSignOut = () => {
+    deleteAllFromStorage();
     void auth.signOut();
   };
 

@@ -28,23 +28,15 @@ jobs:
       VITE_ACCESS_API_URL: ${{ secrets.ACCESS_API_URL }}
       VITE_BLE_SERVICE_UUID: ${{ secrets.BLE_SERVICE_UUID }}
       VITE_BLE_CHARACTERISTIC_UUID: ${{ secrets.BLE_CHARACTERISTIC_UUID }}
+      ENV_VARS: ${{ secrets.ENV_VARS }}
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: latest
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: Generate .env file
+        run: |
+          echo "$ENV_VARS" > .env.local
 
       - name: Set up SSH
         run: |
@@ -57,26 +49,10 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_ed25519
 
-      - name: Generate .env file
-        run: |
-          echo "VITE_APP_TITLE=$VITE_APP_TITLE" > .env.local
-          echo "VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY" >> .env.local
-          echo "VITE_FIREBASE_AUTH_DOMAIN=$VITE_FIREBASE_AUTH_DOMAIN" >> .env.local
-          echo "VITE_FIREBASE_DB_URL=$VITE_FIREBASE_DB_URL" >> .env.local
-          echo "VITE_FIREBASE_PROJECT_ID=$VITE_FIREBASE_PROJECT_ID" >> .env.local
-          echo "VITE_FIREBASE_STORAGE_BUCKET=$VITE_FIREBASE_STORAGE_BUCKET" >> .env.local
-          echo "VITE_FIREBASE_MESSAGING_SENDER_ID=$VITE_FIREBASE_MESSAGING_SENDER_ID" >> .env.local
-          echo "VITE_FIREBASE_APP_ID=$VITE_FIREBASE_APP_ID" >> .env.local
-          echo "VITE_FIREBASE_MEASUREMENT_ID=$VITE_FIREBASE_MEASUREMENT_ID" >> .env.local
-          echo "VITE_GITHUB_CALLBACK_URL=$VITE_GITHUB_CALLBACK_URL" >> .env.local
-          echo "VITE_GITHUB_CLIENT_ID=$VITE_GITHUB_CLIENT_ID" >> .env.local
-          echo "VITE_ACCESS_API_URL=$VITE_ACCESS_API_URL" >> .env.local
-          echo "VITE_BLE_SERVICE_UUID=$VITE_BLE_SERVICE_UUID" >> .env.local
-          echo "VITE_BLE_CHARACTERISTIC_UUID=$VITE_BLE_CHARACTERISTIC_UUID" >> .env.local
-
       - name: Transfer files to Production
         run: |
-          rsync -rvz --delete --exclude=".git" --exclude="node_modules" ./ unison-production:/var/www/access.csipro.isi.unison.mx/
+          rsync -rvz --delete --exclude="node_modules" --exclude=".git" --exclude=".github" --exclude=".vscode" --exclude="dist" ./ unison-production:/var/www/access-web/
 
-      - name: SSH to Production and install dependencies
-        run: ssh unison-production "cd /var/www/access.csipro.isi.unison.mx && rm -rf node_modules && ~/.local/share/pnpm/pnpm install && ~/.local/share/pnpm/pnpm build"
+      - name: SSH into Production and install dependencies
+        run: |
+          ssh unison-production "bash -i -c 'cd /var/www/access-web && pnpm install && pnpm build'"
