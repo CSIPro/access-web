@@ -34,6 +34,19 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Generate .env file
         run: |
           echo "VITE_APP_TITLE=$VITE_APP_TITLE" > .env.local
@@ -50,19 +63,6 @@ jobs:
           echo "VITE_ACCESS_API_URL=$VITE_ACCESS_API_URL" >> .env.local
           echo "VITE_BLE_SERVICE_UUID=$VITE_BLE_SERVICE_UUID" >> .env.local
           echo "VITE_BLE_CHARACTERISTIC_UUID=$VITE_BLE_CHARACTERISTIC_UUID" >> .env.local
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: latest
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Build project
         run: pnpm build

@@ -25,6 +25,7 @@ export const Splash = ({ message, loading = false, children }: Props) => {
         </div>
         <Branding />
       </div>
+      <span className="absolute bottom-4 font-mono text-xs text-gray-400">{`v${APP_VERSION}`}</span>
     </main>
   );
 };
