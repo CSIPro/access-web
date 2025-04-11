@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - access-restrictions
 
 jobs:
   deploy:
@@ -52,7 +51,7 @@ jobs:
 
       - name: Transfer files to Production
         run: |
-          rsync -rvz --delete ./ unison-production:/var/www/access-web/
+          rsync -rvz --delete --exclude="node_modules" --exclude=".git" --exclude=".github" --exclude=".vscode" --exclude="dist" ./ unison-production:/var/www/access-web/
 
       - name: SSH into Production and install dependencies
         run: |
