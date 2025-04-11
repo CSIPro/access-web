@@ -33,7 +33,12 @@ function App() {
 
   if (status === "error") {
     return (
-      <Splash message={error?.message ?? "No pareces estar autenticado"} />
+      <Splash
+        message={
+          error?.message ??
+          "No fue posible conectar con el servicio de autenticación"
+        }
+      />
     );
   }
 

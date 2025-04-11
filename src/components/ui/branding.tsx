@@ -7,16 +7,15 @@ export const Branding: FC<ImgHTMLAttributes<HTMLImageElement>> = ({
   ...props
 }) => {
   return (
-    <img
-      src="/images/csipro.svg"
-      alt="Logo de CSI PRO"
-      height={40}
-      width={40}
-      className={cn(
-        "absolute bottom-16 left-1/2 -translate-x-1/2 transform sm:bottom-6",
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary/20 px-4 py-1 font-poppins text-sm">
+      <span>from</span>
+      <img
+        src="/images/csipro.svg"
+        alt="Logo de CSI PRO"
+        className={cn("w-6", className)}
+        {...props}
+      />
+      <span>CSI PRO</span>
+    </div>
   );
 };
