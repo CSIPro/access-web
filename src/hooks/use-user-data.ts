@@ -341,12 +341,12 @@ export const SignUpForm = z.object({
 
 export type SignUpForm = z.infer<typeof SignUpForm>;
 
-const UserResponse = z.object({
+export const UserResponse = z.object({
   user: NestUser.partial(),
   message: z.string(),
 });
 
-type UserResponse = z.infer<typeof UserResponse>;
+export type UserResponse = z.infer<typeof UserResponse>;
 
 export const useCreateUser = () => {
   const authUser = firebaseAuth.currentUser;
@@ -401,3 +401,38 @@ export const useCreateUser = () => {
 
   return createUser;
 };
+
+export const ProfileForm = z.object({
+  firstName: z
+    .string({
+      required_error: "El nombre es obligatorio",
+    })
+    .min(3, {
+      message: "Tu nombre debe tener al menos 3 caracteres",
+    })
+    .max(50, {
+      message: "Tu nombre no puede exceder los 50 caracteres",
+    }),
+  lastName: z
+    .string({
+      required_error: "Los apellidos son obligatorios",
+    })
+    .min(3, {
+      message: "Tus apellidos deben tener al menos 3 caracteres",
+    })
+    .max(50, {
+      message: "Tus apellidos no pueden exceder los 50 caracteres",
+    }),
+  dateOfBirth: z
+    .date({
+      required_error: "Tu fecha de nacimiento es obligatoria",
+    })
+    .min(new Date(1900, 0, 1), {
+      message: "I don't think you're that old",
+    })
+    .max(new Date(), {
+      message: "Time traveler alert!",
+    }),
+});
+
+export type ProfileForm = z.infer<typeof ProfileForm>;

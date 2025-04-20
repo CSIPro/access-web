@@ -13,6 +13,13 @@ import App from "./App.tsx";
 import "./index.css";
 import { analytics, firebase, firebaseAuth, firestore } from "./firebase.ts";
 
+import setDefaultOptions from "date-fns/setDefaultOptions";
+import { es } from "date-fns/locale";
+
+setDefaultOptions({
+  locale: es,
+});
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

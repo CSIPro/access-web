@@ -9,6 +9,7 @@ import { RoleProvider } from "./context/role-context";
 import { RoomProvider } from "./context/room-context";
 import { UserProvider } from "./context/user-context";
 import { AppIndex } from "./routes/app";
+import { EditProfilePage } from "./routes/app/edit-profile";
 import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
 import { NotificationsPage } from "./routes/app/notifications";
@@ -69,6 +70,7 @@ function App() {
               <Route path="/app/room-requests" element={<RoomRequests />} />
               <Route path="/app/passcode" element={<PasscodePage />} />
               <Route path="/app/restrictions" element={<RoomRestrictions />} />
+              <Route path="/app/edit-profile" element={<EditProfilePage />} />
               <Route
                 path="/app/restrictions/create"
                 element={<CreateRestriction />}
