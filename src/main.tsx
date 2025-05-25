@@ -1,3 +1,5 @@
+import { es } from "date-fns/locale";
+import setDefaultOptions from "date-fns/setDefaultOptions";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -12,6 +14,10 @@ import {
 import App from "./App.tsx";
 import "./index.css";
 import { analytics, firebase, firebaseAuth, firestore } from "./firebase.ts";
+
+setDefaultOptions({
+  locale: es,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {

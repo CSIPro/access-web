@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { useRoomContext } from "@/context/room-context";
@@ -120,6 +121,7 @@ export const useRestrictionActions = () => {
   const authUser = firebaseAuth.currentUser;
   const queryClient = useQueryClient();
   const { selectedRoom } = useRoomContext();
+  const navigate = useNavigate();
 
   const createRestriction = useMutation({
     mutationFn: async (restriction: Omit<Restriction, "id">) => {
@@ -168,6 +170,9 @@ export const useRestrictionActions = () => {
         queryKey: ["restrictions", selectedRoom],
       });
     },
+    onSuccess: () => {
+      navigate("/app/restrictions");
+    },
   });
 
   const updateRestriction = useMutation({
@@ -207,6 +212,9 @@ export const useRestrictionActions = () => {
         queryKey: ["restrictions", selectedRoom],
       });
     },
+    onSuccess: () => {
+      navigate("/app/restrictions");
+    },
   });
 
   const deleteRestriction = useMutation({
@@ -238,6 +246,9 @@ export const useRestrictionActions = () => {
       queryClient.invalidateQueries({
         queryKey: ["restrictions", selectedRoom],
       });
+    },
+    onSuccess: () => {
+      navigate("/app/restrictions");
     },
   });
 

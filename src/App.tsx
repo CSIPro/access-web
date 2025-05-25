@@ -9,6 +9,7 @@ import { RoleProvider } from "./context/role-context";
 import { RoomProvider } from "./context/room-context";
 import { UserProvider } from "./context/user-context";
 import { AppIndex } from "./routes/app";
+import { EditProfilePage } from "./routes/app/edit-profile";
 import { LogsPage } from "./routes/app/logs";
 import { RoomMembers } from "./routes/app/members";
 import { NotificationsPage } from "./routes/app/notifications";
@@ -17,6 +18,7 @@ import { QRCodePage } from "./routes/app/qr-code";
 import { RoomRequests } from "./routes/app/requests";
 import { RoomRestrictions } from "./routes/app/restrictions";
 import { CreateRestriction } from "./routes/app/restrictions/create";
+import { EditRestriction } from "./routes/app/restrictions/edit-restriction";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
@@ -69,6 +71,11 @@ function App() {
               <Route path="/app/room-requests" element={<RoomRequests />} />
               <Route path="/app/passcode" element={<PasscodePage />} />
               <Route path="/app/restrictions" element={<RoomRestrictions />} />
+              <Route
+                path="/app/restrictions/:restrictionId"
+                element={<EditRestriction />}
+              />
+              <Route path="/app/edit-profile" element={<EditProfilePage />} />
               <Route
                 path="/app/restrictions/create"
                 element={<CreateRestriction />}
