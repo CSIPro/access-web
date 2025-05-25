@@ -1,9 +1,7 @@
-import { createContext, FC } from "react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 
 import { PopulatedRestriction } from "@/hooks/use-restrictions";
-
-const RestrictionContext = createContext<PopulatedRestriction | null>(null);
 
 interface Props {
   restriction: PopulatedRestriction;

@@ -18,13 +18,13 @@ import { QRCodePage } from "./routes/app/qr-code";
 import { RoomRequests } from "./routes/app/requests";
 import { RoomRestrictions } from "./routes/app/restrictions";
 import { CreateRestriction } from "./routes/app/restrictions/create";
+import { EditRestriction } from "./routes/app/restrictions/edit-restriction";
 import { AuthCallback } from "./routes/auth-callback/auth-callback";
 import { GithubLink } from "./routes/auth-callback/github-link";
 import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
 import { AuthedRoute } from "./routes/protected-route";
-import { EditRestriction } from "./routes/app/restrictions/edit-restriction";
 
 function App() {
   const { status, data, error } = useSigninCheck();
