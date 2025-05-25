@@ -24,6 +24,7 @@ import { CompleteSignup } from "./routes/complete-signup";
 import { Login } from "./routes/login";
 import { MainApp } from "./routes/main-app";
 import { AuthedRoute } from "./routes/protected-route";
+import { EditRestriction } from "./routes/app/restrictions/edit-restriction";
 
 function App() {
   const { status, data, error } = useSigninCheck();
@@ -70,6 +71,10 @@ function App() {
               <Route path="/app/room-requests" element={<RoomRequests />} />
               <Route path="/app/passcode" element={<PasscodePage />} />
               <Route path="/app/restrictions" element={<RoomRestrictions />} />
+              <Route
+                path="/app/restrictions/:restrictionId"
+                element={<EditRestriction />}
+              />
               <Route path="/app/edit-profile" element={<EditProfilePage />} />
               <Route
                 path="/app/restrictions/create"

@@ -1,10 +1,10 @@
-import { FC, HTMLAttributes } from "react";
+import { ButtonHTMLAttributes, FC } from "react";
 
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   isActive?: boolean;
 }
 
@@ -13,6 +13,7 @@ export const RestrictionDayButton: FC<Props> = ({
   isActive = false,
   onClick,
   className,
+  ...props
 }) => {
   return (
     <Button
@@ -22,6 +23,7 @@ export const RestrictionDayButton: FC<Props> = ({
         isActive && "bg-primary",
         className,
       )}
+      {...props}
     >
       {children}
     </Button>

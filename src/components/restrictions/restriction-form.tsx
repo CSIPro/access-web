@@ -7,7 +7,11 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { useRoomContext } from "@/context/room-context";
-import { Restriction, useRestrictionActions } from "@/hooks/use-restrictions";
+import {
+  PopulatedRestriction,
+  Restriction,
+  useRestrictionActions,
+} from "@/hooks/use-restrictions";
 import { useNestRoles } from "@/hooks/use-roles";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +56,7 @@ const RestrictionFormSchema = z.object({
 type RestrictionFormType = z.infer<typeof RestrictionFormSchema>;
 
 interface Props {
-  restriction?: Restriction | null;
+  restriction?: PopulatedRestriction | null;
 }
 
 export const RestrictionForm: FC<Props> = ({ restriction }) => {
@@ -82,8 +86,8 @@ export const RestrictionForm: FC<Props> = ({ restriction }) => {
   const form = useForm<RestrictionFormType>({
     resolver: zodResolver(RestrictionFormSchema),
     defaultValues: {
-      roomId: restriction?.roomId ?? selectedRoom ?? "",
-      roleId: restriction?.roleId ?? "",
+      roomId: restriction?.room.id ?? selectedRoom ?? "",
+      roleId: restriction?.role.id ?? "",
       daysBitmask: bitmask ?? Array(7).fill(true),
       startTime: new Date(
         new Date().setHours(+startHour, +startMinute, +startSecond),
@@ -242,6 +246,7 @@ export const RestrictionForm: FC<Props> = ({ restriction }) => {
                 <div className="flex w-full items-center justify-between gap-2">
                   {["D", "L", "M", "X", "J", "V", "S"].map((day, index) => (
                     <RestrictionDayButton
+                      type="button"
                       key={index}
                       isActive={field.value[index]}
                       onClick={() => {
