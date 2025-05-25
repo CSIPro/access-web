@@ -19,8 +19,9 @@ export const RestrictionDayButton: FC<Props> = ({
     <Button
       onClick={onClick}
       className={cn(
-        "w-full bg-primary/40 text-white",
-        isActive && "bg-primary",
+        "w-full bg-primary/40 text-white hover:bg-primary/50 focus:bg-primary/50 active:bg-primary/50",
+        isActive &&
+          "bg-primary text-white hover:bg-primary/70 focus:bg-primary/70 active:bg-primary/70",
         className,
       )}
       {...props}
