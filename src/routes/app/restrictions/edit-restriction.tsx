@@ -11,7 +11,7 @@ export const EditRestriction = () => {
       <Header title="Editar restricción" />
       <main className="flex h-full min-h-[100svh] w-full flex-col items-center gap-2 p-2">
         <div className="h-64" />
-        <PibleScanner />
+        {!!navigator.bluetooth && <PibleScanner />}
       </main>
     </div>
   );
