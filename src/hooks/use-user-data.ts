@@ -227,6 +227,10 @@ export const useNestUser = (userId?: string) => {
       });
 
       if (!res.ok) {
+        if (res.status === 404) {
+          return null;
+        }
+
         const errorParse = NestError.safeParse(await res.json());
 
         if (errorParse.success) {
@@ -248,6 +252,10 @@ export const useNestUser = (userId?: string) => {
     },
     onSuccess: (data) => {
       if (userId) {
+        return;
+      }
+
+      if (!data) {
         return;
       }
 
