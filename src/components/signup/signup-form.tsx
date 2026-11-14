@@ -73,7 +73,7 @@ export const SignupForm = () => {
     }
   }, [createUser, createRequest]);
 
-  if (status === "loading") {
+  if (status === "pending") {
     return (
       <div className="flex flex-col items-center justify-center pt-12">
         <LoadingSpinner />
@@ -239,7 +239,7 @@ export const SignupForm = () => {
             </FormItem>
           )}
         />
-        {createUser.isLoading || createRequest.isLoading ? (
+        {createUser.isPending || createRequest.isPending ? (
           <LoadingSpinner />
         ) : (
           <Button

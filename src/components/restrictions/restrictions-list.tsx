@@ -9,7 +9,15 @@ import { LoadingSpinner } from "../ui/spinner";
 export const RestrictionsList = () => {
   const restrictions = useRoomRestrictions();
 
-  if (restrictions.isLoading) {
+  if (!restrictions.data) {
+    if (restrictions.isError) {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <p>Ocurrió un error al obtener las restricciones</p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />
@@ -18,15 +26,7 @@ export const RestrictionsList = () => {
     );
   }
 
-  if (restrictions.isError) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <p>Ocurrió un error al obtener las restricciones</p>
-      </div>
-    );
-  }
-
-  if (restrictions.data?.length === 0) {
+  if (restrictions.data.length === 0) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-center">
         <p>No hay restricciones activas</p>
@@ -43,7 +43,7 @@ export const RestrictionsList = () => {
   return (
     <ul className="flex w-full flex-col gap-2">
       <AddRestriction />
-      {restrictions.data?.map((restriction) => (
+      {restrictions.data.map((restriction) => (
         <li key={restriction.id} className="w-full">
           <RestrictionItem restriction={restriction} />
         </li>

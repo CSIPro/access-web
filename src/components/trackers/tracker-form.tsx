@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "react-query";
 import { useAuth } from "reactfire";
 import { z } from "zod";
 
@@ -30,22 +30,24 @@ export const TrackerForm = () => {
   const { selectedRoom } = useContext(RoomContext);
 
   const queryClient = useQueryClient();
-  const { status, mutateAsync } = useMutation(async (name: string) => {
-    const res = await fetch(
-      `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/add`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+  const { status, mutateAsync } = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await auth.currentUser?.getIdToken()}`,
+          },
+          body: JSON.stringify({ name, roomId: selectedRoom }),
         },
-        body: JSON.stringify({ name, roomId: selectedRoom }),
-      },
-    );
+      );
 
-    const data = await res.json();
+      const data = await res.json();
 
-    return data;
+      return data;
+    },
   });
 
   const form = useForm<TrackerFormFields>({
@@ -53,11 +55,11 @@ export const TrackerForm = () => {
   });
 
   const onSubmit = async (data: TrackerFormFields) => {
-    if (status === "loading") return;
+    if (status === "pending") return;
 
     try {
       await mutateAsync(data.name);
-      queryClient.invalidateQueries(["trackers", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["trackers", selectedRoom] });
 
       form.reset();
     } catch (error) {
@@ -95,7 +97,7 @@ export const TrackerForm = () => {
           type="submit"
           className="bg-primary uppercase text-white hover:brightness-110 focus:brightness-110"
         >
-          {status === "loading" ? <LoadingSpinner /> : "Submit"}
+          {status === "pending" ? <LoadingSpinner /> : "Submit"}
         </Button>
       </form>
     </Form>

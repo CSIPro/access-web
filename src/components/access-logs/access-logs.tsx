@@ -13,19 +13,19 @@ interface Props {
 export const AccessLogs: FC<Props> = ({ limit }) => {
   const { status: logsStatus, data: logs } = useNestLogs({ limitTo: limit });
 
-  if (logsStatus === "loading") {
+  if (!logs) {
+    if (logsStatus === "error") {
+      return (
+        <div className="flex h-full w-full flex-col items-center justify-center">
+          <p>No fue posible conectar con el servidor</p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />
         <p>Obteniendo registros...</p>
-      </div>
-    );
-  }
-
-  if (logsStatus === "error") {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center">
-        <p>No fue posible conectar con el servidor</p>
       </div>
     );
   }

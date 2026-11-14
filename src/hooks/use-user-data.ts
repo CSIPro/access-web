@@ -1,12 +1,11 @@
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { Timestamp, doc } from "firebase/firestore";
 import { useContext } from "react";
-import { useMutation, useQuery } from "react-query";
 import { useFirestore, useFirestoreDocData, useUser } from "reactfire";
 import * as z from "zod";
 
 import { RoomContext } from "@/context/room-context";
 import { firebaseAuth } from "@/firebase";
-import { loadFromCache, saveToCache } from "@/lib/cache";
 import { BASE_API_URL, NestError, PASSCODE_REGEX } from "@/lib/utils";
 
 export const userRoomRoleSchema = z.object({
@@ -212,10 +211,10 @@ export const NestUser = z.object({
 
 export type NestUser = z.infer<typeof NestUser>;
 
-export const useNestUser = (userId?: string) => {
+export const nestUserQueryOptions = (userId?: string) => {
   const authUser = firebaseAuth.currentUser;
 
-  const userQuery = useQuery({
+  return queryOptions({
     queryKey: ["user", userId ?? authUser?.uid],
     queryFn: async () => {
       const fullApiUrl = `${BASE_API_URL}/users/find-one/?${
@@ -248,40 +247,19 @@ export const useNestUser = (userId?: string) => {
         throw new Error("Failed to parse user data");
       }
 
-      return userParse.data;
-    },
-    onSuccess: (data) => {
-      if (userId) {
-        return;
-      }
+      // The API still sends the passcode. Dropping it here keeps it out of the
+      // query cache, and so out of the persisted cache.
+      const { passcode: _passcode, ...user } = userParse.data;
 
-      if (!data) {
-        return;
-      }
-
-      saveToCache("USER", data);
-      saveToCache("USER_ID", data.id);
-    },
-    initialData: () => {
-      if (userId) {
-        return;
-      }
-
-      const cachedData = loadFromCache("USER");
-
-      const userParse = NestUser.safeParse(cachedData);
-
-      if (!userParse.success) {
-        return;
-      }
-
-      return userParse.data;
+      return user;
     },
     refetchInterval: 20000,
     retryDelay: 5000,
   });
+};
 
-  return userQuery;
+export const useNestUser = (userId?: string) => {
+  return useQuery(nestUserQueryOptions(userId));
 };
 
 export const SignUpForm = z.object({
@@ -359,8 +337,8 @@ export type UserResponse = z.infer<typeof UserResponse>;
 export const useCreateUser = () => {
   const authUser = firebaseAuth.currentUser;
 
-  const createUser = useMutation<UserResponse, Error, SignUpForm>(
-    async (formData: SignUpForm) => {
+  const createUser = useMutation<UserResponse, Error, SignUpForm>({
+    mutationFn: async (formData: SignUpForm) => {
       if (!authUser) {
         throw new Error("You don't seem to be logged in...");
       }
@@ -405,7 +383,7 @@ export const useCreateUser = () => {
 
       return userResParse.data;
     },
-  );
+  });
 
   return createUser;
 };

@@ -1,10 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Timestamp } from "firebase/firestore";
 import { useContext, useState } from "react";
 import { BiEditAlt, BiReset } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 import { IoPerson, IoTime } from "react-icons/io5";
-import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { useAuth } from "reactfire";
 
@@ -57,7 +57,7 @@ export const TrackerDetails = () => {
     },
   });
 
-  if (status === "loading") {
+  if (status === "pending") {
     return (
       <>
         <Header title="Tracker Details" backTo="/app/tracker" />

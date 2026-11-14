@@ -1,6 +1,6 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FC, useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useAuth } from "reactfire";
 import { z } from "zod";
 
@@ -90,7 +90,7 @@ export const TrackerParticipants: FC<Props> = ({ trackerId }) => {
 
   return (
     <ScrollArea className="w-full whitespace-nowrap rounded-sm border-2 border-primary py-2">
-      {status === "loading" ? (
+      {status === "pending" ? (
         <div className="flex h-full w-full items-center justify-center">
           <LoadingSpinner size="small" />
         </div>
@@ -175,8 +175,8 @@ export const AddParticipants: FC<{
     enabled: dialogOpen,
   });
 
-  const { status: mutationStatus, mutate } = useMutation<string[], Error>(
-    async () => {
+  const { status: mutationStatus, mutate } = useMutation<string[], Error>({
+    mutationFn: async () => {
       const res = await fetch(
         `${
           import.meta.env.VITE_ACCESS_API_URL
@@ -204,23 +204,25 @@ export const AddParticipants: FC<{
 
       return response.data.participants;
     },
-    {
-      onSuccess: (_) => {
-        toast.success("Participants added successfully");
-        queryClient.invalidateQueries(["tracker", trackerId]);
-        queryClient.invalidateQueries(["tracker-lapses", trackerId]);
-        queryClient.invalidateQueries(["tracker-participants", trackerId]);
-        setSelectedIds([]);
-        setDialogOpen(false);
-      },
-      onError: (_) => {
-        setDialogOpen(false);
-      },
+    onSuccess: (_) => {
+      toast.success("Participants added successfully");
+      queryClient.invalidateQueries({ queryKey: ["tracker", trackerId] });
+      queryClient.invalidateQueries({
+        queryKey: ["tracker-lapses", trackerId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tracker-participants", trackerId],
+      });
+      setSelectedIds([]);
+      setDialogOpen(false);
     },
-  );
+    onError: (_) => {
+      setDialogOpen(false);
+    },
+  });
 
   const handleSubmitParticipants = async () => {
-    if (mutationStatus === "loading") return;
+    if (mutationStatus === "pending") return;
     if (selectedIds.length === 0) return;
 
     mutate();
@@ -248,7 +250,7 @@ export const AddParticipants: FC<{
         <DialogHeader>
           <DialogTitle>Add people to this tracker</DialogTitle>
         </DialogHeader>
-        {status === "loading" && (
+        {status === "pending" && (
           <div className="flex h-full w-full items-center justify-center">
             <LoadingSpinner size="small" />
           </div>
@@ -294,7 +296,7 @@ export const AddParticipants: FC<{
             onClick={handleSubmitParticipants}
             className="select-none text-lg"
           >
-            {mutationStatus === "loading" ? (
+            {mutationStatus === "pending" ? (
               <LoadingSpinner size="small" />
             ) : (
               "Submit"
@@ -318,8 +320,8 @@ export const RemoveParticipants: FC<{
   const auth = useAuth();
   const queryClient = useQueryClient();
 
-  const { status: mutationStatus, mutate } = useMutation<string[], Error>(
-    async () => {
+  const { status: mutationStatus, mutate } = useMutation<string[], Error>({
+    mutationFn: async () => {
       const res = await fetch(
         `${
           import.meta.env.VITE_ACCESS_API_URL
@@ -347,23 +349,23 @@ export const RemoveParticipants: FC<{
 
       return response.data.participants;
     },
-    {
-      onSuccess: (_) => {
-        toast.success("Participants removed successfully");
-        queryClient.invalidateQueries(["tracker", trackerId]);
-        queryClient.invalidateQueries(["tracker-lapses", trackerId]);
-        setSelectedIds([]);
-        setDialogOpen(false);
-      },
-      onError: (error) => {
-        toast.error(error.message);
-        setDialogOpen(false);
-      },
+    onSuccess: (_) => {
+      toast.success("Participants removed successfully");
+      queryClient.invalidateQueries({ queryKey: ["tracker", trackerId] });
+      queryClient.invalidateQueries({
+        queryKey: ["tracker-lapses", trackerId],
+      });
+      setSelectedIds([]);
+      setDialogOpen(false);
     },
-  );
+    onError: (error) => {
+      toast.error(error.message);
+      setDialogOpen(false);
+    },
+  });
 
   const handleSubmitParticipants = async () => {
-    if (mutationStatus === "loading") return;
+    if (mutationStatus === "pending") return;
     if (selectedIds.length === 0) return;
 
     mutate();
@@ -430,7 +432,7 @@ export const RemoveParticipants: FC<{
             onClick={handleSubmitParticipants}
             className="select-none bg-secondary text-lg hover:bg-secondary hover:brightness-110 focus:bg-secondary focus:brightness-110"
           >
-            {mutationStatus === "loading" ? (
+            {mutationStatus === "pending" ? (
               <LoadingSpinner size="small" />
             ) : (
               "Remove"
