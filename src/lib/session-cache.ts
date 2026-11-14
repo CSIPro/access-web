@@ -76,6 +76,12 @@ export const createSessionCache = ({
         refetchOnWindowFocus: true,
         retry: false,
         gcTime: SEVEN_DAYS,
+        // v5 pauses fetches while offline. Failing instead lets the screens
+        // show their error state when there is nothing cached.
+        networkMode: "always",
+      },
+      mutations: {
+        networkMode: "always",
       },
     },
   });

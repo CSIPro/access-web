@@ -1,11 +1,21 @@
+import { onlineManager } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { clear, entries } from "idb-keyval";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { nestLogsQueryOptions } from "@/hooks/use-logs";
+import { qrTokenQueryOptions } from "@/hooks/use-qr-token";
+import {
+  nestMembersByRoleQueryOptions,
+  nestMembersQueryOptions,
+} from "@/hooks/use-room-members";
 import { nestUserQueryOptions } from "@/hooks/use-user-data";
 
 import { AuthLike, createSessionCache } from "./session-cache";
+
+vi.mock("axios", () => ({
+  default: { get: vi.fn(async () => ({ data: { token: QR_TOKEN } })) },
+}));
 
 vi.mock("@/firebase", () => ({
   firebaseAuth: {
@@ -13,7 +23,10 @@ vi.mock("@/firebase", () => ({
   },
 }));
 
+const { QR_TOKEN } = vi.hoisted(() => ({ QR_TOKEN: "qr-token-4f9a1c" }));
+
 const USER_PASSCODE = "9D9D1C";
+const MEMBER_PASSCODE = "2B2B7D";
 const FAILED_ATTEMPT_PASSCODE = "3C3C2B";
 
 const apiUser = {
@@ -62,6 +75,20 @@ const apiLogs = [
   },
 ];
 
+const apiMember = {
+  id: "membership-1",
+  canAccess: true,
+  user: {
+    id: "user-2",
+    firstName: "Grace",
+    lastName: "Hopper",
+    passcode: MEMBER_PASSCODE,
+    csiId: 5678,
+  },
+  role: { id: "role-1", name: "Member", level: 1 },
+  room: { id: "room-1", name: "Lab" },
+};
+
 const respondWithJson = (body: unknown) =>
   new Response(JSON.stringify(body), {
     status: 200,
@@ -74,6 +101,14 @@ const stubApi = () => {
     vi.fn(async (url: string) => {
       if (url.includes("/users/find-one")) return respondWithJson(apiUser);
       if (url.includes("/access-logs/room/")) return respondWithJson(apiLogs);
+      if (url.includes("groupByRole=true")) {
+        return respondWithJson([
+          { id: "role-1", name: "Member", level: 1, members: [apiMember] },
+        ]);
+      }
+      if (url.endsWith("/rooms/room-1/members")) {
+        return respondWithJson([apiMember]);
+      }
 
       return new Response(null, { status: 404 });
     }),
@@ -166,6 +201,59 @@ describe("session cache", () => {
 
     expect(stored).not.toContain(USER_PASSCODE);
     expect(stored).not.toContain(FAILED_ATTEMPT_PASSCODE);
+  });
+
+  it("never writes a member's passcode to disk", async () => {
+    const app = await launchApp({ lastUid: "auth-uid-1" });
+
+    await app.queryClient.fetchQuery(nestMembersQueryOptions("room-1"));
+    await waitForDiskToHold("Hopper");
+
+    expect(await readDisk()).not.toContain(MEMBER_PASSCODE);
+  });
+
+  it("never writes a grouped member's passcode to disk", async () => {
+    const app = await launchApp({ lastUid: "auth-uid-1" });
+
+    await app.queryClient.fetchQuery(nestMembersByRoleQueryOptions("room-1"));
+    await waitForDiskToHold("Hopper");
+
+    expect(await readDisk()).not.toContain(MEMBER_PASSCODE);
+  });
+
+  it("does not persist a query that opts out with meta.persist", async () => {
+    const app = await launchApp({ lastUid: "auth-uid-1" });
+
+    await app.queryClient.fetchQuery(
+      qrTokenQueryOptions({ getIdToken: async () => "id-token" }),
+    );
+    await app.queryClient.fetchQuery(nestUserQueryOptions());
+    await waitForDiskToHold("Lovelace");
+
+    expect(app.queryClient.getQueryData(["qr-token"])).toBeDefined();
+    expect(await readDisk()).not.toContain(QR_TOKEN);
+  });
+
+  it("fails fetches while offline instead of pausing them", async () => {
+    const app = await launchApp({ lastUid: "auth-uid-1" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("Failed to fetch");
+      }),
+    );
+    onlineManager.setOnline(false);
+
+    try {
+      await expect(
+        app.queryClient.fetchQuery(nestUserQueryOptions()),
+      ).rejects.toThrow("Failed to fetch");
+      expect(
+        app.queryClient.getQueryState(["user", "auth-uid-1"])?.status,
+      ).toBe("error");
+    } finally {
+      onlineManager.setOnline(true);
+    }
   });
 
   it("restores the cache for the same user and version", async () => {
