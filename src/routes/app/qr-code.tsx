@@ -11,7 +11,7 @@ export const QRCodePage = () => {
     return <Splash loading />;
   }
 
-  if (userStatus === "error") {
+  if (userStatus === "error" && !userData) {
     return <Splash message={userError?.message ?? "Something went wrong"} />;
   }
 

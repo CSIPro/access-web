@@ -1,10 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, formatDistanceToNow } from "date-fns";
 import { Timestamp } from "firebase/firestore";
 import { FC, useState } from "react";
 import toast from "react-hot-toast";
 import { IconContext } from "react-icons";
 import { IoArrowDown } from "react-icons/io5";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useAuth } from "reactfire";
 import { z } from "zod";
 
@@ -95,7 +95,7 @@ export const TrackerLapses: FC<Props> = ({ trackerId }) => {
   return (
     <ScrollArea className="rounded-sm border-2 border-primary">
       <div className="flex w-full items-start p-2 py-4">
-        {status === "loading" && (
+        {status === "pending" && (
           <div className="flex h-full w-full items-center justify-center">
             <LoadingSpinner size="small" />
           </div>
@@ -166,8 +166,8 @@ const LapseDetails: FC<{ lapse: TrackerLapse; onSubmit: () => void }> = ({
   const auth = useAuth();
 
   const queryClient = useQueryClient();
-  const { status, mutate } = useMutation(
-    async () => {
+  const { status, mutate } = useMutation({
+    mutationFn: async () => {
       const res = await fetch(
         `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/revert/${
           lapse.id
@@ -185,20 +185,20 @@ const LapseDetails: FC<{ lapse: TrackerLapse; onSubmit: () => void }> = ({
         throw new Error("Failed to revert time lapse");
       }
     },
-    {
-      onSuccess: () => {
-        toast.success("Time lapse reverted successfully");
-        onSubmit();
-      },
-      onError: () => {
-        toast.error("Failed to revert time lapse");
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries(["tracker-lapses", lapse.trackerId]);
-        queryClient.invalidateQueries(["tracker", lapse.trackerId]);
-      },
+    onSuccess: () => {
+      toast.success("Time lapse reverted successfully");
+      onSubmit();
     },
-  );
+    onError: () => {
+      toast.error("Failed to revert time lapse");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["tracker-lapses", lapse.trackerId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["tracker", lapse.trackerId] });
+    },
+  });
 
   const formatDate = (timestamp?: SerializedTimestamp) => {
     if (!timestamp) return "N/A";
@@ -274,14 +274,14 @@ const LapseDetails: FC<{ lapse: TrackerLapse; onSubmit: () => void }> = ({
           </div>
         ) : null}
         <Button
-          disabled={status === "loading" || lapse.changeType === "rollback"}
+          disabled={status === "pending" || lapse.changeType === "rollback"}
           onClick={() => {
-            if (status === "loading") return;
+            if (status === "pending") return;
             mutate();
           }}
           className="bg-secondary hover:bg-secondary hover:brightness-110 focus:bg-secondary focus:brightness-110 active:bg-secondary active:brightness-110"
         >
-          {status === "loading" ? (
+          {status === "pending" ? (
             <LoadingSpinner size="small" />
           ) : lapse.changeType === "rollback" ? (
             "No revertceptions allowed"

@@ -149,7 +149,7 @@ export const RestrictionForm: FC<Props> = ({ restriction }) => {
 
   const handleDeleteRestriction = async () => {
     if (!restriction) return;
-    if (deleteRestriction.isLoading) return;
+    if (deleteRestriction.isPending) return;
 
     try {
       deleteRestriction.mutate(restriction.id);
@@ -476,9 +476,9 @@ export const RestrictionForm: FC<Props> = ({ restriction }) => {
             type="submit"
             className="basis-2/3"
             disabled={
-              createRestriction.isLoading ||
-              updateRestriction.isLoading ||
-              deleteRestriction.isLoading
+              createRestriction.isPending ||
+              updateRestriction.isPending ||
+              deleteRestriction.isPending
             }
           >
             {restriction ? "Guardar restricción" : "Crear restricción"}
@@ -489,14 +489,14 @@ export const RestrictionForm: FC<Props> = ({ restriction }) => {
             variant="textSecondary"
             type="button"
             onClick={handleDeleteRestriction}
-            disabled={deleteRestriction.isLoading}
+            disabled={deleteRestriction.isPending}
           >
             Eliminar restricción
           </Button>
         )}
-        {(createRestriction.isLoading ||
-          updateRestriction.isLoading ||
-          deleteRestriction.isLoading) && (
+        {(createRestriction.isPending ||
+          updateRestriction.isPending ||
+          deleteRestriction.isPending) && (
           <div className="flex w-full items-center justify-center pt-4">
             <LoadingSpinner />
           </div>

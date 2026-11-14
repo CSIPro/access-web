@@ -1,12 +1,11 @@
 import { FC, ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "reactfire";
 
 import { Splash } from "@/components/splash/splash";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { useNestUser } from "@/hooks/use-user-data";
-import { deleteAllFromStorage } from "@/lib/local-storage";
+import { signOut } from "@/lib/session-cache";
 
 interface Props {
   isAuthenticated: boolean;
@@ -19,33 +18,27 @@ export const AuthedRoute: FC<Props> = ({
   redirectPath = "/login",
   children,
 }) => {
-  const auth = useAuth();
-  const { isLoading, isFetching, data, error, refetch } = useNestUser();
-
-  const signOut = () => {
-    deleteAllFromStorage();
-    auth.signOut();
-  };
+  const { isPending, isFetching, data, error, refetch } = useNestUser();
 
   if (!isAuthenticated) {
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (isLoading) {
+  if (isPending) {
     return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 
-  if (error) {
+  if (data === undefined && error) {
     return (
       <Splash message="No fue posible conectar con el servidor">
         <div className="flex items-center gap-2">
           <Button
-            onClick={isFetching || isLoading ? undefined : () => refetch()}
+            onClick={isFetching || isPending ? undefined : () => refetch()}
           >
-            {isFetching || isLoading ? <LoadingSpinner /> : "Reintentar"}
+            {isFetching || isPending ? <LoadingSpinner /> : "Reintentar"}
           </Button>
           <Button
-            onClick={() => signOut()}
+            onClick={() => void signOut()}
             variant="secondary"
             className="text-white"
           >
@@ -74,7 +67,7 @@ export const UnauthedRoute: FC<Props> = ({
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (status === "loading") {
+  if (status === "pending") {
     return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 

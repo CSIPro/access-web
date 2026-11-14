@@ -1,6 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { useQuery } from "react-query";
 import { useAuth } from "reactfire";
 import { z } from "zod";
 
@@ -77,7 +77,7 @@ export const TrackersDashboard = () => {
     },
   );
 
-  if (status === "loading") {
+  if (status === "pending") {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <LoadingSpinner />

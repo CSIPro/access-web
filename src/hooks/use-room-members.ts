@@ -1,6 +1,11 @@
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { collectionGroup, query, where } from "firebase/firestore";
 import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useFirestore, useFirestoreCollection } from "reactfire";
 import { z } from "zod";
 
@@ -92,7 +97,9 @@ export const useRoomMembersByRole = (roleId: string) => {
 export const Member = z.object({
   id: z.string(),
   canAccess: z.boolean(),
-  user: NestUser.partial(),
+  // The API still sends each member's passcode. Leaving it out of the schema
+  // makes the parse drop it, which keeps it out of the persisted cache.
+  user: NestUser.omit({ passcode: true }).partial(),
   role: NestRole.partial(),
   room: NestRoom.partial(),
 });
@@ -108,16 +115,13 @@ export const RoleWithMembers = z.object({
 
 export type RoleWithMembers = z.infer<typeof RoleWithMembers>;
 
-export const useNestMembers = (roomId?: string) => {
+export const nestMembersQueryOptions = (roomId?: string) => {
   const authUser = firebaseAuth.currentUser;
-  const { selectedRoom } = useRoomContext();
 
-  const membersQuery = useQuery({
-    queryKey: ["members", roomId ?? selectedRoom],
+  return queryOptions({
+    queryKey: ["members", roomId],
     queryFn: async () => {
-      const fullApiUrl = `${BASE_API_URL}/rooms/${
-        roomId ?? selectedRoom
-      }/members`;
+      const fullApiUrl = `${BASE_API_URL}/rooms/${roomId}/members`;
 
       const res = await fetch(fullApiUrl, {
         headers: {
@@ -146,20 +150,21 @@ export const useNestMembers = (roomId?: string) => {
       return membersParse.data;
     },
   });
-
-  return membersQuery;
 };
 
-export const useNestMembersByRole = (roomId?: string) => {
-  const authUser = firebaseAuth.currentUser;
+export const useNestMembers = (roomId?: string) => {
   const { selectedRoom } = useRoomContext();
 
-  const membersQuery = useQuery({
-    queryKey: ["members", roomId ?? selectedRoom],
+  return useQuery(nestMembersQueryOptions(roomId ?? selectedRoom));
+};
+
+export const nestMembersByRoleQueryOptions = (roomId?: string) => {
+  const authUser = firebaseAuth.currentUser;
+
+  return queryOptions({
+    queryKey: ["members", roomId],
     queryFn: async () => {
-      const fullApiUrl = `${BASE_API_URL}/rooms/${
-        roomId ?? selectedRoom
-      }/members?groupByRole=true`;
+      const fullApiUrl = `${BASE_API_URL}/rooms/${roomId}/members?groupByRole=true`;
 
       const res = await fetch(fullApiUrl, {
         headers: {
@@ -200,8 +205,12 @@ export const useNestMembersByRole = (roomId?: string) => {
     retryDelay: 5000,
     refetchInterval: 20000,
   });
+};
 
-  return membersQuery;
+export const useNestMembersByRole = (roomId?: string) => {
+  const { selectedRoom } = useRoomContext();
+
+  return useQuery(nestMembersByRoleQueryOptions(roomId ?? selectedRoom));
 };
 
 export const useMemberActions = (userId: string) => {
@@ -236,8 +245,8 @@ export const useMemberActions = (userId: string) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["user", userId]);
-      queryClient.invalidateQueries(["members", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["members", selectedRoom] });
     },
   });
 
@@ -269,35 +278,37 @@ export const useMemberActions = (userId: string) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["user", userId]);
-      queryClient.invalidateQueries(["members", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["members", selectedRoom] });
     },
   });
 
-  const kickMember = useMutation(async () => {
-    const res = await fetch(
-      `${BASE_API_URL}/rooms/${selectedRoom}/member/${userId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${await firebaseAuth.currentUser?.getIdToken()}`,
-          "Content-Type": "application/json",
+  const kickMember = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(
+        `${BASE_API_URL}/rooms/${selectedRoom}/member/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${await firebaseAuth.currentUser?.getIdToken()}`,
+            "Content-Type": "application/json",
+          },
         },
-      },
-    );
+      );
 
-    if (!res.ok) {
-      const errorParse = NestError.safeParse(await res.json());
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(await res.json());
 
-      if (errorParse.success) {
-        throw new Error(errorParse.data.message);
-      } else {
-        throw new Error("Failed to kick member");
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        } else {
+          throw new Error("Failed to kick member");
+        }
       }
-    }
 
-    queryClient.invalidateQueries(["user", userId]);
-    queryClient.invalidateQueries(["members", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["members", selectedRoom] });
+    },
   });
 
   return {

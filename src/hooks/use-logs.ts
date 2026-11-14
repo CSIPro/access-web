@@ -1,4 +1,10 @@
 import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
   Timestamp,
   collection,
   limit,
@@ -7,7 +13,6 @@ import {
   where,
 } from "firebase/firestore";
 import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import * as z from "zod";
 
@@ -228,10 +233,8 @@ export const NestLog = z.object({
 
 export type NestLog = z.infer<typeof NestLog>;
 
-export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
-  const { selectedRoom } = useRoomContext();
-
-  const logsQuery = useQuery({
+export const nestLogsQueryOptions = (selectedRoom?: string, limitTo = 40) =>
+  queryOptions({
     queryKey: ["logs", selectedRoom, limitTo],
     queryFn: async () => {
       const res = await fetch(
@@ -255,46 +258,61 @@ export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
         throw new Error("An error occurred while parsing logs");
       }
 
-      return logsParse.data;
+      // The API still sends the passcode of failed attempts. Dropping it here
+      // keeps it out of the query cache, and so out of the persisted cache.
+      return logsParse.data.map(({ attempt, ...log }) => {
+        if (!attempt) {
+          return { ...log, attempt };
+        }
+
+        const { passcode: _passcode, ...safeAttempt } = attempt;
+
+        return { ...log, attempt: safeAttempt };
+      });
     },
     refetchInterval: 10000,
   });
 
-  return logsQuery;
+export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
+  const { selectedRoom } = useRoomContext();
+
+  return useQuery(nestLogsQueryOptions(selectedRoom, limitTo));
 };
 
 export const useLogActions = (id: string) => {
   const queryClient = useQueryClient();
   const authUser = firebaseAuth.currentUser;
 
-  const deleteLog = useMutation(async () => {
-    if (!authUser) {
-      throw new Error("You don't seem to be logged in...");
-    }
-
-    const token = await authUser.getIdToken();
-
-    const res = await fetch(`${BASE_API_URL}/access-logs/delete-log/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      const errorParse = NestError.safeParse(data);
-
-      if (errorParse.success) {
-        throw new Error(errorParse.data.message);
+  const deleteLog = useMutation({
+    mutationFn: async () => {
+      if (!authUser) {
+        throw new Error("You don't seem to be logged in...");
       }
 
-      throw new Error("Something went wrong while deleting the log");
-    }
+      const token = await authUser.getIdToken();
 
-    queryClient.invalidateQueries(["logs"]);
+      const res = await fetch(`${BASE_API_URL}/access-logs/delete-log/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(data);
+
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        }
+
+        throw new Error("Something went wrong while deleting the log");
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["logs"] });
+    },
   });
 
   return { deleteLog };
