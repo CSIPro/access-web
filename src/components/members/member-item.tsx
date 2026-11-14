@@ -35,7 +35,7 @@ export const MemberItem: FC<Props> = ({ member }) => {
   const memberQuery = useNestUser(member.user.id);
   const { accessUpdate } = useMemberActions(member.user.id!);
 
-  if (memberQuery.status === "loading") {
+  if (memberQuery.status === "pending") {
     return (
       <li className="flex w-full items-center justify-center gap-2 p-2">
         <LoadingSpinner />

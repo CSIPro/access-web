@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
@@ -98,18 +98,16 @@ const pushNotification = async (form: NotificationForm) => {
 export const NotificationsPage = () => {
   const navigate = useNavigate();
 
-  const sendNotification = useMutation<void, Error, NotificationForm, void>(
-    pushNotification,
-    {
-      onSuccess: () => {
-        toast.success("Notificación enviada");
-        navigate("/app");
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+  const sendNotification = useMutation<void, Error, NotificationForm, void>({
+    mutationFn: pushNotification,
+    onSuccess: () => {
+      toast.success("Notificación enviada");
+      navigate("/app");
     },
-  );
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
   const { user } = useUserContext();
   const { rooms } = useRoomContext();
   const { status: membershipsStatus, data: memberships } = useMemberships(
@@ -126,7 +124,7 @@ export const NotificationsPage = () => {
     },
   });
 
-  if (membershipsStatus === "loading") {
+  if (membershipsStatus === "pending") {
     return (
       <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
         <Header title="Notificaciones" />
@@ -254,7 +252,7 @@ export const NotificationsPage = () => {
                 </FormItem>
               )}
             />
-            {sendNotification.isLoading ? (
+            {sendNotification.isPending ? (
               <div className="flex w-full items-center justify-center">
                 <LoadingSpinner onBackground />
               </div>

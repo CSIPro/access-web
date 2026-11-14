@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { useRoomContext } from "@/context/room-context";
@@ -159,8 +159,12 @@ export const useNestRequestHelpers = (request?: PopulatedNestRequest) => {
         throw new Error("An error occurred while approving request");
       }
 
-      queryClient.invalidateQueries(["requests", request?.room.id]);
-      queryClient.invalidateQueries(["members", request?.room.id]);
+      queryClient.invalidateQueries({
+        queryKey: ["requests", request?.room.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["members", request?.room.id],
+      });
     },
   });
 
@@ -186,8 +190,12 @@ export const useNestRequestHelpers = (request?: PopulatedNestRequest) => {
         throw new Error("An error occurred while rejecting request");
       }
 
-      queryClient.invalidateQueries(["requests", request?.room.id]);
-      queryClient.invalidateQueries(["members", request?.room.id]);
+      queryClient.invalidateQueries({
+        queryKey: ["requests", request?.room.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["members", request?.room.id],
+      });
     },
   });
 
@@ -212,7 +220,7 @@ export const useNestRequestHelpers = (request?: PopulatedNestRequest) => {
         throw new Error("An error occurred while creating request");
       }
 
-      queryClient.invalidateQueries(["requests", roomId]);
+      queryClient.invalidateQueries({ queryKey: ["requests", roomId] });
     },
   });
 

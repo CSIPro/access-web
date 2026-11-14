@@ -13,7 +13,7 @@ interface Props {
 export const AccessLogs: FC<Props> = ({ limit }) => {
   const { status: logsStatus, data: logs } = useNestLogs({ limitTo: limit });
 
-  if (logsStatus === "loading") {
+  if (logsStatus === "pending") {
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />

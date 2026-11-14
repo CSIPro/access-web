@@ -20,7 +20,7 @@ export const AuthedRoute: FC<Props> = ({
   children,
 }) => {
   const auth = useAuth();
-  const { isLoading, isFetching, data, error, refetch } = useNestUser();
+  const { isPending, isFetching, data, error, refetch } = useNestUser();
 
   const signOut = () => {
     deleteAllFromStorage();
@@ -31,7 +31,7 @@ export const AuthedRoute: FC<Props> = ({
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (isLoading) {
+  if (isPending) {
     return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 
@@ -40,9 +40,9 @@ export const AuthedRoute: FC<Props> = ({
       <Splash message="No fue posible conectar con el servidor">
         <div className="flex items-center gap-2">
           <Button
-            onClick={isFetching || isLoading ? undefined : () => refetch()}
+            onClick={isFetching || isPending ? undefined : () => refetch()}
           >
-            {isFetching || isLoading ? <LoadingSpinner /> : "Reintentar"}
+            {isFetching || isPending ? <LoadingSpinner /> : "Reintentar"}
           </Button>
           <Button
             onClick={() => signOut()}
@@ -74,7 +74,7 @@ export const UnauthedRoute: FC<Props> = ({
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (status === "loading") {
+  if (status === "pending") {
     return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 

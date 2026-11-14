@@ -6,7 +6,7 @@ import { LoadingSpinner } from "../ui/spinner";
 export const RoleList = () => {
   const { status, data } = useNestMembersByRole();
 
-  if (status === "loading") {
+  if (status === "pending") {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <LoadingSpinner onBackground />

@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Timestamp,
   collection,
@@ -7,7 +8,6 @@ import {
   where,
 } from "firebase/firestore";
 import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import * as z from "zod";
 
@@ -267,34 +267,36 @@ export const useLogActions = (id: string) => {
   const queryClient = useQueryClient();
   const authUser = firebaseAuth.currentUser;
 
-  const deleteLog = useMutation(async () => {
-    if (!authUser) {
-      throw new Error("You don't seem to be logged in...");
-    }
-
-    const token = await authUser.getIdToken();
-
-    const res = await fetch(`${BASE_API_URL}/access-logs/delete-log/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      const errorParse = NestError.safeParse(data);
-
-      if (errorParse.success) {
-        throw new Error(errorParse.data.message);
+  const deleteLog = useMutation({
+    mutationFn: async () => {
+      if (!authUser) {
+        throw new Error("You don't seem to be logged in...");
       }
 
-      throw new Error("Something went wrong while deleting the log");
-    }
+      const token = await authUser.getIdToken();
 
-    queryClient.invalidateQueries(["logs"]);
+      const res = await fetch(`${BASE_API_URL}/access-logs/delete-log/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(data);
+
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        }
+
+        throw new Error("Something went wrong while deleting the log");
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["logs"] });
+    },
   });
 
   return { deleteLog };

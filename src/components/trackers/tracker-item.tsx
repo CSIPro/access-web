@@ -1,10 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Timestamp } from "firebase/firestore";
 import { FC, MouseEventHandler } from "react";
 import toast from "react-hot-toast";
 import { IconContext } from "react-icons";
 import { BiReset } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "reactfire";
 import { z } from "zod";
@@ -89,7 +89,7 @@ export const TrackerItem: FC<Props> = ({ trackerId }) => {
     navigate(`/app/tracker/${trackerId}`);
   };
 
-  if (queryStatus === "loading") {
+  if (queryStatus === "pending") {
     return (
       <div className="flex w-full items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary-08 p-2 text-white">
         <LoadingSpinner />
@@ -161,8 +161,8 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
     refetchInterval: 1000,
   });
 
-  const { status, mutate } = useMutation<{ message: string }, Error>(
-    async () => {
+  const { status, mutate } = useMutation<{ message: string }, Error>({
+    mutationFn: async () => {
       const res = await fetch(
         `${import.meta.env.VITE_ACCESS_API_URL}/api/trackers/reset/${id}`,
         {
@@ -182,25 +182,23 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
 
       const data = await res.json();
 
-      queryClient.invalidateQueries(["tracker", id]);
-      queryClient.invalidateQueries(["tracker-lapses", id]);
+      queryClient.invalidateQueries({ queryKey: ["tracker", id] });
+      queryClient.invalidateQueries({ queryKey: ["tracker-lapses", id] });
 
       return data;
     },
-    {
-      onSuccess: (_) => {
-        toast.success("Tracker reset successfully");
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+    onSuccess: (_) => {
+      toast.success("Tracker reset successfully");
     },
-  );
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const handleReset: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
 
-    if (status === "loading") return;
+    if (status === "pending") return;
 
     mutate();
   };
@@ -222,7 +220,7 @@ export const TrackerTimer: FC<TrackerTimerProps> = ({
           size="icon"
           className="aspect-square h-auto w-auto rounded-sm p-1 hover:brightness-110 focus:brightness-110 active:brightness-110"
         >
-          {status === "loading" ? <LoadingSpinner size="small" /> : <BiReset />}
+          {status === "pending" ? <LoadingSpinner size="small" /> : <BiReset />}
         </Button>
       </div>
     </IconContext.Provider>

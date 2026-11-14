@@ -15,7 +15,7 @@ export const EditRestriction = () => {
     <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
       <Header title="Editar restricción" />
       <main className="flex h-full min-h-[100svh] w-full flex-col items-center gap-2 p-2">
-        {restriction.isLoading && <LoadingSpinner />}
+        {restriction.isPending && <LoadingSpinner />}
         {restriction.isError && (
           <div className="flex h-full w-full items-center justify-center">
             <p className="text-white">No fue posible obtener la restricción</p>

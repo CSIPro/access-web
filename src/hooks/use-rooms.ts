@@ -1,5 +1,5 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection } from "firebase/firestore";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useFirestore, useFirestoreCollectionData, useUser } from "reactfire";
 import * as z from "zod";
 
@@ -109,9 +109,10 @@ export const useNestRooms = () => {
         throw new Error("An error occurred while parsing rooms");
       }
 
+      saveToCache("ROOMS", roomsParse.data);
+
       return roomsParse.data;
     },
-    onSuccess: (data) => saveToCache("ROOMS", data),
     initialData: () => {
       const cachedRooms = loadFromCache("ROOMS");
 
@@ -178,30 +179,32 @@ export const useSubmitRoom = () => {
   const queryClient = useQueryClient();
   const authUser = firebaseAuth.currentUser;
 
-  const mutation = useMutation(async (data: RoomForm) => {
-    const authToken = await authUser?.getIdToken();
+  const mutation = useMutation({
+    mutationFn: async (data: RoomForm) => {
+      const authToken = await authUser?.getIdToken();
 
-    const res = await fetch(`${BASE_API_URL}/rooms`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify(data),
-    });
+      const res = await fetch(`${BASE_API_URL}/rooms`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (!res.ok) {
-      const errorParse = NestError.safeParse(await res.json());
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(await res.json());
 
-      if (errorParse.success) {
-        throw new Error(errorParse.data.message);
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        }
+
+        throw new Error("An error occurred while creating the room");
       }
 
-      throw new Error("An error occurred while creating the room");
-    }
-
-    queryClient.invalidateQueries(["rooms"]);
-    queryClient.invalidateQueries(["memberships"]);
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["memberships"] });
+    },
   });
 
   return mutation;

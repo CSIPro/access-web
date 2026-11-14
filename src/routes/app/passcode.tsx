@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { MdAutoAwesome, MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
@@ -48,22 +48,20 @@ export const PasscodePage = () => {
     defaultValues: { passcode: "" },
     resolver: zodResolver(PasscodeSchema),
   });
-  const { mutate, isLoading } = useMutation<void, Error, string>(
-    submitPasscode,
-    {
-      onSuccess: () => {
-        form.reset();
-        toast.success("Contraseña actualizada");
-        navigate("/app");
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
+  const { mutate, isPending } = useMutation<void, Error, string>({
+    mutationFn: submitPasscode,
+    onSuccess: () => {
+      form.reset();
+      toast.success("Contraseña actualizada");
+      navigate("/app");
     },
-  );
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const submit = async (data: PasscodeForm) => {
-    if (isLoading) return;
+    if (isPending) return;
 
     mutate(data.passcode);
   };
@@ -122,9 +120,9 @@ export const PasscodePage = () => {
           <Button
             type="submit"
             className="w-full"
-            onClick={isLoading ? undefined : form.handleSubmit(submit)}
+            onClick={isPending ? undefined : form.handleSubmit(submit)}
           >
-            {isLoading ? <LoadingSpinner /> : "Enviar"}
+            {isPending ? <LoadingSpinner /> : "Enviar"}
           </Button>
         </Form>
       </main>

@@ -1,6 +1,6 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { collectionGroup, query, where } from "firebase/firestore";
 import { useContext } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useFirestore, useFirestoreCollection } from "reactfire";
 import { z } from "zod";
 
@@ -236,8 +236,8 @@ export const useMemberActions = (userId: string) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["user", userId]);
-      queryClient.invalidateQueries(["members", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["members", selectedRoom] });
     },
   });
 
@@ -269,35 +269,37 @@ export const useMemberActions = (userId: string) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["user", userId]);
-      queryClient.invalidateQueries(["members", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["members", selectedRoom] });
     },
   });
 
-  const kickMember = useMutation(async () => {
-    const res = await fetch(
-      `${BASE_API_URL}/rooms/${selectedRoom}/member/${userId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${await firebaseAuth.currentUser?.getIdToken()}`,
-          "Content-Type": "application/json",
+  const kickMember = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(
+        `${BASE_API_URL}/rooms/${selectedRoom}/member/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${await firebaseAuth.currentUser?.getIdToken()}`,
+            "Content-Type": "application/json",
+          },
         },
-      },
-    );
+      );
 
-    if (!res.ok) {
-      const errorParse = NestError.safeParse(await res.json());
+      if (!res.ok) {
+        const errorParse = NestError.safeParse(await res.json());
 
-      if (errorParse.success) {
-        throw new Error(errorParse.data.message);
-      } else {
-        throw new Error("Failed to kick member");
+        if (errorParse.success) {
+          throw new Error(errorParse.data.message);
+        } else {
+          throw new Error("Failed to kick member");
+        }
       }
-    }
 
-    queryClient.invalidateQueries(["user", userId]);
-    queryClient.invalidateQueries(["members", selectedRoom]);
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      queryClient.invalidateQueries({ queryKey: ["members", selectedRoom] });
+    },
   });
 
   return {

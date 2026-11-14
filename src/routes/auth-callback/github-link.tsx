@@ -1,5 +1,5 @@
+import { useMutation } from "@tanstack/react-query";
 import { GithubAuthProvider, getAuth, linkWithCredential } from "firebase/auth";
-import { useMutation } from "react-query";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useFirebaseApp } from "reactfire";
 
@@ -10,7 +10,7 @@ export const GithubLink = () => {
   const navigate = useNavigate();
   const params = useParams();
   const { status, mutate } = useMutation({
-    mutationKey: "github-link",
+    mutationKey: ["github-link"],
     mutationFn: async () => {
       const serverUrl = `${
         import.meta.env.VITE_ACCESS_API_URL

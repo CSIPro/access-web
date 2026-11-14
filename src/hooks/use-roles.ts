@@ -1,5 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
 import { collection, orderBy, query } from "firebase/firestore";
-import { useQuery } from "react-query";
 import { useFirestore, useFirestoreCollectionData } from "reactfire";
 import * as z from "zod";
 
@@ -70,9 +70,10 @@ export const useNestRoles = () => {
         throw new Error("An error occurred while parsing roles");
       }
 
+      saveToCache("ROLES", rolesParse.data);
+
       return rolesParse.data;
     },
-    onSuccess: (data) => saveToCache("ROLES", data),
     initialData: () => {
       const cachedRoles = loadFromCache("ROLES");
 

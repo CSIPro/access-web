@@ -6,7 +6,7 @@ import { LoadingSpinner } from "../ui/spinner";
 export const RequestsList = () => {
   const { status, data } = useNestRoomRequests();
 
-  if (status === "loading") {
+  if (status === "pending") {
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />

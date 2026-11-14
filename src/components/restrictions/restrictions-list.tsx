@@ -9,7 +9,7 @@ import { LoadingSpinner } from "../ui/spinner";
 export const RestrictionsList = () => {
   const restrictions = useRoomRestrictions();
 
-  if (restrictions.isLoading) {
+  if (restrictions.isPending) {
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />

@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { firebaseAuth } from "@/firebase";
@@ -50,6 +50,10 @@ export const useMemberships = (userId?: string) => {
         throw new Error("An error occurred while parsing memberships");
       }
 
+      if (userId === loadFromCache("USER_ID")) {
+        saveToCache("USER_MEMBERSHIPS", membershipsParse.data);
+      }
+
       return membershipsParse.data;
     },
     initialData: () => {
@@ -66,13 +70,6 @@ export const useMemberships = (userId?: string) => {
       }
 
       return membershipsParse.data;
-    },
-    onSuccess: (data) => {
-      if (userId !== loadFromCache("USER_ID")) {
-        return undefined;
-      }
-
-      saveToCache("USER_MEMBERSHIPS", data);
     },
     staleTime: 1000,
     refetchInterval: 20000,

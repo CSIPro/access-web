@@ -1,5 +1,5 @@
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { FC, ReactNode, createContext, useContext } from "react";
-import { useMutation, UseMutationResult } from "react-query";
 import { z } from "zod";
 
 import { Splash } from "@/components/splash/splash";
@@ -34,8 +34,8 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     data?.id,
   );
 
-  const registerForNotifications = useMutation(
-    async (registration: ServiceWorkerRegistration) => {
+  const registerForNotifications = useMutation({
+    mutationFn: async (registration: ServiceWorkerRegistration) => {
       const authUser = firebaseAuth.currentUser;
 
       if (!authUser) {
@@ -105,7 +105,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         console.log("Message from service worker", event.data);
       });
     },
-  );
+  });
 
   const submitPasscode = async (passcode: string) => {
     if (!data) {
@@ -152,7 +152,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  if (status === "loading" || membershipStatus === "loading") {
+  if (status === "pending" || membershipStatus === "pending") {
     return <Splash loading message="Loading user data..." />;
   }
 
@@ -173,7 +173,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <UserContext.Provider
         value={{
-          user: data,
+          user: data ?? undefined,
           submitPasscode,
           registerForNotifications,
         }}
@@ -188,7 +188,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 
   const providerValue = {
-    user: data,
+    user: data ?? undefined,
     membership,
     submitPasscode,
     registerForNotifications,

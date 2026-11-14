@@ -44,7 +44,7 @@ export const RoomProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [selectedRoom, roomsData]);
 
-  if (roomsStatus === "loading") {
+  if (roomsStatus === "pending") {
     return <Splash loading message="Loading rooms..." />;
   }
 
