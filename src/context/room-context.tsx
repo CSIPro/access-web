@@ -44,16 +44,16 @@ export const RoomProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [selectedRoom, roomsData]);
 
-  if (roomsStatus === "pending") {
+  if (!roomsData) {
+    if (roomsStatus === "error") {
+      return <Splash message="Unable to reach server" />;
+    }
+
     return <Splash loading message="Loading rooms..." />;
   }
 
-  if (roomsStatus === "error") {
-    return <Splash message="Unable to reach server" />;
-  }
-
   const providerValue = {
-    selectedRoom: selectedRoom || roomsData!.at(0)?.id,
+    selectedRoom: selectedRoom || roomsData.at(0)?.id,
     setSelectedRoom,
     rooms: roomsData,
   };

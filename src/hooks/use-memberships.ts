@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { firebaseAuth } from "@/firebase";
-import { loadFromCache, saveToCache } from "@/lib/cache";
 import { BASE_API_URL, NestError } from "@/lib/utils";
 
 import { NestRole } from "./use-roles";
@@ -48,25 +47,6 @@ export const useMemberships = (userId?: string) => {
 
       if (!membershipsParse.success) {
         throw new Error("An error occurred while parsing memberships");
-      }
-
-      if (userId === loadFromCache("USER_ID")) {
-        saveToCache("USER_MEMBERSHIPS", membershipsParse.data);
-      }
-
-      return membershipsParse.data;
-    },
-    initialData: () => {
-      if (userId !== loadFromCache("USER_ID")) {
-        return undefined;
-      }
-
-      const cachedMemberships = loadFromCache("USER_MEMBERSHIPS");
-
-      const membershipsParse = Membership.array().safeParse(cachedMemberships);
-
-      if (!membershipsParse.success) {
-        return undefined;
       }
 
       return membershipsParse.data;

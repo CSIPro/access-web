@@ -1,5 +1,6 @@
 import { FC, ReactNode, createContext, useContext } from "react";
 
+import { Splash } from "@/components/splash/splash";
 import { NestRole, useNestRoles } from "@/hooks/use-roles";
 
 interface RoleContextProps {
@@ -11,7 +12,11 @@ export const RoleContext = createContext<RoleContextProps>({});
 export const RoleProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { status: rolesStatus, data: rolesData } = useNestRoles();
 
-  if (rolesStatus === "error") {
+  if (!rolesData) {
+    if (rolesStatus === "pending") {
+      return <Splash loading message="Loading roles..." />;
+    }
+
     return (
       <RoleContext.Provider value={{ roles: [] }}>
         {children}

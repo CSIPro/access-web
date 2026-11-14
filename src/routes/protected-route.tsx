@@ -1,12 +1,11 @@
 import { FC, ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "reactfire";
 
 import { Splash } from "@/components/splash/splash";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { useNestUser } from "@/hooks/use-user-data";
-import { deleteAllFromStorage } from "@/lib/local-storage";
+import { signOut } from "@/lib/session-cache";
 
 interface Props {
   isAuthenticated: boolean;
@@ -19,13 +18,7 @@ export const AuthedRoute: FC<Props> = ({
   redirectPath = "/login",
   children,
 }) => {
-  const auth = useAuth();
   const { isPending, isFetching, data, error, refetch } = useNestUser();
-
-  const signOut = () => {
-    deleteAllFromStorage();
-    auth.signOut();
-  };
 
   if (!isAuthenticated) {
     return <Navigate to={redirectPath} replace />;
@@ -35,7 +28,7 @@ export const AuthedRoute: FC<Props> = ({
     return <Splash loading message="Obteniendo datos de usuario..." />;
   }
 
-  if (error) {
+  if (data === undefined && error) {
     return (
       <Splash message="No fue posible conectar con el servidor">
         <div className="flex items-center gap-2">
@@ -45,7 +38,7 @@ export const AuthedRoute: FC<Props> = ({
             {isFetching || isPending ? <LoadingSpinner /> : "Reintentar"}
           </Button>
           <Button
-            onClick={() => signOut()}
+            onClick={() => void signOut()}
             variant="secondary"
             className="text-white"
           >

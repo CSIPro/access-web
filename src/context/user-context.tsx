@@ -152,11 +152,14 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  if (status === "pending" || membershipStatus === "pending") {
+  if (
+    (data === undefined && status === "pending") ||
+    (memberships === undefined && membershipStatus === "pending")
+  ) {
     return <Splash loading message="Loading user data..." />;
   }
 
-  if (status === "error") {
+  if (data === undefined) {
     return (
       <UserContext.Provider
         value={{
@@ -169,7 +172,7 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
   }
 
-  if (membershipStatus === "error") {
+  if (memberships === undefined) {
     return (
       <UserContext.Provider
         value={{

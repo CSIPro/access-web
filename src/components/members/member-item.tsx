@@ -35,18 +35,18 @@ export const MemberItem: FC<Props> = ({ member }) => {
   const memberQuery = useNestUser(member.user.id);
   const { accessUpdate } = useMemberActions(member.user.id!);
 
-  if (memberQuery.status === "pending") {
+  if (memberQuery.data === undefined) {
+    if (memberQuery.status === "error") {
+      return (
+        <li className="flex w-full items-center justify-center gap-2 p-2">
+          <p>Error al cargar el usuario</p>
+        </li>
+      );
+    }
+
     return (
       <li className="flex w-full items-center justify-center gap-2 p-2">
         <LoadingSpinner />
-      </li>
-    );
-  }
-
-  if (memberQuery.status === "error") {
-    return (
-      <li className="flex w-full items-center justify-center gap-2 p-2">
-        <p>Error al cargar el usuario</p>
       </li>
     );
   }

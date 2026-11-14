@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { SignupForm } from "@/components/signup/signup-form";
 import { BrandingHeader } from "@/components/ui/branding-header";
 import { Button } from "@/components/ui/button";
-import { firebaseAuth } from "@/firebase";
+import { signOut } from "@/lib/session-cache";
 
 export const CompleteSignup = () => {
   const navigate = useNavigate();
-  const auth = firebaseAuth;
 
   const handleSignOut = async () => {
-    await auth.signOut();
+    await signOut();
     navigate("/");
   };
 

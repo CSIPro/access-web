@@ -3,10 +3,10 @@ import { format } from "date-fns";
 import { AtSign, Cake, Mail, User } from "lucide-react";
 import { IconContext } from "react-icons";
 import { Link } from "react-router-dom";
-import { useAuth, useUser } from "reactfire";
+import { useUser } from "reactfire";
 
 import { useUserContext } from "@/context/user-context";
-import { deleteAllFromStorage } from "@/lib/local-storage";
+import { signOut } from "@/lib/session-cache";
 import { formatUserName } from "@/lib/utils";
 
 import { Button } from "./button";
@@ -22,7 +22,6 @@ import {
 import { LoadingSpinner } from "./spinner";
 
 export const ProfileButton = () => {
-  const auth = useAuth();
   const { status: userStatus, data: userData } = useUser();
   const { user } = useUserContext();
 
@@ -39,15 +38,14 @@ export const ProfileButton = () => {
   };
 
   const handleSignOut = () => {
-    deleteAllFromStorage();
-    void auth.signOut();
+    void signOut();
   };
 
   if (userStatus === "loading") {
     return <LoadingSpinner />;
   }
 
-  if (userStatus === "error") {
+  if (userStatus === "error" && !userData && !user) {
     return <span>Ocurrió un error al cargar los datos del usuario</span>;
   }
 

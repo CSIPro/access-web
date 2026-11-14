@@ -25,8 +25,8 @@ export const RoomSelector: FC<Props> = ({ className }) => {
     user?.id,
   );
 
-  const loading = membershipsStatus === "pending";
-  const error = membershipsStatus === "error";
+  const loading = !memberships && membershipsStatus === "pending";
+  const error = !memberships && membershipsStatus === "error";
 
   const selectContent = user?.isRoot
     ? rooms?.map((room) => (

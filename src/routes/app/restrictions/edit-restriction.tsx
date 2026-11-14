@@ -15,14 +15,12 @@ export const EditRestriction = () => {
     <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
       <Header title="Editar restricción" />
       <main className="flex h-full min-h-[100svh] w-full flex-col items-center gap-2 p-2">
-        {restriction.isPending && <LoadingSpinner />}
-        {restriction.isError && (
+        {restriction.data && <RestrictionForm restriction={restriction.data} />}
+        {!restriction.data && restriction.isPending && <LoadingSpinner />}
+        {!restriction.data && restriction.isError && (
           <div className="flex h-full w-full items-center justify-center">
             <p className="text-white">No fue posible obtener la restricción</p>
           </div>
-        )}
-        {restriction.isSuccess && (
-          <RestrictionForm restriction={restriction.data} />
         )}
         <div className="h-64" />
         {!!navigator.bluetooth && <PibleScanner />}

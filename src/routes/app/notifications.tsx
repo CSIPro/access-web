@@ -124,23 +124,23 @@ export const NotificationsPage = () => {
     },
   });
 
-  if (membershipsStatus === "pending") {
+  if (!memberships) {
+    if (membershipsStatus === "error") {
+      return (
+        <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
+          <Header title="Notificaciones" />
+          <main className="flex h-full w-full flex-col items-center gap-2 p-2">
+            <p>Error al cargar tus salones</p>
+          </main>
+        </div>
+      );
+    }
+
     return (
       <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
         <Header title="Notificaciones" />
         <main className="flex h-full w-full flex-col items-center justify-center gap-2 p-2">
           <LoadingSpinner onBackground />
-        </main>
-      </div>
-    );
-  }
-
-  if (membershipsStatus === "error") {
-    return (
-      <div className="relative flex min-h-screen w-full flex-col items-center bg-muted">
-        <Header title="Notificaciones" />
-        <main className="flex h-full w-full flex-col items-center gap-2 p-2">
-          <p>Error al cargar tus salones</p>
         </main>
       </div>
     );

@@ -2,10 +2,11 @@ import { FC } from "react";
 import { BiMenu } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "reactfire";
 
 import { useUserContext } from "@/context/user-context";
+import { signOut } from "@/lib/session-cache";
 
+import { StaleLabel } from "./stale-label";
 import { Navbar } from "../navbar/navbar";
 import { BrandingHeader } from "../ui/branding-header";
 import { Button } from "../ui/button";
@@ -26,7 +27,6 @@ interface Props {
 
 export const Header: FC<Props> = ({ title, backTo }) => {
   const navigate = useNavigate();
-  const auth = useAuth();
   const { user, membership } = useUserContext();
 
   const handleBack = () => {
@@ -36,7 +36,7 @@ export const Header: FC<Props> = ({ title, backTo }) => {
   };
 
   const handleSignOut = () => {
-    void auth.signOut();
+    void signOut();
   };
 
   return (
@@ -74,6 +74,7 @@ export const Header: FC<Props> = ({ title, backTo }) => {
             <Navbar role={membership?.role} isRoot={user?.isRoot} />
           </div>
           <div className="block flex-grow" />
+          <StaleLabel />
           <ProfileButton />
         </div>
       </header>

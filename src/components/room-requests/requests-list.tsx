@@ -6,7 +6,15 @@ import { LoadingSpinner } from "../ui/spinner";
 export const RequestsList = () => {
   const { status, data } = useNestRoomRequests();
 
-  if (status === "pending") {
+  if (!data) {
+    if (status === "error") {
+      return (
+        <div className="flex h-full w-full flex-col items-center justify-center">
+          <p>No fue posible conectar con el servidor</p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex h-full w-full items-center justify-center gap-2">
         <LoadingSpinner />
@@ -15,15 +23,7 @@ export const RequestsList = () => {
     );
   }
 
-  if (status === "error") {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center">
-        <p>No fue posible conectar con el servidor</p>
-      </div>
-    );
-  }
-
-  if (data?.length === 0) {
+  if (data.length === 0) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p>No hay solicitudes pendientes</p>
@@ -33,7 +33,9 @@ export const RequestsList = () => {
 
   return (
     <ul className="flex w-full flex-col gap-1">
-      {data?.map((req) => <RequestItem key={req.id} request={req} />)}
+      {data.map((req) => (
+        <RequestItem key={req.id} request={req} />
+      ))}
     </ul>
   );
 };

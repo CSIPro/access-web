@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   Timestamp,
   collection,
@@ -228,10 +233,8 @@ export const NestLog = z.object({
 
 export type NestLog = z.infer<typeof NestLog>;
 
-export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
-  const { selectedRoom } = useRoomContext();
-
-  const logsQuery = useQuery({
+export const nestLogsQueryOptions = (selectedRoom?: string, limitTo = 40) =>
+  queryOptions({
     queryKey: ["logs", selectedRoom, limitTo],
     queryFn: async () => {
       const res = await fetch(
@@ -255,12 +258,25 @@ export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
         throw new Error("An error occurred while parsing logs");
       }
 
-      return logsParse.data;
+      // The API still sends the passcode of failed attempts. Dropping it here
+      // keeps it out of the query cache, and so out of the persisted cache.
+      return logsParse.data.map(({ attempt, ...log }) => {
+        if (!attempt) {
+          return { ...log, attempt };
+        }
+
+        const { passcode: _passcode, ...safeAttempt } = attempt;
+
+        return { ...log, attempt: safeAttempt };
+      });
     },
     refetchInterval: 10000,
   });
 
-  return logsQuery;
+export const useNestLogs = ({ limitTo = 40 }: { limitTo?: number } = {}) => {
+  const { selectedRoom } = useRoomContext();
+
+  return useQuery(nestLogsQueryOptions(selectedRoom, limitTo));
 };
 
 export const useLogActions = (id: string) => {

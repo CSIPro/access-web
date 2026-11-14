@@ -7,6 +7,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "test": "vitest run",
     "preview": "vite preview --host --port=3002"
   },
   "dependencies": {
@@ -23,8 +24,10 @@
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.6",
+    "@tanstack/query-async-storage-persister": "^5.107.1",
     "@tanstack/react-query": "^5.107.1",
     "@tanstack/react-query-devtools": "^5.107.1",
+    "@tanstack/react-query-persist-client": "^5.107.1",
     "axios": "^1.5.0",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
@@ -34,6 +37,7 @@
     "eslint-plugin-import": "^2.28.1",
     "firebase": "^10.3.1",
     "framer-motion": "^11.0.23",
+    "idb-keyval": "^6.3.0",
     "lucide-react": "^0.276.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.9.0",
@@ -64,12 +68,15 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "fake-indexeddb": "^6.2.8",
+    "jsdom": "^31.0.0",
     "postcss": "^8.4.29",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.4",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "vite-plugin-pwa": "^0.19.2"
+    "vite-plugin-pwa": "^0.19.2",
+    "vitest": "^1.6.1"
   }
 }
